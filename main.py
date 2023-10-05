@@ -135,7 +135,9 @@ def start_campaign(campaign):
     run_combat_event()
     run_choice_event()
     # game ended, return to main menu
+    run_last_choice_event()
     print("Campaign ended!")
+    print("########################################################################")
     display_main_menu()
 
 
@@ -182,6 +184,27 @@ def run_choice_event():
             break
         elif user_choice == 2:
             print("You took the right path.")
+            break
+        else:
+            print("Invalid choice, please try again.")
+
+
+# @TODO Fake ending choice run_choice_event
+def run_last_choice_event():
+    while True:
+        print("You reach the end of the path and discover 2 treasure chests. Which one do you pick?")
+        print("1. Pick the red treasure chest.")
+        print("2. Pick the blue treasure chest.")
+        user_choice = int(input("Enter your choice (1-2):"))
+        if user_choice == 1:
+            print("You picked the red treasure chest.")
+            print("The red treasure chest was booby trapped, you died in the explosion.")
+            print("Defeat!")
+            break
+        elif user_choice == 2:
+            print("You picked the blue treasure chest.")
+            print("The blue treasure chest contains the holy grail. You found it!")
+            print("Victory!")
             break
         else:
             print("Invalid choice, please try again.")
