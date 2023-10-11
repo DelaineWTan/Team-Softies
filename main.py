@@ -1,3 +1,6 @@
+from classes import *
+
+
 # @TODO define campaign entity
 campaign_list = ["The Eternity Terrain", "The Demon Forest", "The Burning Land"]
 
@@ -43,7 +46,12 @@ def display_new_campaign_menu():
         if len(user_input) == 0:
             print("Name cannot be empty, please try again.")
         else:
-            campaign_list.append(user_input)
+            
+            campaign = Campaign(user_input, 'some text that should be asked for later in-editor.')
+            print(f'{campaign.name}')
+            FileManager.create_config_file(campaign)
+
+            campaign_list.append(campaign)
             print(f"New campaign created: {user_input}")
             display_edit_campaign_menu(user_input)
             break
