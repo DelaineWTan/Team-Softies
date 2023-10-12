@@ -94,13 +94,30 @@ class Event(abc.ABC):
 
 
 class DialogueEvent(Event):
-    def __init__(self, description):
-        self._description = description
-        self._list_of_choices = []
+    def __init__(self, event_id):
+        self._event_id = event_id
+        self._description = "lorem ipsum"
+        self._choice_event_ids = []
 
     def run_event(self):
         print(self._description)
         print("running the dialogue event idk")
+
+    @property
+    def description(self):
+        return self._description
+
+    @description.setter
+    def description(self, description):
+        self._description = description
+
+    @property
+    def event_id(self):
+        return self._event_id
+
+    @event_id.setter
+    def event_id(self, event_id):
+        self._event_id = event_id
 
 
 class CombatEvent(Event):
