@@ -10,7 +10,6 @@ class UserMenu:
     def __init__(self):
         self._campaign_manager = CampaignManager()
 
-
     def display_main_menu(self):
         while True:
             print("1. Editor mode")
@@ -24,7 +23,6 @@ class UserMenu:
                 break
             else:
                 print("Invalid choice, please try again.")
-
 
     def display_editor_menu(self):
         while True:
@@ -45,7 +43,6 @@ class UserMenu:
             else:
                 print("Invalid choice, please try again.")
 
-
     def display_new_campaign_menu(self):
         while True:
             user_input = input("Enter new campaign name:")
@@ -54,23 +51,23 @@ class UserMenu:
             else:
                 self._campaign_manager.create_campaign(user_input)
                 self._campaign_manager.set_current_campaign(-1)
-                campaign_list.append(user_input)
+                new_campaign = Campaign(user_input)  # generate new campaign object
+                campaign_list.append(new_campaign)
                 print(f"New campaign created: {user_input}")
                 self.display_edit_campaign_menu(user_input)
                 break
 
-# def display_new_campaign_menu():
-#     while True:
-#         user_input = input("Enter new campaign name:")
-#         if len(user_input) == 0:
-#             print("Name cannot be empty, please try again.")
-#         else:
-#             newCampaign = Campaign(user_input)  # generate new campaign object
-#             campaign_list.append(newCampaign)
-#             print(f"New campaign created: {newCampaign.name}")
-#             display_edit_campaign_menu(newCampaign)
-#             break
-
+    # def display_new_campaign_menu():
+    #     while True:
+    #         user_input = input("Enter new campaign name:")
+    #         if len(user_input) == 0:
+    #             print("Name cannot be empty, please try again.")
+    #         else:
+    #             newCampaign = Campaign(user_input)  # generate new campaign object
+    #             campaign_list.append(newCampaign)
+    #             print(f"New campaign created: {newCampaign.name}")
+    #             display_edit_campaign_menu(newCampaign)
+    #             break
 
     def display_campaign_list_choices(self):
         print("Campaign list:")
@@ -83,7 +80,6 @@ class UserMenu:
                 print(f"{index + 1}. {campaign}")
         print(f"{1 + choice_count}. Back")
         return choice_count
-
 
     def display_edit_existing_campaigns_menu(self):
         while True:
@@ -99,7 +95,6 @@ class UserMenu:
             else:
                 print("Invalid choice, please try again.")
 
-
     def display_edit_campaign_menu(self, campaign):
         # @TODO implement all these campaign management options
         while True:
@@ -114,7 +109,7 @@ class UserMenu:
             print("8. Back")
             user_choice = int(input("Enter your choice (1-8):"))
             if user_choice == 4:
-                manage_campaign_players(campaign)
+                self.manage_campaign_players(campaign)
             if 1 <= user_choice <= 6:
                 print("Made a valid choice 1-6")
             elif user_choice == 7:
@@ -128,7 +123,6 @@ class UserMenu:
                 break
             else:
                 print("Invalid choice, please try again.")
-
 
     def display_player_menu(self):
         while True:
@@ -145,8 +139,7 @@ class UserMenu:
             else:
                 print("Invalid choice, please try again.")
 
-
-    def manage_campaign_players(campaign: Campaign) -> None:
+    def manage_campaign_players(self, campaign: Campaign) -> None:
         while True:
             print(f" --Managing player character-- ")
             print(f"{campaign.player}")
@@ -173,25 +166,6 @@ class UserMenu:
             else:
                 print("Invalid choice, please try again.")
 
-
-
-
-    def display_player_menu(self):
-        while True:
-            print("You are in player mode. Choices:")
-            print("1. Play campaign")
-            print("2. Return to main menu")
-            user_choice = int(input("Enter your choice (1-2):"))
-            if user_choice == 1:
-                self.display_play_existing_campaigns_menu()
-                break
-            elif user_choice == 2:
-                display_main_menu()
-                break
-            else:
-                print("Invalid choice, please try again.")
-
-
     def display_play_existing_campaigns_menu(self):
         while True:
             choice_count = self.display_campaign_list_choices()
@@ -204,7 +178,6 @@ class UserMenu:
             else:
                 print("Invalid choice, please try again.")
 
-
     def start_campaign(self, campaign):
         # @TODO properly extract campaign data to start campaign event sequence
         self.run_combat_event()
@@ -214,7 +187,6 @@ class UserMenu:
         print("Campaign ended!")
         print("########################################################################")
         self.display_main_menu()
-
 
     # @TODO Fake combat event
     def run_combat_event(self):
@@ -241,11 +213,9 @@ class UserMenu:
             else:
                 print("Invalid choice, please try again.")
 
-
     # @TODO fake use item menu
     def use_item_menu(self):
         print("You used a potion and healed 1 hp!")
-
 
     # @TODO Fake choice event
     def run_choice_event(self):
@@ -262,7 +232,6 @@ class UserMenu:
                 break
             else:
                 print("Invalid choice, please try again.")
-
 
     # @TODO Fake ending choice run_choice_event
     def run_last_choice_event(self):
