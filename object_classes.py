@@ -99,7 +99,8 @@ class DialogueEvent(Event):
         self._list_of_choices = []
 
     def run_event(self):
-        print("run the event idk")
+        print(self._description)
+        print("running the dialogue event idk")
 
 
 class CombatEvent(Event):
@@ -108,7 +109,8 @@ class CombatEvent(Event):
         self._list_of_choices = []  # idk
 
     def run_event(self):
-        print("run the event idk")
+        print(self._description)
+        print("running the combat event idk")
 
 
 class Campaign:
