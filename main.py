@@ -1,5 +1,5 @@
-from classes import *
-from EditorObjects import *
+from manager_classes import *
+from object_classes import *
 
 # @TODO define campaign entity
 
