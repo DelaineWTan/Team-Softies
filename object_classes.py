@@ -117,14 +117,15 @@ class Campaign:
     _player = Player("Anon")  # just a single player class
     _short_desc = "some short description idk"
 
-    def __init__(self, name):
+    def __init__(self, name, short_desc = '', sequence_of_events = {}, list_of_PCs = [],
+        list_of_NPCs = [], items = []):
         self._name = name
-        self._short_desc = ""
-        self._events = {}
+        self._short_desc = short_desc
+        self._events = sequence_of_events
         # @TODO do we want to have potentially more than 1 character per campaign?
-        self._PCs = []  # PCs are Characters
-        self._NPCs = []  # list of NPC objects, this can be empty
-        self._items = []  # list of item objects, this can be empty
+        self._PCs = list_of_PCs  # PCs are Characters
+        self._NPCs = list_of_NPCs  # list of NPC objects, this can be empty
+        self._items = items  # list of item objects, this can be empty
 
     @property
     def name(self) -> str:

@@ -11,6 +11,8 @@ class UserMenu:
         self._campaign_manager = CampaignManager()
 
     def display_main_menu(self):
+        # @TODO add load campaign calls to whenever campaigns are shown to the user
+        self._campaign_manager.load_campaigns()
         while True:
             print("1. Editor mode")
             print("2. Player mode")

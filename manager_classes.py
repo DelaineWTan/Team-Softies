@@ -41,6 +41,13 @@ class CampaignManager:
         self.campaigns.remove(self.current_campaign)
         self.set_no_current_campaign()
 
+    def load_campaigns(self):
+        campaigns = self._file_manager.load_config_files()
+        for campaign in campaigns:
+            print(campaign.name)
+            print(campaign.short_desc)
+            self._campaigns.append(campaign)
+
 
 class FileManager:
     def __init__(self):
@@ -51,7 +58,22 @@ class FileManager:
             dump(campaign.__dict__, file_object, indent=3)
 
     def load_config_files(self):
-        pass
+        campaign_files = [x for x in os.listdir(self._path) if x.endswith('.json')]
+        parsed_campaigns = list()
+
+        for index, js in enumerate(campaign_files):
+            with open(f'{self._path}{js}') as json_file:
+                json_data = load(json_file)
+
+                name = json_data['_name']
+                desc = json_data['_short_desc']
+                events = json_data['_sequence_of_events']
+                playable_chars = json_data['_list_of_PCs']
+                non_playable_chars = json_data['_list_of_NPCs']
+
+                parsed_campaigns.append(Campaign(name, desc, events, playable_chars, non_playable_chars))
+
+        return parsed_campaigns
 
     def delete_config_file(self, file_name):
         file_path = f'{self._path}{file_name}.json'
