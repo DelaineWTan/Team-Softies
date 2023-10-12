@@ -1,3 +1,6 @@
+import abc
+
+
 class Character:
     name = "Anon"
     base_hp = 10
@@ -60,40 +63,86 @@ class Item:
         self.name = name
 
 
-class Event:
-    name = ""
-    description = ""
-    next = None
-    outcome = None
+# class Event:
+#     name = ""
+#     description = ""
+#     next = None
+#     outcome = None
+#
+#     def __init__(self, name, description):
+#         self.name = name
+#         self.description = description
+#
+#     def setNextEvent(self, event):
+#         self.next = event
+#
+#     def eventOutcome(self, outcome):  # function will take in a universal object
+#         if outcome.type == Event:
+#             self.setNextEvent(outcome)
+#
+#         if outcome.type == Item:
+#             pass  # give player an item
+#
+#         if outcome.type == NPC:
+#             pass  # trigger battle!
 
-    def __init__(self, name, description):
-        self.name = name
-        self.description = description
 
-    def setNextEvent(self, event):
-        self.next = event
+class Event(abc.ABC):
+    @abc.abstractmethod
+    def run_event(self):
+        pass
 
-    def eventOutcome(self, outcome):  # function will take in a universal object
-        if outcome.type == Event:
-            self.setNextEvent(outcome)
 
-        if outcome.type == Item:
-            pass  # give player an item
+class DialogueEvent(Event):
+    def __init__(self, description):
+        self._description = description
+        self._list_of_choices = []
 
-        if outcome.type == NPC:
-            pass  # trigger battle!
+    def run_event(self):
+        print("run the event idk")
+
+
+class CombatEvent(Event):
+    def __init__(self, description):
+        self._description = description  # will the combat event have a description?
+        self._list_of_choices = []  # idk
+
+    def run_event(self):
+        print("run the event idk")
 
 
 class Campaign:
-    name = "Untitled Campaign"
-    events = []  # empty linked list of event objects
-    player = Player("Anon")  # just a single player class
-    NPCs = []  # list of NPC objects, this can be empty
-    items = []  # list of item objects, this can be empty
+    # defaults just in case
+    _name = "The Stick of Tooth"
+    _player = Player("Anon")  # just a single player class
+    _short_desc = "some short description idk"
 
-    def __init__(self, name: str):
-        self.name = name
+    def __init__(self, name):
+        self._name = name
+        self._short_desc = ""
+        self._events = {}
+        # @TODO do we want to have potentially more than 1 character per campaign?
+        self._PCs = []  # PCs are Characters
+        self._NPCs = []  # list of NPC objects, this can be empty
+        self._items = []  # list of item objects, this can be empty
+
+    @property
+    def name(self) -> str:
+        return self._name
+
+    @property
+    def short_desc(self) -> str:
+        return self._short_desc
+
+    @short_desc.setter
+    def short_desc(self, short_desc):
+        self._short_desc = short_desc
+
+    @property
+    def player(self) -> Player:
+        return self._player
 
     def __str__(self):
-        return (f"The \"{self.name}\" campaign plays as {self.player.name}."
-                f" This campaign has {len(self.events)} events, {len(self.NPCs)} characters, and {len(self.items)} items.")
+        return (f"The \"{self._name}\" campaign plays as {self._player.name}."
+                f" This campaign has {len(self._events)} events, {len(self._NPCs)} characters, and {len(self._items)} "
+                f"items.")
