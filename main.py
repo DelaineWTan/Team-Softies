@@ -52,6 +52,7 @@ class UserMenu:
                 print("Name cannot be empty, please try again.")
             else:
                 self._campaign_manager.create_campaign(user_input)
+                self._campaign_manager.set_current_campaign(-1)
                 campaign_list.append(user_input)
                 print(f"New campaign created: {user_input}")
                 self.display_edit_campaign_menu(user_input)
@@ -61,10 +62,10 @@ class UserMenu:
     def display_campaign_list_choices(self):
         print("Campaign list:")
         choice_count = 0
-        if campaign_list.count == 0:
+        if len(self._campaign_manager.campaigns) == 0:
             print("No campaigns available.")
         else:
-            for index, campaign in enumerate(campaign_list):
+            for index, campaign in enumerate(self._campaign_manager.campaign_names()):
                 choice_count += 1
                 print(f"{index + 1}. {campaign}")
         print(f"{1 + choice_count}. Back")
@@ -76,7 +77,9 @@ class UserMenu:
             choice_count = self.display_campaign_list_choices()
             user_choice = int(input(f"Enter your choice (1-{1 + choice_count}):"))
             if choice_count + 1 > user_choice > 0:
-                self.display_edit_campaign_menu(campaign_list[user_choice - 1])
+                self._campaign_manager.set_current_campaign(user_choice - 1)
+                print(f'--*{self._campaign_manager.current_campaign.name}*--')
+                self.display_edit_campaign_menu(self._campaign_manager.campaigns[user_choice - 1].name)
             elif user_choice == 1 + choice_count:
                 self.display_editor_menu()
                 break
@@ -100,10 +103,12 @@ class UserMenu:
             if 1 <= user_choice <= 6:
                 print("Made a valid choice 1-6")
             elif user_choice == 7:
-                campaign_list.remove(campaign)
+                # campaign_list.remove(campaign)
                 print(f"Deleted campaign: {campaign}")
+                self._campaign_manager.delete_campaign()
                 break
             elif user_choice == 8:
+                self._campaign_manager.set_no_current_campaign()
                 self.display_edit_existing_campaigns_menu()
                 break
             else:
