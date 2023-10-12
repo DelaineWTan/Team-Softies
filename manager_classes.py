@@ -1,4 +1,3 @@
-import abc
 import os
 from json import dump, load
 from object_classes import Campaign
@@ -32,7 +31,8 @@ class CampaignManager:
         return [campaign.name for campaign in self._campaigns]
 
     def create_campaign(self, name: str) -> None:
-        campaign = Campaign(name, 'some text that should be asked for later in-editor.')
+        campaign = Campaign(name)
+        campaign.short_desc = 'some text that should be asked for later in-editor.'
         self._file_manager.create_config_file(campaign)
         self.add_compaign(campaign)
 

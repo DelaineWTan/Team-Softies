@@ -115,12 +115,13 @@ class Campaign:
     # defaults just in case
     _name = "The Stick of Tooth"
     _player = Player("Anon")  # just a single player class
+    _short_desc = "some short description idk"
 
-    def __init__(self, name, short_desc):
+    def __init__(self, name):
         self._name = name
-        self._short_desc = short_desc
+        self._short_desc = ""
         self._events = {}
-        # do we want to have potentially more than 1 character per campaign?
+        # @TODO do we want to have potentially more than 1 character per campaign?
         self._PCs = []  # PCs are Characters
         self._NPCs = []  # list of NPC objects, this can be empty
         self._items = []  # list of item objects, this can be empty
@@ -132,6 +133,14 @@ class Campaign:
     @property
     def short_desc(self) -> str:
         return self._short_desc
+
+    @short_desc.setter
+    def short_desc(self, short_desc):
+        self._short_desc = short_desc
+
+    @property
+    def player(self) -> Player:
+        return self._player
 
     def __str__(self):
         return (f"The \"{self._name}\" campaign plays as {self._player.name}."
