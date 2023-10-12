@@ -79,7 +79,7 @@ class FileManager:
 
 
     def create_config_file(self, campaign: Campaign) -> None:
-        with open(f'{campaign.name}.json', 'w+') as file_object:
+        with open(f'{self._path}{campaign.name}.json', 'w+') as file_object:
             dump(campaign.__dict__, file_object, indent=3)
 
     
