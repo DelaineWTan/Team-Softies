@@ -85,15 +85,28 @@ class Event:
 
 
 class Campaign:
-    name = "Untitled Campaign"
-    events = []  # empty linked list of event objects
-    player = Player("Anon")  # just a single player class
-    NPCs = []  # list of NPC objects, this can be empty
-    items = []  # list of item objects, this can be empty
+    # defaults just in case
+    _name = "The Stick of Tooth"
+    _player = Player("Anon")  # just a single player class
 
-    def __init__(self, name: str):
-        self.name = name
+    def __init__(self, name, short_desc):
+        self._name = name
+        self._short_desc = short_desc
+        self._events = {}
+        # do we want to have potentially more than 1 character per campaign?
+        self._PCs = []  # PCs are Characters
+        self._NPCs = []  # list of NPC objects, this can be empty
+        self._items = []  # list of item objects, this can be empty
+
+    @property
+    def name(self) -> str:
+        return self._name
+
+    @property
+    def short_desc(self) -> str:
+        return self._short_desc
 
     def __str__(self):
-        return (f"The \"{self.name}\" campaign plays as {self.player.name}."
-                f" This campaign has {len(self.events)} events, {len(self.NPCs)} characters, and {len(self.items)} items.")
+        return (f"The \"{self._name}\" campaign plays as {self._player.name}."
+                f" This campaign has {len(self._events)} events, {len(self._NPCs)} characters, and {len(self._items)} "
+                f"items.")

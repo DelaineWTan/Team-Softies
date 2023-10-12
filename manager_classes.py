@@ -1,23 +1,7 @@
 import abc
 import os
 from json import dump, load
-
-
-class Campaign:
-    def __init__(self, name, short_desc):
-        self._name = name
-        self._short_desc = short_desc
-        self._sequence_of_events = {}
-        self._list_of_PCs = []  # PCs are Characters
-        self._list_of_NPCs = []
-
-    @property
-    def name(self) -> str:
-        return self._name
-
-    @property
-    def short_desc(self) -> str:
-        return self._short_desc
+from object_classes import Campaign
 
 
 class CampaignManager:
