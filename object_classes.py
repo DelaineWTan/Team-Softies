@@ -1,3 +1,6 @@
+import abc
+
+
 class Character:
     name = "Anon"
     base_hp = 10
@@ -60,28 +63,52 @@ class Item:
         self.name = name
 
 
-class Event:
-    name = ""
-    description = ""
-    next = None
-    outcome = None
+# class Event:
+#     name = ""
+#     description = ""
+#     next = None
+#     outcome = None
+#
+#     def __init__(self, name, description):
+#         self.name = name
+#         self.description = description
+#
+#     def setNextEvent(self, event):
+#         self.next = event
+#
+#     def eventOutcome(self, outcome):  # function will take in a universal object
+#         if outcome.type == Event:
+#             self.setNextEvent(outcome)
+#
+#         if outcome.type == Item:
+#             pass  # give player an item
+#
+#         if outcome.type == NPC:
+#             pass  # trigger battle!
 
-    def __init__(self, name, description):
-        self.name = name
-        self.description = description
 
-    def setNextEvent(self, event):
-        self.next = event
+class Event(abc.ABC):
+    @abc.abstractmethod
+    def run_event(self):
+        pass
 
-    def eventOutcome(self, outcome):  # function will take in a universal object
-        if outcome.type == Event:
-            self.setNextEvent(outcome)
 
-        if outcome.type == Item:
-            pass  # give player an item
+class DialogueEvent(Event):
+    def __init__(self, description):
+        self._description = description
+        self._list_of_choices = []
 
-        if outcome.type == NPC:
-            pass  # trigger battle!
+    def run_event(self):
+        print("run the event idk")
+
+
+class CombatEvent(Event):
+    def __init__(self, description):
+        self._description = description  # will the combat event have a description?
+        self._list_of_choices = []  # idk
+
+    def run_event(self):
+        print("run the event idk")
 
 
 class Campaign:

@@ -42,31 +42,6 @@ class CampaignManager:
         self.set_no_current_campaign()
 
 
-# should we even do something like this?
-class Event(abc.ABC):
-    @abc.abstractmethod
-    def run_event(self):
-        pass
-
-
-class DialogueEvent(Event):
-    def __init__(self, description):
-        self._description = description
-        self._list_of_choices = []
-
-    def run_event(self):
-        print("run the event idk")
-
-
-class CombatEvent(Event):
-    def __init__(self, description):
-        self._description = description  # will the combat event have a description?
-        self._list_of_choices = []  # idk
-
-    def run_event(self):
-        print("run the event idk")
-
-
 class FileManager:
     def __init__(self):
         self._path = 'game_configs/'
