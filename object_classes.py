@@ -97,7 +97,7 @@ class DialogueEvent(Event):
     def __init__(self, event_id):
         self._event_id = event_id
         self._description = "lorem ipsum"
-        self._choice_event_ids = []
+        self._choices = []  # list of next event ids
 
     def run_event(self):
         print(self._description)

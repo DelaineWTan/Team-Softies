@@ -3,6 +3,13 @@ from json import dump, load
 from object_classes import Campaign
 
 
+class EventManager:
+    def __init__(self):
+        event_tree = {}
+    def create_event(self):
+        pass
+        
+
 class CampaignManager:
     def __init__(self) -> None:
         self._campaigns = list()
