@@ -1,11 +1,14 @@
-# @TODO define campaign entity
-campaign_list = ["The Eternity Terrain", "The Demon Forest", "The Burning Land"]
+from EditorObjects import *
+
+
+campaign_list = [Campaign("The Eternity Terrain"), Campaign("The Demon Forest"), Campaign("The Burning Land")]
 
 
 def display_main_menu():
     while True:
         print("1. Editor mode")
         print("2. Player mode")
+
         user_choice = int(input("Enter your choice (1-2):"))
         if user_choice == 1:
             display_editor_menu()
@@ -43,9 +46,10 @@ def display_new_campaign_menu():
         if len(user_input) == 0:
             print("Name cannot be empty, please try again.")
         else:
-            campaign_list.append(user_input)
-            print(f"New campaign created: {user_input}")
-            display_edit_campaign_menu(user_input)
+            newCampaign = Campaign(user_input)  # generate new campaign object
+            campaign_list.append(newCampaign)
+            print(f"New campaign created: {newCampaign.name}")
+            display_edit_campaign_menu(newCampaign)
             break
 
 
@@ -57,7 +61,7 @@ def display_campaign_list_choices():
     else:
         for index, campaign in enumerate(campaign_list):
             choice_count += 1
-            print(f"{index + 1}. {campaign}")
+            print(f"{index + 1}. {campaign.name}")
     print(f"{1 + choice_count}. Back")
     return choice_count
 
@@ -75,7 +79,7 @@ def display_edit_existing_campaigns_menu():
             print("Invalid choice, please try again.")
 
 
-def display_edit_campaign_menu(campaign):
+def display_edit_campaign_menu(campaign: Campaign):
     # @TODO implement all these campaign management options
     while True:
         print(f"Editing campaign: {campaign}")
@@ -88,6 +92,8 @@ def display_edit_campaign_menu(campaign):
         print("7. Delete campaign (WARNING: this action is irreversible)")
         print("8. Back")
         user_choice = int(input("Enter your choice (1-8):"))
+        if user_choice == 4:
+            manage_campaign_players(campaign)
         if 1 <= user_choice <= 6:
             print("Made a valid choice 1-6")
         elif user_choice == 7:
@@ -99,6 +105,36 @@ def display_edit_campaign_menu(campaign):
             break
         else:
             print("Invalid choice, please try again.")
+
+
+def manage_campaign_players(campaign: Campaign) -> None:
+    while True:
+        print(f" --Managing player character-- ")
+        print(f"{campaign.player}")
+        print("1. Change player name")
+        print("2. Change player description")
+        print("3. Change player base hit points")
+        print("4. Change player base attack")
+        print("5. Change player base speed")
+        print("6. Change player level up experience")
+        print("7. Change player max level")
+        print("8. Change player hit point gain per level")
+        print("9. Change player attack gain per level")
+        print("10. Change player speed gain per level")
+        print("11. Clear character")
+        print("12. Back")
+
+        user_choice = int(input("Enter your choice (1-12):"))
+        if user_choice == 1:
+            new_name = input("Enter new Name: ")
+            campaign.player.name = new_name
+            break
+        if 2 <= user_choice <= 12:
+            break
+        else:
+            print("Invalid choice, please try again.")
+
+
 
 
 def display_player_menu():
