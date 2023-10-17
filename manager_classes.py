@@ -1,14 +1,15 @@
 import os
 from json import dump, load
-from object_classes import Campaign
+from object_classes import Campaign, DialogueEvent
 
 
 class EventManager:
-    def __init__(self):
-        event_tree = {}
+    def __init__(self, events_tree):
+        self._events_tree = events_tree
+
     def create_event(self):
         pass
-        
+
 
 class CampaignManager:
     def __init__(self) -> None:

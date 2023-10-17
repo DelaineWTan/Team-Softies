@@ -94,10 +94,13 @@ class Event(abc.ABC):
 
 
 class DialogueEvent(Event):
-    def __init__(self, event_id):
+    def __init__(self, event_id=99999, description="null event", choices=None):
         self._event_id = event_id
-        self._description = "lorem ipsum"
-        self._choices = []  # list of next event ids
+        self._description = description
+        if choices is None:
+            self._choices = []  # list of next event ids
+        else:
+            self._choices = choices
 
     def run_event(self):
         print(self._description)
@@ -118,6 +121,27 @@ class DialogueEvent(Event):
     @event_id.setter
     def event_id(self, event_id):
         self._event_id = event_id
+
+    @property
+    def choices(self):
+        return self._choices
+
+    @choices.setter
+    def choices(self, choices):
+        self._choices = choices
+
+    def __str__(self):
+        event_string = (f"event_id: {self._event_id}\n"
+                        f"description: {self._description}\n")
+        if len(self._choices) == 0:
+            event_string += f"--=== Event End ===--\n"
+        elif len(self._choices) == 1:
+            event_string += f" > continue\n"
+        else:
+            for choice in self._choices:
+                event_string += f" > choice event id: {choice}\n"
+
+        return event_string
 
 
 class CombatEvent(Event):
