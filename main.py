@@ -12,7 +12,6 @@ class UserMenu:
 
     def display_main_menu(self):
         # @TODO add load campaign calls to whenever campaigns are shown to the user
-        self._campaign_manager.load_campaigns()
         while True:
             print("1. Editor mode")
             print("2. Player mode")
@@ -85,6 +84,7 @@ class UserMenu:
 
     def display_edit_existing_campaigns_menu(self):
         while True:
+            self._campaign_manager.load_campaigns()
             choice_count = self.display_campaign_list_choices()
             user_choice = int(input(f"Enter your choice (1-{1 + choice_count}):"))
             if choice_count + 1 > user_choice > 0:
@@ -100,7 +100,7 @@ class UserMenu:
     def display_edit_campaign_menu(self, campaign):
         # @TODO implement all these campaign management options
         while True:
-            print(f"Editing campaign: {campaign}")
+            print(f"Editing campaign: {self._campaign_manager.current_campaign.name}")
             print("1. Change campaign name")
             print("2. Edit event tree")
             print("3. Manage events")
@@ -110,9 +110,11 @@ class UserMenu:
             print("7. Delete campaign (WARNING: this action is irreversible)")
             print("8. Back")
             user_choice = int(input("Enter your choice (1-8):"))
-            if user_choice == 4:
+            if user_choice == 1:
+                self.edit_campaign_name_menu()
+            elif user_choice == 4:
                 self.manage_campaign_players(campaign)
-            if 1 <= user_choice <= 6:
+            elif 1 <= user_choice <= 6:
                 print("Made a valid choice 1-6")
             elif user_choice == 7:
                 # campaign_list.remove(campaign)
@@ -125,6 +127,16 @@ class UserMenu:
                 break
             else:
                 print("Invalid choice, please try again.")
+
+    def edit_campaign_name_menu(self):
+        while True:
+            user_input = input("Enter new campaign name:")
+            if len(user_input) == 0:
+                print("Name cannot be empty, please try again.")
+            else:
+                self._campaign_manager.rename_campaign(user_input)
+                self._campaign_manager.save_campaign()
+                break
 
     def display_player_menu(self):
         while True:

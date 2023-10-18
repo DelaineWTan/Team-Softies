@@ -18,7 +18,8 @@ class CampaignManager:
         return self._current_campaign
 
     def set_current_campaign(self, index: int) -> None:
-        # edit to return bool if successful?
+        # edit to return bool if successful? Would be useful for making
+        # custom exceptions
         self._current_campaign = self._campaigns[index]
 
     def set_no_current_campaign(self):
@@ -29,10 +30,12 @@ class CampaignManager:
 
     def campaign_names(self) -> list:
         return [campaign.name for campaign in self._campaigns]
+    
+    def save_campaign(self):
+        self._file_manager.save_config_file(self.current_campaign)
 
     def create_campaign(self, name: str) -> None:
         campaign = Campaign(name)
-        campaign.short_desc = 'some text that should be asked for later in-editor.'
         self._file_manager.create_config_file(campaign)
         self.add_compaign(campaign)
 
@@ -42,11 +45,10 @@ class CampaignManager:
         self.set_no_current_campaign()
 
     def load_campaigns(self):
-        campaigns = self._file_manager.load_config_files()
-        for campaign in campaigns:
-            print(campaign.name)
-            print(campaign.short_desc)
-            self._campaigns.append(campaign)
+        self._campaigns = self._file_manager.load_config_files()
+    
+    def rename_campaign(self, new_name):
+        self._current_campaign.name = new_name
 
 
 class FileManager:
@@ -54,24 +56,35 @@ class FileManager:
         self._path = 'game_configs/'
 
     def create_config_file(self, campaign: Campaign) -> None:
-        with open(f'{self._path}{campaign.name}.json', 'w+') as file_object:
+        file_name = f'{self._path}{campaign.original_name}.json'
+        with open(file_name, 'w') as file_object:
             dump(campaign.__dict__, file_object, indent=3)
+
+    def save_config_file(self, campaign: Campaign) -> None:
+        file_name = f'{self._path}{campaign.original_name}.json'
+        with open(file_name, 'w') as file_object:
+            dump(campaign.__dict__, file_object, indent=3)
+        
+        if campaign.name != file_object.name:
+                os.rename(file_name, f'{self._path}{campaign.name}.json')
 
     def load_config_files(self):
         campaign_files = [x for x in os.listdir(self._path) if x.endswith('.json')]
         parsed_campaigns = list()
 
         for index, js in enumerate(campaign_files):
-            with open(f'{self._path}{js}') as json_file:
+            with open(f'{self._path}{js}', 'r') as json_file:
                 json_data = load(json_file)
 
                 name = json_data['_name']
                 desc = json_data['_short_desc']
-                events = json_data['_sequence_of_events']
-                playable_chars = json_data['_list_of_PCs']
-                non_playable_chars = json_data['_list_of_NPCs']
+                events = json_data['_events']
+                playable_chars = json_data['_PCs']
+                non_playable_chars = json_data['_NPCs']
+                items = json_data['_items']
 
-                parsed_campaigns.append(Campaign(name, desc, events, playable_chars, non_playable_chars))
+                parsed_campaigns.append(Campaign(name, desc, events, playable_chars, 
+                                                 non_playable_chars, items))
 
         return parsed_campaigns
 
