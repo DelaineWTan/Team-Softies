@@ -149,6 +149,8 @@ class UserMenu:
             elif user_input.lower() == BACK_KEYWORD:
                 break
             else:
+                # @TODO need to handle special chars. It will change the campaign 
+                # name in the json but not the actual filename as of now.
                 self._campaign_manager.rename_campaign(user_input)
                 self._campaign_manager.save_campaign()
                 break
