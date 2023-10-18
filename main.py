@@ -1,5 +1,8 @@
 from manager_classes import *
 from object_classes import *
+from output_messages import output_messages as output
+
+BACK_KEYWORD = 'back'
 
 # @TODO define campaign entity
 
@@ -11,7 +14,6 @@ class UserMenu:
         self._campaign_manager = CampaignManager()
 
     def display_main_menu(self):
-        # @TODO add load campaign calls to whenever campaigns are shown to the user
         while True:
             print("1. Editor mode")
             print("2. Player mode")
@@ -47,9 +49,12 @@ class UserMenu:
     def display_new_campaign_menu(self):
         while True:
             try:
-                user_input = input("Enter new campaign name:")
+                user_input = input(output.campaign_name_prompt()).strip()
                 if len(user_input) == 0:
                     raise ValueError
+                
+                elif user_input.lower() == BACK_KEYWORD:
+                    break
                     
                 self._campaign_manager.create_campaign(user_input)
                 self._campaign_manager.set_current_campaign(-1)
@@ -138,9 +143,11 @@ class UserMenu:
 
     def edit_campaign_name_menu(self):
         while True:
-            user_input = input("Enter new campaign name (Enter back to return to campaign editing menu):")
+            user_input = input(output.campaign_name_prompt()).strip()
             if len(user_input) == 0:
                 print("Name cannot be empty, please try again.")
+            elif user_input.lower() == BACK_KEYWORD:
+                break
             else:
                 self._campaign_manager.rename_campaign(user_input)
                 self._campaign_manager.save_campaign()
