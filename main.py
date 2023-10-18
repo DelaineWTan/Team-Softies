@@ -46,17 +46,25 @@ class UserMenu:
 
     def display_new_campaign_menu(self):
         while True:
-            user_input = input("Enter new campaign name:")
-            if len(user_input) == 0:
-                print("Name cannot be empty, please try again.")
-            else:
+            try:
+                user_input = input("Enter new campaign name:")
+                if len(user_input) == 0:
+                    raise ValueError
+                    
                 self._campaign_manager.create_campaign(user_input)
                 self._campaign_manager.set_current_campaign(-1)
                 new_campaign = Campaign(user_input)  # generate new campaign object
                 campaign_list.append(new_campaign)
                 print(f"New campaign created: {user_input}")
                 self.display_edit_campaign_menu(user_input)
-                break
+
+            # TODO will have to raise error when id + name are identical.
+            # For now, just not allow 
+            except FileExistsError:
+                print(f'{user_input} already exists as another name.')
+
+            except ValueError:
+                print("Name cannot be empty, please try again.")
 
     # def display_new_campaign_menu():
     #     while True:
@@ -130,7 +138,7 @@ class UserMenu:
 
     def edit_campaign_name_menu(self):
         while True:
-            user_input = input("Enter new campaign name:")
+            user_input = input("Enter new campaign name (Enter back to return to campaign editing menu):")
             if len(user_input) == 0:
                 print("Name cannot be empty, please try again.")
             else:

@@ -35,9 +35,12 @@ class CampaignManager:
         self._file_manager.save_config_file(self.current_campaign)
 
     def create_campaign(self, name: str) -> None:
-        campaign = Campaign(name)
-        self._file_manager.create_config_file(campaign)
-        self.add_compaign(campaign)
+        try:
+            campaign = Campaign(name)
+            self._file_manager.create_config_file(campaign)
+            self.add_compaign(campaign)
+        except FileExistsError:
+            raise FileExistsError
 
     def delete_campaign(self) -> None:
         self._file_manager.delete_config_file(self._current_campaign.name)
@@ -56,9 +59,12 @@ class FileManager:
         self._path = 'game_configs/'
 
     def create_config_file(self, campaign: Campaign) -> None:
-        file_name = f'{self._path}{campaign.original_name}.json'
-        with open(file_name, 'w') as file_object:
-            dump(campaign.__dict__, file_object, indent=3)
+        try:
+            file_name = f'{self._path}{campaign.original_name}.json'
+            with open(file_name, 'x') as file_object:
+                dump(campaign.__dict__, file_object, indent=3)
+        except FileExistsError:
+            raise FileExistsError
 
     def save_config_file(self, campaign: Campaign) -> None:
         file_name = f'{self._path}{campaign.original_name}.json'
