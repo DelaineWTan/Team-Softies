@@ -132,29 +132,53 @@ class UserMenu:
 
     # Edit events stuff start -Jun ==========================
     def edit_events_menu(self):
-        # @TODO: print tree structure here
+        self._events_manager.events_tree = self._campaign_manager.current_campaign.events
         user_choice = None
-        while user_choice != 3:
-
+        while user_choice != 4:
+            # @TODO: print tree structure here
             print("print event tree here...")
             print("1. Create new event\n"
-                  "2. Select existing event\n"
-                  "3. Return to edit campaign menu")
+                  "2. Edit an existing event\n"
+                  # I just realized, if it's like this then event should have
+                  # a 'choice_name/choice_description for when it's being called
+                  # as a choice
+                  # @TODO: add choice_name/choice_description for an event
+                  "3. Link events (create choices)\n"
+                  "4. Return to edit campaign menu")
             user_choice = int(input("Enter your choice (1-3):"))
             if user_choice == 1:
                 self.display_new_event_menu()
             if user_choice == 2:
                 self.display_edit_existing_events_menu()
-            if user_choice == 3:
+            if user_choice == 4:
+                self._campaign_manager.current_campaign.events = self._events_manager.events_tree
                 return
             else:
                 print("Invalid choice, please try again.")
 
     def display_new_event_menu(self):
-        pass
+        print("Creating new event...")
+        # @TODO: exception handling
+        description = input("Enter event description/dialogue here: ")
+        self._events_manager.create_event(description)
 
     def display_edit_existing_events_menu(self):
-        pass
+        # @TODO: exception handling
+        # @TODO: use choice_name/choice_description
+        event_id = input("Enter event you'd like to edit: ")
+        print(f"Editing event {event_id}")
+        is_successful = True
+        while not is_successful:
+            print("1. Edit description\n"
+                  # nothing else yet
+                  "2. Edit something else...\n"
+                  "3. Cancel edit")
+            user_choice = input("Enter choice here (1-3): ")
+            if user_choice == 1:
+                
+
+        is_successful = self._events_manager.edit_event(event_id, )
+
     # Edit events stuff end =================================
 
     def edit_campaign_name_menu(self):
