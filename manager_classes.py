@@ -17,7 +17,7 @@ class EventsManager:
 
     def create_event(self, description):
         new_event_id = 0
-        while new_event_id in self._events_tree:
+        while str(new_event_id) in self._events_tree:
             new_event_id += 1
         created_event = DialogueEvent(new_event_id, description)
         self._events_tree[new_event_id] = created_event
