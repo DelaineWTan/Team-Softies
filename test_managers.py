@@ -1,5 +1,5 @@
 from object_classes import DialogueEvent
-from manager_classes import EventManager
+from manager_classes import EventsManager
 
 if __name__ == '__main__':
     print(f'testing dialogue trees\n')
@@ -17,7 +17,7 @@ if __name__ == '__main__':
     # print(event_2)
     # print(event_3)
     # print(event_4)
-    em = EventManager({})
+    em = EventsManager({})
     em.create_event(description)
     em.create_event(description2)
     print(em.events_tree[0])
