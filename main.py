@@ -61,6 +61,7 @@ class UserMenu:
                 campaign_list.append(new_campaign)
                 print(f"New campaign created: {user_input}")
                 self.display_edit_campaign_menu(user_input)
+                break
             except FileExistsError:
                 print(f'{user_input} already exists as another name.')
             except ValueError:
@@ -129,9 +130,7 @@ class UserMenu:
             elif 1 <= user_choice <= 6:
                 print("Made a valid choice 1-6")
             elif user_choice == 7:
-                # campaign_list.remove(campaign)
-                print(f"Deleted campaign: {campaign}")
-                self._campaign_manager.delete_campaign()
+                self.delete_campaign(self._campaign_manager.current_campaign.name)
                 break
             elif user_choice == 8:
                 self._campaign_manager.set_no_current_campaign()
@@ -139,6 +138,13 @@ class UserMenu:
                 break
             else:
                 print("Invalid choice, please try again.")
+
+    def delete_campaign(self, campaign_name: str) -> None:
+        try:
+            print(f"Deleted campaign: {campaign_name}")
+            self._campaign_manager.delete_campaign()
+        except OSError:
+            print(output.delete_missing_config_file(campaign_name))
 
     def edit_campaign_name_menu(self):
         while True:

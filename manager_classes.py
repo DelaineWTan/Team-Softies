@@ -110,8 +110,12 @@ class FileManager:
         return parsed_campaigns
 
     def delete_config_file(self, file_name):
-        file_path = f'{self._path}{file_name}.json'
-        os.remove(file_path)
+        try:
+            file_path = f'{self._path}{file_name}.json'
+            os.remove(file_path)
+        except OSError:
+            raise OSError
+        
 
     def validate_filename(self, file_name) -> bool:
         invalid_chars = fr'[{BAD_FILENAME_CHARS}]'
