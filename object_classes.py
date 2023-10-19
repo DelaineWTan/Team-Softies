@@ -21,6 +21,7 @@ class Character:
                 "⣿⣿⡹⣿⡼⣿⣿⣿⣿⣿⣿⣿⣧⡰⣿⣿⣿⣿⣿⣹⡿⠟⠉⡀⠄⠄⢿⣿ \n" \
                 "⣿⣿⣿⣽⣿⣼⣛⠿⠿⣿⣿⣿⣿⣿⣯⣿⠿⢟⣻⡽⢚⣤⡞⠄⠄⠄⢸⣿ \n"
 
+    # @TODO properly extract properties of character dicts
     def __init__(self, name: str):
         self.name = name
 
@@ -112,26 +113,21 @@ class CombatEvent(Event):
 
 
 class Campaign:
-    # defaults just in case
-    _name = "The Stick of Tooth"
-    _player = Player("Anon")  # just a single player class
-    _short_desc = "some short description idk"
-
-    def __init__(self, name, short_desc = '', sequence_of_events = {}, list_of_PCs = [],
-        list_of_NPCs = [], items = []):
+    def __init__(self, name, short_desc="", sequence_of_events={}, player_list=[Player("Anon")],
+                 npc_list=[], items=[]):
         self._name = name
         self._original_name = name
         self._short_desc = short_desc
         self._events = sequence_of_events
         # @TODO do we want to have potentially more than 1 character per campaign?
-        self._PCs = list_of_PCs  # PCs are Characters
-        self._NPCs = list_of_NPCs  # list of NPC objects, this can be empty
+        self._player_list = player_list  # players are characters
+        self._npc_list = npc_list  # list of NPCs, this can be empty
         self._items = items  # list of item objects, this can be empty
 
     @property
     def name(self) -> str:
         return self._name
-    
+
     @name.setter
     def name(self, name):
         self._name = name
@@ -149,10 +145,15 @@ class Campaign:
         self._short_desc = short_desc
 
     @property
-    def player(self) -> Player:
-        return self._player
+    def player_list(self) -> list[Player]:
+        return self._player_list
+
+    @property
+    def npc_list(self) -> list[NPC]:
+        return self._npc_list
 
     def __str__(self):
-        return (f"The \"{self._name}\" campaign plays as {self._player.name}."
-                f" This campaign has {len(self._events)} events, {len(self._NPCs)} characters, and {len(self._items)} "
+        return (f"Campaign: \"{self._name}\""
+                f" This campaign has {len(self._events)} events, {len(self._npc_list)} player characters, "
+                f"{len(self._npc_list)} NPC characters, and {len(self._items)} "
                 f"items.")

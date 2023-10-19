@@ -1,6 +1,6 @@
 import os
-from json import dump, load
-from object_classes import Campaign
+from json import dump, load, JSONEncoder
+from object_classes import Campaign, Player, NPC
 
 
 class CampaignManager:
@@ -30,7 +30,7 @@ class CampaignManager:
 
     def campaign_names(self) -> list:
         return [campaign.name for campaign in self._campaigns]
-    
+
     def save_campaign(self):
         self._file_manager.save_config_file(self.current_campaign)
 
@@ -40,15 +40,24 @@ class CampaignManager:
         self.add_compaign(campaign)
 
     def delete_campaign(self) -> None:
-        self._file_manager.delete_config_file(self._current_campaign.name)
+        campaign_name = self._current_campaign.name
+        self._file_manager.delete_config_file(campaign_name)
         self.campaigns.remove(self.current_campaign)
         self.set_no_current_campaign()
+        print(f"Deleted campaign: {campaign_name}")
 
     def load_campaigns(self):
         self._campaigns = self._file_manager.load_config_files()
-    
+
     def rename_campaign(self, new_name):
         self._current_campaign.name = new_name
+
+
+class ClassObjEncoder(JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, (Player, NPC)):
+            return obj.__dict__
+        return super().default(obj)
 
 
 class FileManager:
@@ -58,15 +67,15 @@ class FileManager:
     def create_config_file(self, campaign: Campaign) -> None:
         file_name = f'{self._path}{campaign.original_name}.json'
         with open(file_name, 'w') as file_object:
-            dump(campaign.__dict__, file_object, indent=3)
+            dump(campaign.__dict__, file_object, indent=3, cls=ClassObjEncoder)
 
     def save_config_file(self, campaign: Campaign) -> None:
         file_name = f'{self._path}{campaign.original_name}.json'
         with open(file_name, 'w') as file_object:
             dump(campaign.__dict__, file_object, indent=3)
-        
+
         if campaign.name != file_object.name:
-                os.rename(file_name, f'{self._path}{campaign.name}.json')
+            os.rename(file_name, f'{self._path}{campaign.name}.json')
 
     def load_config_files(self):
         campaign_files = [x for x in os.listdir(self._path) if x.endswith('.json')]
@@ -79,11 +88,12 @@ class FileManager:
                 name = json_data['_name']
                 desc = json_data['_short_desc']
                 events = json_data['_events']
-                playable_chars = json_data['_PCs']
-                non_playable_chars = json_data['_NPCs']
+                # @TODO properly extract properties of character dicts for players and npcs
+                playable_chars = [Player(player["name"]) for player in json_data['_player_list']]
+                non_playable_chars = [NPC(npc["name"]) for npc in json_data['_npc_list']]
                 items = json_data['_items']
 
-                parsed_campaigns.append(Campaign(name, desc, events, playable_chars, 
+                parsed_campaigns.append(Campaign(name, desc, events, playable_chars,
                                                  non_playable_chars, items))
 
         return parsed_campaigns
