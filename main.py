@@ -136,7 +136,7 @@ class UserMenu:
         while user_choice != 4:
             # @TODO: print tree structure here
             print("printing event tree here...")
-            # print(self._events_manager.events_tree)
+            print(self._events_manager.events_tree)
             for event in self._events_manager.events_tree.values():
                 print(f"|| Event ID: {event.event_id} -> choices: {event.choices}")
             print("1. Create new event\n"
@@ -170,7 +170,7 @@ class UserMenu:
         # @TODO: exception handling
         # @TODO: use choice_name/choice_description
         while True:
-            event_id = int(input("Enter event you'd like to edit: "))
+            event_id = input("Enter event you'd like to edit: ")
             if event_id not in self._events_manager.events_tree:
                 print("Event not found")
                 return
