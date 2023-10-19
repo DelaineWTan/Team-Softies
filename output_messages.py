@@ -4,6 +4,19 @@ from manager_classes import BAD_FILENAME_CHARS
 class output_messages:
 
     @staticmethod
+    def campaign_editor_choices(campaign_name: str) -> str:
+        return f"""Editing campaign: {campaign_name}
+1. Rename campaign
+2. Edit event tree
+3. Manage events
+4. Manage player characters
+5. Manage non-player characters
+6. Manage items
+7. Delete campaign (WARNING: this action is irreversible)
+8. Edit campaign description
+9. Back"""
+
+    @staticmethod
     def campaign_name_prompt():
         return 'Enter new campaign name (Enter back to return to the previous menu):'
     

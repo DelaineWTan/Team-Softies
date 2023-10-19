@@ -113,15 +113,7 @@ class UserMenu:
     def display_edit_campaign_menu(self, campaign):
         # @TODO implement all these campaign management options
         while True:
-            print(f"Editing campaign: {self._campaign_manager.current_campaign.name}")
-            print("1. Change campaign name")
-            print("2. Edit event tree")
-            print("3. Manage events")
-            print("4. Manage player characters")
-            print("5. Manage non-player characters")
-            print("6. Manage items")
-            print("7. Delete campaign (WARNING: this action is irreversible)")
-            print("8. Back")
+            print(output.campaign_editor_choices(self._campaign_manager.current_campaign.name))
             user_choice = int(input("Enter your choice (1-8):"))
             if user_choice == 1:
                 self.edit_campaign_name_menu()
@@ -133,6 +125,8 @@ class UserMenu:
                 self.delete_campaign(self._campaign_manager.current_campaign.name)
                 break
             elif user_choice == 8:
+                pass
+            elif user_choice == 9:
                 self._campaign_manager.set_no_current_campaign()
                 self.display_edit_existing_campaigns_menu()
                 break
