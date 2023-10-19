@@ -3,8 +3,6 @@ from object_classes import *
 
 # @TODO define campaign entity
 
-
-
 class UserMenu:
     def __init__(self):
         self._campaign_manager = CampaignManager()
@@ -148,10 +146,11 @@ class UserMenu:
             user_choice = int(input("Enter your choice (1-3):"))
             if user_choice == 1:
                 self.display_new_event_menu()
-            if user_choice == 2:
+            elif user_choice == 2:
                 self.display_edit_existing_events_menu()
-            if user_choice == 4:
+            elif user_choice == 4:
                 self._campaign_manager.current_campaign.events = self._events_manager.events_tree
+                self._campaign_manager.save_campaign()
                 return
             else:
                 print("Invalid choice, please try again.")
@@ -165,19 +164,30 @@ class UserMenu:
     def display_edit_existing_events_menu(self):
         # @TODO: exception handling
         # @TODO: use choice_name/choice_description
-        event_id = input("Enter event you'd like to edit: ")
-        print(f"Editing event {event_id}")
-        is_successful = True
-        while not is_successful:
-            print("1. Edit description\n"
-                  # nothing else yet
-                  "2. Edit something else...\n"
-                  "3. Cancel edit")
-            user_choice = input("Enter choice here (1-3): ")
-            if user_choice == 1:
-                
-
-        is_successful = self._events_manager.edit_event(event_id, )
+        while True:
+            event_id = int(input("Enter event you'd like to edit: "))
+            if event_id not in self._events_manager.events_tree:
+                print("Event not found")
+                return
+            print(f"Editing event {event_id}")
+            print(self._events_manager.events_tree[event_id])
+            user_choice = None
+            while user_choice != 3:
+                print("1. Edit description\n"
+                      # nothing else yet
+                      "2. Edit something else...\n"
+                      "3. Cancel edit")
+                user_choice = int(input("Enter choice here (1-3): "))
+                if user_choice == 1:
+                    new_desc = input("Enter new description: ")
+                    self._events_manager.edit_event(event_id, "description", new_desc)
+                # @TODO: add other value
+                elif user_choice == 2:
+                    pass
+                elif user_choice == 3:
+                    return
+                else:
+                    print("Invalid choice please try again.")
 
     # Edit events stuff end =================================
 

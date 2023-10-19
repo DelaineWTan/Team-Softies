@@ -95,7 +95,7 @@ class Event(abc.ABC):
 
 
 class DialogueEvent(Event):
-    def __init__(self, event_id=99999, description="null event", choices=None):
+    def __init__(self, event_id=99999, description="null event", choices=[]):
         self._event_id = event_id
         self._description = description
         if choices is None:

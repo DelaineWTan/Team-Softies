@@ -94,7 +94,7 @@ class CampaignManager:
 
 class ClassObjEncoder(JSONEncoder):
     def default(self, obj):
-        if isinstance(obj, (Player, NPC)):
+        if isinstance(obj, (Player, NPC, DialogueEvent)):
             return obj.__dict__
         return super().default(obj)
 
@@ -111,7 +111,7 @@ class FileManager:
     def save_config_file(self, campaign: Campaign) -> None:
         file_name = f'{self._path}{campaign.original_name}.json'
         with open(file_name, 'w') as file_object:
-            dump(campaign.__dict__, file_object, indent=3)
+            dump(campaign.__dict__, file_object, indent=3, cls=ClassObjEncoder)
 
         if campaign.name != file_object.name:
             os.rename(file_name, f'{self._path}{campaign.name}.json')
@@ -127,6 +127,8 @@ class FileManager:
                 name = json_data['_name']
                 desc = json_data['_short_desc']
                 events = json_data['_events']
+                #for event in json_data['_event']:
+                #events = [DialogueEvent(event["0"]) for event in json_data['_events']]
                 # @TODO properly extract properties of character dicts for players and npcs
                 playable_chars = [Player(player["name"]) for player in json_data['_player_list']]
                 non_playable_chars = [NPC(npc["name"]) for npc in json_data['_npc_list']]
