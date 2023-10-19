@@ -2,9 +2,10 @@ from manager_classes import *
 from object_classes import *
 from output_messages import output_messages as output
 
+
 BACK_KEYWORD = 'back'
 
-# @TODO define campaign entity
+# @TODO define campaign entity1
 
 campaign_list = [Campaign("The Eternity Terrain"), Campaign("The Demon Forest"), Campaign("The Burning Land")]
 

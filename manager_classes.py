@@ -3,8 +3,8 @@ from json import dump, load
 from object_classes import Campaign
 import re
 
-BAD_FILENAME_CHARS = '/\<>:"|?*'
 
+BAD_FILENAME_CHARS = r'/\\<>:\"|?*'
 
 class CampaignManager:
     def __init__(self) -> None:
@@ -39,6 +39,8 @@ class CampaignManager:
 
     def create_campaign(self, name: str) -> None:
         try:
+            if self._file_manager.validate_filename(name) is False:
+                raise OSError
             campaign = Campaign(name)
             self._file_manager.create_config_file(campaign)
             self.add_compaign(campaign)
@@ -56,10 +58,12 @@ class CampaignManager:
         self._campaigns = self._file_manager.load_config_files()
     
     def rename_campaign(self, new_name) -> None:
-        if self._file_manager.validate_filename(new_name) is False:
-            raise
-        
-        self._current_campaign.name = new_name
+        try:
+            if self._file_manager.validate_filename(new_name) is False:
+                raise OSError
+            self._current_campaign.name = new_name
+        except OSError:
+            raise OSError
 
 
 class FileManager:
@@ -107,7 +111,7 @@ class FileManager:
         os.remove(file_path)
 
     def validate_filename(self, file_name) -> bool:
-        invalid_chars = fr'{BAD_FILENAME_CHARS}'
+        invalid_chars = f'[{BAD_FILENAME_CHARS}]'
         if re.search(invalid_chars, file_name):
             return False
         
