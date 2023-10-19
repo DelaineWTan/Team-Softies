@@ -25,7 +25,7 @@ class CampaignManager:
     def set_no_current_campaign(self):
         self._current_campaign = None
 
-    def add_compaign(self, campaign) -> None:
+    def add_campaign(self, campaign) -> None:
         self._campaigns.append(campaign)
 
     def campaign_names(self) -> list:
@@ -37,7 +37,7 @@ class CampaignManager:
     def create_campaign(self, name: str) -> None:
         campaign = Campaign(name)
         self._file_manager.create_config_file(campaign)
-        self.add_compaign(campaign)
+        self.add_campaign(campaign)
 
     def delete_campaign(self) -> None:
         campaign_name = self._current_campaign.name
