@@ -44,8 +44,8 @@ class Player(Character):
         return (f"Name: {self.name}\n"
                 f"Level: {self.lvl}, {self.exp_per_lvl_up} exp needed to level up\n"
                 f"Hit points (HP): {self.base_hp}, +{self.hp_mod} per level up\n"
-                f"Attack (atk): {self.base_atk}, +{self.atk_mod - 1} per level up\n"
-                f"Speed (spd): {self.base_spd}, +{self.hp_mod - 1} per level up\n"
+                f"Attack (atk): {self.base_atk}, +{self.atk_mod} per level up\n"
+                f"Speed (spd): {self.base_spd}, +{self.hp_mod} per level up\n"
                 f"{self.description}"
                 f"{self.ascii_art}")
 
