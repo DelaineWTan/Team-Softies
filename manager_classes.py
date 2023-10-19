@@ -3,9 +3,9 @@ from json import dump, load, JSONEncoder
 from object_classes import Campaign, Player, NPC, DialogueEvent
 
 
-class EventManager:
-    def __init__(self, events_tree):
-        self._events_tree = events_tree
+class EventsManager:
+    def __init__(self):
+        self._events_tree = {}
 
     @property
     def events_tree(self):
