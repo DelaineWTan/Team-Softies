@@ -148,7 +148,7 @@ class UserMenu:
             else:
                 print("Invalid choice, please try again.")
 
-    def manage_campaign_players(self) -> None:
+    def manage_campaign_players(self):
         while True:
             print(f" --Player Character List-- ")
             for index, player in enumerate(self._campaign_manager.current_campaign.player_list):
