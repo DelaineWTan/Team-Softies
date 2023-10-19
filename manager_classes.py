@@ -23,15 +23,14 @@ class EventsManager:
         self._events_tree[new_event_id] = created_event
 
     def edit_event(self, event_id, to_edit, new_value):
-        is_successful = True
+        if event_id not in self._events_tree:
+            return False
         if to_edit == "description":
             self._events_tree[event_id].description = new_value
-        elif to_edit == "choices":
-            self._events_tree[event_id].choices = new_value
         else:
-            is_successful = False
+            return False
 
-        return is_successful
+        return True
 
     def delete_event(self, event_id):
         is_successful = True
