@@ -26,7 +26,8 @@ class UserMenu:
                 self.display_player_menu()
                 break
             else:
-                print("Invalid choice, please try again.")
+                print(output.invalid_choice())
+
 
     def display_editor_menu(self):
         while True:
@@ -44,7 +45,7 @@ class UserMenu:
                 else:
                     print("Invalid choice, please try again.")
             except ValueError:
-                print('catch value error')
+                print(output.invalid_choice_int_expected())
                 
 
     def display_new_campaign_menu(self):
@@ -98,41 +99,47 @@ class UserMenu:
 
     def display_edit_existing_campaigns_menu(self):
         while True:
-            self._campaign_manager.load_campaigns()
-            choice_count = self.display_campaign_list_choices()
-            user_choice = int(input(f"Enter your choice (1-{1 + choice_count}):"))
-            if choice_count + 1 > user_choice > 0:
-                self._campaign_manager.set_current_campaign(user_choice - 1)
-                print(f'--*{self._campaign_manager.current_campaign.name}*--')
-                self.display_edit_campaign_menu(self._campaign_manager.campaigns[user_choice - 1].name)
-            elif user_choice == 1 + choice_count:
-                self.display_editor_menu()
-                break
-            else:
-                print("Invalid choice, please try again.")
+            try:
+                self._campaign_manager.load_campaigns()
+                choice_count = self.display_campaign_list_choices()
+                user_choice = int(input(f"Enter your choice (1-{1 + choice_count}):"))
+                if choice_count + 1 > user_choice > 0:
+                    self._campaign_manager.set_current_campaign(user_choice - 1)
+                    print(f'--*{self._campaign_manager.current_campaign.name}*--')
+                    self.display_edit_campaign_menu(self._campaign_manager.campaigns[user_choice - 1].name)
+                elif user_choice == 1 + choice_count:
+                    self.display_editor_menu()
+                    break
+                else:
+                    print("Invalid choice, please try again.")
+            except ValueError:
+                print(output.invalid_choice_int_expected())
 
     def display_edit_campaign_menu(self, campaign):
         # @TODO implement all these campaign management options
         while True:
             print(output.campaign_editing_choices(self._campaign_manager.current_campaign.name))
-            user_choice = int(input("Enter your choice (1-8):"))
-            if user_choice == 1:
-                self.edit_campaign_name_menu()
-            elif user_choice == 4:
-                self.manage_campaign_players(campaign)
-            elif 1 <= user_choice <= 6:
-                print("Made a valid choice 1-6")
-            elif user_choice == 7:
-                self.delete_campaign(self._campaign_manager.current_campaign.name)
-                break
-            elif user_choice == 8:
-                pass
-            elif user_choice == 9:
-                self._campaign_manager.set_no_current_campaign()
-                self.display_edit_existing_campaigns_menu()
-                break
-            else:
-                print("Invalid choice, please try again.")
+            try:
+                user_choice = int(input("Enter your choice (1-8):"))
+                if user_choice == 1:
+                    self.edit_campaign_name_menu()
+                elif user_choice == 4:
+                    self.manage_campaign_players(campaign)
+                elif 1 <= user_choice <= 6:
+                    print("Made a valid choice 1-6")
+                elif user_choice == 7:
+                    self.delete_campaign(self._campaign_manager.current_campaign.name)
+                    break
+                elif user_choice == 8:
+                    pass
+                elif user_choice == 9:
+                    self._campaign_manager.set_no_current_campaign()
+                    self.display_edit_existing_campaigns_menu()
+                    break
+                else:
+                    print(output.invalid_choice())
+            except ValueError:
+                print(output.invalid_choice_int_expected())
 
     def edit_campaign_description(self, desc: str) -> None:
         # print("Edit your description below:")

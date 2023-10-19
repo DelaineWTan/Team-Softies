@@ -29,6 +29,16 @@ class output_messages:
     @staticmethod
     def campaign_name_prompt():
         return 'Enter new campaign name (Enter back to return to the previous menu):'
+
+
+    @staticmethod
+    def invalid_choice():
+        return 'Invalid choice, please try again.'
+    
+    
+    @staticmethod
+    def invalid_choice_int_expected():
+        return 'Invalid choice, input should be a number corresponding to the list of choices.'
     
     
     @staticmethod
