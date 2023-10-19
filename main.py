@@ -135,7 +135,10 @@ class UserMenu:
         user_choice = None
         while user_choice != 4:
             # @TODO: print tree structure here
-            print("print event tree here...")
+            print("printing event tree here...")
+            # print(self._events_manager.events_tree)
+            for event in self._events_manager.events_tree.values():
+                print(f"|| Event ID: {event.event_id} -> choices: {event.choices}")
             print("1. Create new event\n"
                   "2. Edit an existing event\n"
                   # I just realized, if it's like this then event should have
