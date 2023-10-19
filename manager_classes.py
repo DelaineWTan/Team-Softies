@@ -7,8 +7,39 @@ class EventManager:
     def __init__(self, events_tree):
         self._events_tree = events_tree
 
-    def create_event(self):
-        pass
+    @property
+    def events_tree(self):
+        return self._events_tree
+
+    @events_tree.setter
+    def events_tree(self, events_tree):
+        self._events_tree = events_tree
+
+    def create_event(self, description):
+        new_event_id = 0
+        while new_event_id in self._events_tree:
+            new_event_id += 1
+        created_event = DialogueEvent(new_event_id, description)
+        self._events_tree[new_event_id] = created_event
+
+    def edit_event(self, event_id, to_edit, new_value):
+        is_successful = True
+        if to_edit == "description":
+            self._events_tree[event_id].description = new_value
+        elif to_edit == "choices":
+            self._events_tree[event_id].choices = new_value
+        else:
+            is_successful = False
+
+        return is_successful
+
+    def delete_event(self, event_id):
+        is_successful = True
+        try:
+            del self._events_tree[event_id]
+        except KeyError:
+            is_successful = False
+        return is_successful
 
 
 class CampaignManager:

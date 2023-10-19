@@ -193,6 +193,7 @@ class UserMenu:
             choice_count = self.display_campaign_list_choices()
             user_choice = int(input(f"Enter your choice (1-{1 + choice_count}):"))
             if choice_count + 1 > user_choice > 0:
+                # @TODO: change to use CampaignManager
                 self.start_campaign(campaign_list[user_choice - 1])
             elif user_choice == 1 + choice_count:
                 self.display_player_menu()
