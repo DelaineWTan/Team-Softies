@@ -8,6 +8,7 @@ from object_classes import *
 class UserMenu:
     def __init__(self):
         self._campaign_manager = CampaignManager()
+        self._events_manager = EventsManager()
 
     def display_main_menu(self):
         # @TODO add load campaign calls to whenever campaigns are shown to the user
@@ -38,6 +39,10 @@ class UserMenu:
                 self.display_edit_existing_campaigns_menu()
                 break
             elif user_choice == 3:
+                # Wouldn't this run another instance of display_main_menu
+                # and never finishing the display_main_menu from before?
+                # Unless I'm getting it wrong
+                # -Jun
                 self.display_main_menu()
                 break
             else:
@@ -99,8 +104,8 @@ class UserMenu:
         while True:
             print(f"Editing campaign: {self._campaign_manager.current_campaign.name}")
             print("1. Change campaign name")
-            print("2. Edit event tree")
-            print("3. Manage events")
+            # print("2. Edit and manage event tree")
+            print("2. Manage events")
             print("4. Manage player characters")
             print("5. Manage non-player characters")
             print("6. Manage items")
@@ -109,6 +114,8 @@ class UserMenu:
             user_choice = int(input("Enter your choice (1-8):"))
             if user_choice == 1:
                 self.edit_campaign_name_menu()
+            if user_choice == 2:
+                self.edit_events_menu()
             elif user_choice == 4:
                 self.manage_campaign_players()
             elif 1 <= user_choice <= 6:
@@ -122,6 +129,33 @@ class UserMenu:
                 break
             else:
                 print("Invalid choice, please try again.")
+
+    # Edit events stuff start -Jun ==========================
+    def edit_events_menu(self):
+        # @TODO: print tree structure here
+        user_choice = None
+        while user_choice != 3:
+
+            print("print event tree here...")
+            print("1. Create new event\n"
+                  "2. Select existing event\n"
+                  "3. Return to edit campaign menu")
+            user_choice = int(input("Enter your choice (1-3):"))
+            if user_choice == 1:
+                self.display_new_event_menu()
+            if user_choice == 2:
+                self.display_edit_existing_events_menu()
+            if user_choice == 3:
+                return
+            else:
+                print("Invalid choice, please try again.")
+
+    def display_new_event_menu(self):
+        pass
+
+    def display_edit_existing_events_menu(self):
+        pass
+    # Edit events stuff end =================================
 
     def edit_campaign_name_menu(self):
         while True:
