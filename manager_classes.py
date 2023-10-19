@@ -39,18 +39,11 @@ class CampaignManager:
         self._file_manager.save_config_file(self.current_campaign)
 
     def create_campaign(self, name: str) -> None:
-        try:
-            if self._file_manager.validate_filename(name) is False:
-                raise fb.ForbiddenFilenameCharsError
-            campaign = Campaign(name)
-            self._file_manager.create_config_file(campaign)
-            self.add_compaign(campaign)
-        except FileExistsError:
-            raise FileExistsError
-        except OSError:
-            raise OSError
-        except fb.ForbiddenFilenameCharsError:
+        if self._file_manager.validate_filename(name) is False:
             raise fb.ForbiddenFilenameCharsError
+        campaign = Campaign(name)
+        self._file_manager.create_config_file(campaign)
+        self.add_compaign(campaign)
 
     def delete_campaign(self) -> None:
         self._file_manager.delete_config_file(self._current_campaign.name)
@@ -61,14 +54,10 @@ class CampaignManager:
         self._campaigns = self._file_manager.load_config_files()
     
     def rename_campaign(self, new_name) -> None:
-        try:
-            if self._file_manager.validate_filename(new_name) is False:
-                raise fb.ForbiddenFilenameCharsError
-            self._current_campaign.name = new_name
-        except OSError:
-            raise OSError
-        except fb.ForbiddenFilenameCharsError:
+        if self._file_manager.validate_filename(new_name) is False:
             raise fb.ForbiddenFilenameCharsError
+        self._current_campaign.name = new_name
+        self._current_campaign.original_name = self._current_campaign.name
 
 
 class FileManager:
