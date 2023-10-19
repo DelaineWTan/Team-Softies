@@ -1,6 +1,9 @@
 import os
 from json import dump, load
 from object_classes import Campaign
+import re
+
+BAD_FILENAME_CHARS = '/\<>:"|?*'
 
 
 class CampaignManager:
@@ -22,7 +25,7 @@ class CampaignManager:
         # custom exceptions
         self._current_campaign = self._campaigns[index]
 
-    def set_no_current_campaign(self):
+    def set_no_current_campaign(self) -> None:
         self._current_campaign = None
 
     def add_compaign(self, campaign) -> None:
@@ -41,16 +44,21 @@ class CampaignManager:
             self.add_compaign(campaign)
         except FileExistsError:
             raise FileExistsError
+        except OSError:
+            raise OSError
 
     def delete_campaign(self) -> None:
         self._file_manager.delete_config_file(self._current_campaign.name)
         self.campaigns.remove(self.current_campaign)
         self.set_no_current_campaign()
 
-    def load_campaigns(self):
+    def load_campaigns(self) -> None:
         self._campaigns = self._file_manager.load_config_files()
     
-    def rename_campaign(self, new_name):
+    def rename_campaign(self, new_name) -> None:
+        if self._file_manager.validate_filename(new_name) is False:
+            raise
+        
         self._current_campaign.name = new_name
 
 
@@ -97,3 +105,10 @@ class FileManager:
     def delete_config_file(self, file_name):
         file_path = f'{self._path}{file_name}.json'
         os.remove(file_path)
+
+    def validate_filename(self, file_name) -> bool:
+        invalid_chars = fr'{BAD_FILENAME_CHARS}'
+        if re.search(invalid_chars, file_name):
+            return False
+        
+        return True

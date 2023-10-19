@@ -36,7 +36,6 @@ class UserMenu:
             user_choice = int(input("Enter your choice (1-3):"))
             if user_choice == 1:
                 self.display_new_campaign_menu()
-                break
             elif user_choice == 2:
                 self.display_edit_existing_campaigns_menu()
                 break
@@ -51,8 +50,7 @@ class UserMenu:
             try:
                 user_input = input(output.campaign_name_prompt()).strip()
                 if len(user_input) == 0:
-                    raise ValueError
-                
+                    raise ValueError               
                 elif user_input.lower() == BACK_KEYWORD:
                     break
                     
@@ -62,14 +60,12 @@ class UserMenu:
                 campaign_list.append(new_campaign)
                 print(f"New campaign created: {user_input}")
                 self.display_edit_campaign_menu(user_input)
-
-            # TODO will have to raise error when id + name are identical.
-            # For now, just not allow 
             except FileExistsError:
                 print(f'{user_input} already exists as another name.')
-
             except ValueError:
                 print("Name cannot be empty, please try again.")
+            except OSError:
+                print(output.invalid_campaign_name(user_input))
 
     # def display_new_campaign_menu():
     #     while True:
@@ -143,17 +139,21 @@ class UserMenu:
 
     def edit_campaign_name_menu(self):
         while True:
-            user_input = input(output.campaign_name_prompt()).strip()
-            if len(user_input) == 0:
+            try:
+                user_input = input(output.campaign_name_prompt()).strip()
+                if len(user_input) == 0:
+                    print("Name cannot be empty, please try again.")
+                elif user_input.lower() == BACK_KEYWORD:
+                    break
+                else:
+                    # @TODO need to handle special chars. It will change the campaign
+                    self._campaign_manager.rename_campaign(user_input)
+                    self._campaign_manager.save_campaign()
+                    break
+            except ValueError:
                 print("Name cannot be empty, please try again.")
-            elif user_input.lower() == BACK_KEYWORD:
-                break
-            else:
-                # @TODO need to handle special chars. It will change the campaign 
-                # name in the json but not the actual filename as of now.
-                self._campaign_manager.rename_campaign(user_input)
-                self._campaign_manager.save_campaign()
-                break
+            except OSError:
+                print(output.invalid_campaign_name(user_input))
 
     def display_player_menu(self):
         while True:
