@@ -53,9 +53,9 @@ class CampaignManager:
         self._current_campaign.name = new_name
 
 
-class PlayerEncoder(JSONEncoder):
+class ClassObjEncoder(JSONEncoder):
     def default(self, obj):
-        if isinstance(obj, Player):
+        if isinstance(obj, [Player, NPC]):
             return obj.__dict__
         return super().default(obj)
 
@@ -67,7 +67,7 @@ class FileManager:
     def create_config_file(self, campaign: Campaign) -> None:
         file_name = f'{self._path}{campaign.original_name}.json'
         with open(file_name, 'w') as file_object:
-            dump(campaign.__dict__, file_object, indent=3, cls=PlayerEncoder)
+            dump(campaign.__dict__, file_object, indent=3, cls=ClassObjEncoder)
 
     def save_config_file(self, campaign: Campaign) -> None:
         file_name = f'{self._path}{campaign.original_name}.json'
