@@ -188,6 +188,14 @@ class Campaign:
         self._short_desc = short_desc
 
     @property
+    def events(self):
+        return self._events
+
+    @events.setter
+    def events(self, events):
+        self._events = events
+
+    @property
     def player_list(self) -> list[Player]:
         return self._player_list
 
