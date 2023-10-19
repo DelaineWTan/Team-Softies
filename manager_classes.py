@@ -40,9 +40,11 @@ class CampaignManager:
         self.add_compaign(campaign)
 
     def delete_campaign(self) -> None:
-        self._file_manager.delete_config_file(self._current_campaign.name)
+        campaign_name = self._current_campaign.name
+        self._file_manager.delete_config_file(campaign_name)
         self.campaigns.remove(self.current_campaign)
         self.set_no_current_campaign()
+        print(f"Deleted campaign: {campaign_name}")
 
     def load_campaigns(self):
         self._campaigns = self._file_manager.load_config_files()
