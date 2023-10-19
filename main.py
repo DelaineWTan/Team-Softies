@@ -55,7 +55,7 @@ class UserMenu:
                 new_campaign = Campaign(user_input)  # generate new campaign object
                 campaign_list.append(new_campaign)
                 print(f"New campaign created: {user_input}")
-                self.display_edit_campaign_menu(user_input)
+                self.display_edit_campaign_menu(new_campaign)
                 break
 
     # def display_new_campaign_menu():
@@ -90,14 +90,14 @@ class UserMenu:
             if choice_count + 1 > user_choice > 0:
                 self._campaign_manager.set_current_campaign(user_choice - 1)
                 print(f'--*{self._campaign_manager.current_campaign.name}*--')
-                self.display_edit_campaign_menu(self._campaign_manager.campaigns[user_choice - 1].name)
+                self.display_edit_campaign_menu(self._campaign_manager.campaigns[user_choice - 1])
             elif user_choice == 1 + choice_count:
                 self.display_editor_menu()
                 break
             else:
                 print("Invalid choice, please try again.")
 
-    def display_edit_campaign_menu(self, campaign):
+    def display_edit_campaign_menu(self, campaign: Campaign):
         # @TODO implement all these campaign management options
         while True:
             print(f"Editing campaign: {self._campaign_manager.current_campaign.name}")
@@ -155,8 +155,21 @@ class UserMenu:
 
     def manage_campaign_players(self, campaign: Campaign) -> None:
         while True:
-            print(f" --Managing player character-- ")
-            print(f"{campaign.player}")
+            print(f" --Player Character List-- ")
+            for index, player in enumerate(campaign.player_list):
+                print(f"{index + 1}. {player.name}")
+            player_index = int(input(f"Enter your choice (1-{len(campaign.player_list)}):")) - 1
+            if 0 <= player_index <= (len(campaign.player_list)):
+                self.manage_single_campaign_player(campaign, player_index)
+                break
+            else:
+                print("Invalid choice, please try again.")
+
+    def manage_single_campaign_player(self, campaign: Campaign, player_index):
+        while True:
+            print(f" --Player Character Details-- ")
+            print(f"{campaign.player_list[player_index]}")
+            print(f" -------- ")
             print("1. Change player name")
             print("2. Change player description")
             print("3. Change player base hit points")
@@ -173,12 +186,13 @@ class UserMenu:
             user_choice = int(input("Enter your choice (1-12):"))
             if user_choice == 1:
                 new_name = input("Enter new Name: ")
-                campaign.player.name = new_name
+                campaign.player_list[player_index].name = new_name
                 break
             if 2 <= user_choice <= 12:
                 break
             else:
                 print("Invalid choice, please try again.")
+
 
     def display_play_existing_campaigns_menu(self):
         while True:
