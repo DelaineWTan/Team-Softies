@@ -30,21 +30,22 @@ class UserMenu:
 
     def display_editor_menu(self):
         while True:
-            print("You are in editor mode. Choices:")
-            print("1. Create new campaign")
-            print("2. Select existing campaign")
-            print("3. Return to main menu")
-            user_choice = int(input("Enter your choice (1-3):"))
-            if user_choice == 1:
-                self.display_new_campaign_menu()
-            elif user_choice == 2:
-                self.display_edit_existing_campaigns_menu()
-                break
-            elif user_choice == 3:
-                self.display_main_menu()
-                break
-            else:
-                print("Invalid choice, please try again.")
+            print(output.campaign_editor_choices())
+            try:
+                user_choice = int(input("Enter your choice (1-3):"))
+                if user_choice == 1:
+                    self.display_new_campaign_menu()
+                elif user_choice == 2:
+                    self.display_edit_existing_campaigns_menu()
+                    break
+                elif user_choice == 3:
+                    self.display_main_menu()
+                    break
+                else:
+                    print("Invalid choice, please try again.")
+            except ValueError:
+                print('catch value error')
+                
 
     def display_new_campaign_menu(self):
         while True:
@@ -113,7 +114,7 @@ class UserMenu:
     def display_edit_campaign_menu(self, campaign):
         # @TODO implement all these campaign management options
         while True:
-            print(output.campaign_editor_choices(self._campaign_manager.current_campaign.name))
+            print(output.campaign_editing_choices(self._campaign_manager.current_campaign.name))
             user_choice = int(input("Enter your choice (1-8):"))
             if user_choice == 1:
                 self.edit_campaign_name_menu()
