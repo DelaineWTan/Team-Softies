@@ -120,7 +120,7 @@ class Campaign:
     def __init__(self, name, short_desc = '', sequence_of_events = {}, list_of_PCs = [],
         list_of_NPCs = [], items = []):
         self._name = name
-        self._original_name = name
+        self._previous_name = name
         self._short_desc = short_desc
         self._events = sequence_of_events
         # @TODO do we want to have potentially more than 1 character per campaign?
@@ -137,8 +137,12 @@ class Campaign:
         self._name = name
 
     @property
-    def original_name(self):
-        return self._original_name
+    def previous_name(self):
+        return self._previous_name
+    
+    @previous_name.setter
+    def previous_name(self, new_name):
+        self._previous_name = new_name
 
     @property
     def short_desc(self) -> str:

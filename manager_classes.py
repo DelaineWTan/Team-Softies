@@ -56,8 +56,9 @@ class CampaignManager:
     def rename_campaign(self, new_name) -> None:
         if self._file_manager.validate_filename(new_name) is False:
             raise fb.ForbiddenFilenameCharsError
+        self._current_campaign.previous_name = self._current_campaign.name
         self._current_campaign.name = new_name
-        self._current_campaign.original_name = self._current_campaign.name
+        
 
 
 class FileManager:
@@ -66,19 +67,27 @@ class FileManager:
 
     def create_config_file(self, campaign: Campaign) -> None:
         try:
-            file_name = f'{self._path}{campaign.original_name}.json'
+            file_name = f'{self._path}{campaign.name}.json'
             with open(file_name, 'x') as file_object:
                 dump(campaign.__dict__, file_object, indent=3)
         except FileExistsError:
             raise FileExistsError
+        except OSError:
+            raise OSError
 
     def save_config_file(self, campaign: Campaign) -> None:
-        file_name = f'{self._path}{campaign.original_name}.json'
-        with open(file_name, 'w') as file_object:
-            dump(campaign.__dict__, file_object, indent=3)
+        try:
+            file_name = f'{self._path}{campaign.previous_name}.json'
+            with open(file_name, 'w') as file_object:
+                dump(campaign.__dict__, file_object, indent=3)
+            
+            if campaign.name != file_object.name:
+                    os.rename(file_name, f'{self._path}{campaign.name}.json')
+        except FileExistsError:
+            raise FileExistsError
+        except OSError:
+            raise OSError
         
-        if campaign.name != file_object.name:
-                os.rename(file_name, f'{self._path}{campaign.name}.json')
 
     def load_config_files(self):
         campaign_files = [x for x in os.listdir(self._path) if x.endswith('.json')]
