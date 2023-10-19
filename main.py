@@ -133,6 +133,12 @@ class UserMenu:
             else:
                 print("Invalid choice, please try again.")
 
+    def edit_campaign_description(self, desc: str) -> None:
+        # print("Edit your description below:")
+        # ask for input
+        # insert current desc on input field
+        pass
+
     def delete_campaign(self, campaign_name: str) -> None:
         try:
             print(f"Deleted campaign: {campaign_name}")

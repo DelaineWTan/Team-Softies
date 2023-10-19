@@ -58,6 +58,9 @@ class CampaignManager:
             raise fb.ForbiddenFilenameCharsError
         self._current_campaign.previous_name = self._current_campaign.name
         self._current_campaign.name = new_name
+
+    def edit_description(self, new_desc: str) -> str:
+        self._current_campaign.short_desc = new_desc
         
 
 
