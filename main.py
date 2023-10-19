@@ -66,7 +66,9 @@ class UserMenu:
             except ValueError:
                 print("Name cannot be empty, please try again.")
             except OSError:
-                print(output.invalid_campaign_name(user_input))
+                print(output.invalid_OS_filename(user_input))
+            except fb.ForbiddenFilenameCharsError:
+                print(output.invalid_chars_campaign_name(user_input))
 
     # def display_new_campaign_menu():
     #     while True:
@@ -154,7 +156,9 @@ class UserMenu:
             except ValueError:
                 print("Name cannot be empty, please try again.")
             except OSError:
-                print(output.invalid_campaign_name(user_input))
+                print(output.invalid_OS_filename(user_input))
+            except fb.ForbiddenFilenameCharsError:
+                print(output.invalid_chars_campaign_name(user_input))
 
     def display_player_menu(self):
         while True:
