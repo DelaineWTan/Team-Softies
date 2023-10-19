@@ -136,7 +136,7 @@ class UserMenu:
         while user_choice != 4:
             # @TODO: print tree structure here
             print("printing event tree here...")
-            print(self._events_manager.events_tree)
+            # print(self._events_manager.events_tree)
             for event in self._events_manager.events_tree.values():
                 print(f"|| Event ID: {event.event_id} -> choices: {event.choices}")
             print("1. Create new event\n"
@@ -164,18 +164,21 @@ class UserMenu:
         # @TODO: exception handling
         description = input("Enter event description/dialogue here: ")
         self._events_manager.create_event(description)
+        self._campaign_manager.current_campaign.events = self._events_manager.events_tree
+        self._campaign_manager.save_campaign()
 
     # honestly could be done so much better...
     def display_edit_existing_events_menu(self):
         # @TODO: exception handling
         # @TODO: use choice_name/choice_description
         while True:
+            print(self._events_manager.events_tree)
             event_id = input("Enter event you'd like to edit: ")
             if event_id not in self._events_manager.events_tree:
-                print("Event not found")
+                print(f"Event {event_id} not found")
                 return
             print(f"Editing event {event_id}")
-            print(self._events_manager.events_tree[event_id])
+            # print(self._events_manager.events_tree[event_id])
             user_choice = None
             while user_choice != 3:
                 print("1. Edit description\n"
@@ -193,6 +196,9 @@ class UserMenu:
                     return
                 else:
                     print("Invalid choice please try again.")
+                self._campaign_manager.current_campaign.events = self._events_manager.events_tree
+                self._campaign_manager.save_campaign()
+                print("Edit is done")
 
     # Edit events stuff end =================================
 

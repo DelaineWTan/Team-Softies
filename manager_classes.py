@@ -19,6 +19,7 @@ class EventsManager:
         new_event_id = 0
         while str(new_event_id) in self._events_tree:
             new_event_id += 1
+        new_event_id = str(new_event_id)
         created_event = DialogueEvent(new_event_id, description)
         self._events_tree[new_event_id] = created_event
 
