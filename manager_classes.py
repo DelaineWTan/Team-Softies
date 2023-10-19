@@ -126,9 +126,11 @@ class FileManager:
 
                 name = json_data['_name']
                 desc = json_data['_short_desc']
-                events = json_data['_events']
-                #for event in json_data['_event']:
-                #events = [DialogueEvent(event["0"]) for event in json_data['_events']]
+                # events = json_data['_events']
+                # this should work, but haven't tested it yet
+                # @TODO: make it work with CombatEvents as well
+                events = [(key, DialogueEvent(value['_event_id'], value['_description'], value['_choices'])) for
+                          key, value in json_data['_events'].items()]
                 # @TODO properly extract properties of character dicts for players and npcs
                 playable_chars = [Player(player["name"]) for player in json_data['_player_list']]
                 non_playable_chars = [NPC(npc["name"]) for npc in json_data['_npc_list']]

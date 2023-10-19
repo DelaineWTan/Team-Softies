@@ -3,6 +3,7 @@ from object_classes import *
 
 # @TODO define campaign entity
 
+
 class UserMenu:
     def __init__(self):
         self._campaign_manager = CampaignManager()
@@ -161,6 +162,7 @@ class UserMenu:
         description = input("Enter event description/dialogue here: ")
         self._events_manager.create_event(description)
 
+    # honestly could be done so much better...
     def display_edit_existing_events_menu(self):
         # @TODO: exception handling
         # @TODO: use choice_name/choice_description
