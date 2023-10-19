@@ -55,7 +55,7 @@ class CampaignManager:
 
 class ClassObjEncoder(JSONEncoder):
     def default(self, obj):
-        if isinstance(obj, [Player, NPC]):
+        if isinstance(obj, (Player, NPC)):
             return obj.__dict__
         return super().default(obj)
 
