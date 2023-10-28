@@ -1,8 +1,10 @@
 from manager_classes import *
 from object_classes import *
+from output_messages import output_messages as output
 
 
-# @TODO define campaign entity
+BACK_KEYWORD = 'back'
+
 
 class UserMenu:
     def __init__(self):
@@ -10,7 +12,6 @@ class UserMenu:
         self._events_manager = EventsManager()
 
     def display_main_menu(self):
-        # @TODO add load campaign calls to whenever campaigns are shown to the user
         while True:
             print("1. Editor mode")
             print("2. Player mode")
@@ -22,42 +23,53 @@ class UserMenu:
                 self.display_player_menu()
                 break
             else:
-                print("Invalid choice, please try again.")
+                print(output.invalid_choice())
 
     def display_editor_menu(self):
         while True:
-            print("You are in editor mode. Choices:")
-            print("1. Create new campaign")
-            print("2. Select existing campaign")
-            print("3. Return to main menu")
-            user_choice = int(input("Enter your choice (1-3):"))
-            if user_choice == 1:
-                self.display_new_campaign_menu()
-                break
-            elif user_choice == 2:
-                self.display_edit_existing_campaigns_menu()
-                break
-            elif user_choice == 3:
-                # Wouldn't this run another instance of display_main_menu
-                # and never finishing the display_main_menu from before?
-                # Unless I'm getting it wrong
-                # -Jun
-                self.display_main_menu()
-                break
-            else:
-                print("Invalid choice, please try again.")
+            print(output.campaign_editor_choices())
+            try:
+                user_choice = int(input("Enter your choice (1-3):"))
+                if user_choice == 1:
+                    self.display_new_campaign_menu()
+                elif user_choice == 2:
+                    self.display_edit_existing_campaigns_menu()
+                    break
+                elif user_choice == 3:
+                    # Wouldn't this run another instance of display_main_menu
+                    # and never finishing the display_main_menu from before?
+                    # Unless I'm getting it wrong
+                    # -Jun
+                    self.display_main_menu()
+                    break
+                else:
+                    print("Invalid choice, please try again.")
+            except ValueError:
+                print(output.invalid_choice_int_expected())
 
     def display_new_campaign_menu(self):
         while True:
-            user_input = input("Enter new campaign name:")
-            if len(user_input) == 0:
-                print("Name cannot be empty, please try again.")
-            else:
+            user_input = None
+            try:
+                user_input = input(output.campaign_name_prompt()).strip()
+                if len(user_input) == 0:
+                    raise ValueError
+                elif user_input.lower() == BACK_KEYWORD:
+                    break
+
                 self._campaign_manager.create_campaign(user_input)
                 self._campaign_manager.set_current_campaign(len(self._campaign_manager.campaigns) - 1)
                 print(f"New campaign created: {user_input}")
                 self.display_edit_campaign_menu()
                 break
+            except FileExistsError:
+                print(f'{user_input} already exists as another name.')
+            except ValueError:
+                print("Name cannot be empty, please try again.")
+            except OSError:
+                print(output.invalid_OS_filename(user_input))
+            except fb.ForbiddenFilenameCharsError:
+                print(output.invalid_chars_campaign_name(user_input))
 
     # def display_new_campaign_menu():
     #     while True:
@@ -85,49 +97,62 @@ class UserMenu:
 
     def display_edit_existing_campaigns_menu(self):
         while True:
-            self._campaign_manager.load_campaigns()
-            choice_count = self.display_campaign_list_choices()
-            user_choice = int(input(f"Enter your choice (1-{1 + choice_count}):"))
-            if choice_count + 1 > user_choice > 0:
-                self._campaign_manager.set_current_campaign(user_choice - 1)
-                print(f'--*{self._campaign_manager.current_campaign.name}*--')
-                self.display_edit_campaign_menu()
-            elif user_choice == 1 + choice_count:
-                self.display_editor_menu()
-                break
-            else:
-                print("Invalid choice, please try again.")
+            try:
+                self._campaign_manager.load_campaigns()
+                choice_count = self.display_campaign_list_choices()
+                user_choice = int(input(f"Enter your choice (1-{1 + choice_count}):"))
+                if choice_count + 1 > user_choice > 0:
+                    self._campaign_manager.set_current_campaign(user_choice - 1)
+                    print(f'--*{self._campaign_manager.current_campaign.name}*--')
+                    self.display_edit_campaign_menu()
+                elif user_choice == 1 + choice_count:
+                    self.display_editor_menu()
+                    break
+                else:
+                    print("Invalid choice, please try again.")
+            except ValueError:
+                print(output.invalid_choice_int_expected())
 
     def display_edit_campaign_menu(self):
         # @TODO implement all these campaign management options
         while True:
-            print(f"Editing campaign: {self._campaign_manager.current_campaign.name}")
-            print("1. Change campaign name")
-            # print("2. Edit and manage event tree")
-            print("2. Manage events")
-            print("4. Manage player characters")
-            print("5. Manage non-player characters")
-            print("6. Manage items")
-            print("7. Delete campaign (WARNING: this action is irreversible)")
-            print("8. Back")
-            user_choice = int(input("Enter your choice (1-8):"))
-            if user_choice == 1:
-                self.edit_campaign_name_menu()
-            if user_choice == 2:
-                self.edit_events_menu()
-            elif user_choice == 4:
-                self.manage_campaign_players()
-            elif 1 <= user_choice <= 6:
-                print("Made a valid choice 1-6")
-            elif user_choice == 7:
-                self._campaign_manager.delete_campaign()
-                break
-            elif user_choice == 8:
-                self._campaign_manager.set_no_current_campaign()
-                self.display_edit_existing_campaigns_menu()
-                break
-            else:
-                print("Invalid choice, please try again.")
+            print(output.campaign_editing_choices(self._campaign_manager.current_campaign.name))
+            try:
+                user_choice = int(input("Enter your choice (1-8):"))
+                if user_choice == 1:
+                    self.edit_campaign_name_menu()
+                elif user_choice == 2:
+                    self.edit_events_menu()
+                elif user_choice == 4:
+                    self.manage_campaign_players()
+                elif 1 <= user_choice <= 6:
+                    print("Made a valid choice 1-6")
+                elif user_choice == 7:
+                    self.delete_campaign(self._campaign_manager.current_campaign.name)
+                    break
+                elif user_choice == 8:
+                    pass
+                elif user_choice == 9:
+                    self._campaign_manager.set_no_current_campaign()
+                    self.display_edit_existing_campaigns_menu()
+                    break
+                else:
+                    print(output.invalid_choice())
+            except ValueError:
+                print(output.invalid_choice_int_expected())
+
+    def edit_campaign_description(self, desc: str) -> None:
+        # print("Edit your description below:")
+        # ask for input
+        # insert current desc on input field
+        pass
+
+    def delete_campaign(self, campaign_name: str) -> None:
+        try:
+            print(f"Deleted campaign: {campaign_name}")
+            self._campaign_manager.delete_campaign()
+        except OSError:
+            print(output.delete_missing_config_file(campaign_name))
 
     # Edit events stuff start -Jun ==========================
     def edit_events_menu(self):
@@ -204,13 +229,23 @@ class UserMenu:
 
     def edit_campaign_name_menu(self):
         while True:
-            user_input = input("Enter new campaign name:")
-            if len(user_input) == 0:
+            try:
+                user_input = input(output.campaign_name_prompt()).strip()
+                if len(user_input) == 0:
+                    print("Name cannot be empty, please try again.")
+                elif user_input.lower() == BACK_KEYWORD:
+                    break
+                else:
+
+                    self._campaign_manager.rename_campaign(user_input)
+                    self._campaign_manager.save_campaign()
+                    break
+            except ValueError:
                 print("Name cannot be empty, please try again.")
-            else:
-                self._campaign_manager.rename_campaign(user_input)
-                self._campaign_manager.save_campaign()
-                break
+            except OSError:
+                print(output.invalid_OS_filename(user_input))
+            except fb.ForbiddenFilenameCharsError:
+                print(output.invalid_chars_campaign_name(user_input))
 
     # generic function to change any property in campaign
     def _change_campaign_property(self, campaign_obj, prop_name: str, current_prop: str, display_prop):
