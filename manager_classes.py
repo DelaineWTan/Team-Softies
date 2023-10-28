@@ -1,6 +1,11 @@
 import os
 from json import dump, load, JSONEncoder
 from object_classes import Campaign, Player, NPC
+import re
+from CustomExceptions import forbidden_filename_chars_error as fb
+
+
+BAD_FILENAME_CHARS = r'/\\<>:\"|?*'
 
 
 class CampaignManager:
@@ -22,7 +27,7 @@ class CampaignManager:
         # custom exceptions
         self._current_campaign = self._campaigns[index]
 
-    def set_no_current_campaign(self):
+    def set_no_current_campaign(self) -> None:
         self._current_campaign = None
 
     def add_campaign(self, campaign) -> None:
@@ -35,6 +40,8 @@ class CampaignManager:
         self._file_manager.save_config_file(self.current_campaign)
 
     def create_campaign(self, name: str) -> None:
+        if self._file_manager.validate_filename(name) is False:
+            raise fb.ForbiddenFilenameCharsError
         campaign = Campaign(name)
         self._file_manager.create_config_file(campaign)
         self.add_campaign(campaign)
@@ -46,11 +53,17 @@ class CampaignManager:
         self.set_no_current_campaign()
         print(f"Deleted campaign: {campaign_name}")
 
-    def load_campaigns(self):
+    def load_campaigns(self) -> None:
         self._campaigns = self._file_manager.load_config_files()
-
-    def rename_campaign(self, new_name):
+    
+    def rename_campaign(self, new_name) -> None:
+        if self._file_manager.validate_filename(new_name) is False:
+            raise fb.ForbiddenFilenameCharsError
+        self._current_campaign.previous_name = self._current_campaign.name
         self._current_campaign.name = new_name
+
+    def edit_description(self, new_desc: str):
+        self._current_campaign.short_desc = new_desc
 
 
 class ClassObjEncoder(JSONEncoder):
@@ -65,17 +78,28 @@ class FileManager:
         self._path = 'game_configs/'
 
     def create_config_file(self, campaign: Campaign) -> None:
-        file_name = f'{self._path}{campaign.original_name}.json'
-        with open(file_name, 'w') as file_object:
-            dump(campaign.__dict__, file_object, indent=3, cls=ClassObjEncoder)
+        try:
+            file_name = f'{self._path}{campaign.name}.json'
+            with open(file_name, 'x') as file_object:
+                dump(campaign.__dict__, file_object, indent=3, cls=ClassObjEncoder)
+        except FileExistsError:
+            raise FileExistsError
+        except OSError:
+            raise OSError
 
     def save_config_file(self, campaign: Campaign) -> None:
-        file_name = f'{self._path}{campaign.original_name}.json'
-        with open(file_name, 'w') as file_object:
-            dump(campaign.__dict__, file_object, indent=3)
+        try:
+            file_name = f'{self._path}{campaign.previous_name}.json'
+            with open(file_name, 'w') as file_object:
+                dump(campaign.__dict__, file_object, indent=3, cls=ClassObjEncoder)
 
-        if campaign.name != file_object.name:
-            os.rename(file_name, f'{self._path}{campaign.name}.json')
+            if campaign.name != file_object.name:
+                os.rename(file_name, f'{self._path}{campaign.name}.json')
+        except FileExistsError:
+            raise FileExistsError
+        except OSError:
+            raise OSError
+
 
     def load_config_files(self):
         campaign_files = [x for x in os.listdir(self._path) if x.endswith('.json')]
@@ -99,5 +123,16 @@ class FileManager:
         return parsed_campaigns
 
     def delete_config_file(self, file_name):
-        file_path = f'{self._path}{file_name}.json'
-        os.remove(file_path)
+        try:
+            file_path = f'{self._path}{file_name}.json'
+            os.remove(file_path)
+        except OSError:
+            raise OSError
+
+
+    def validate_filename(self, file_name) -> bool:
+        invalid_chars = fr'[{BAD_FILENAME_CHARS}]'
+        if re.search(invalid_chars, file_name):
+            return False
+
+        return True
