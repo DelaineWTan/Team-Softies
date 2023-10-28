@@ -95,12 +95,54 @@ class Event(abc.ABC):
 
 
 class DialogueEvent(Event):
-    def __init__(self, description):
+    def __init__(self, event_id=99999, description="null event", choices=[]):
+        self._event_id = event_id
         self._description = description
-        self._list_of_choices = []
+        if choices is None:
+            self._choices = []  # list of next event ids
+        else:
+            self._choices = choices
 
     def run_event(self):
-        print("run the event idk")
+        print(self._description)
+        print("running the dialogue event idk")
+
+    @property
+    def description(self):
+        return self._description
+
+    @description.setter
+    def description(self, description):
+        self._description = description
+
+    @property
+    def event_id(self):
+        return self._event_id
+
+    @event_id.setter
+    def event_id(self, event_id):
+        self._event_id = event_id
+
+    @property
+    def choices(self):
+        return self._choices
+
+    @choices.setter
+    def choices(self, choices):
+        self._choices = choices
+
+    def __str__(self):
+        event_string = (f"event_id: {self._event_id}\n"
+                        f"description: {self._description}\n")
+        if len(self._choices) == 0:
+            event_string += f"--=== Event End ===--\n"
+        elif len(self._choices) == 1:
+            event_string += f" > continue\n"
+        else:
+            for choice in self._choices:
+                event_string += f" > choice event id: {choice}\n"
+
+        return event_string
 
 
 class CombatEvent(Event):
@@ -109,7 +151,8 @@ class CombatEvent(Event):
         self._list_of_choices = []  # idk
 
     def run_event(self):
-        print("run the event idk")
+        print(self._description)
+        print("running the combat event idk")
 
 
 class Campaign:
@@ -147,6 +190,14 @@ class Campaign:
     @short_desc.setter
     def short_desc(self, short_desc):
         self._short_desc = short_desc
+
+    @property
+    def events(self):
+        return self._events
+
+    @events.setter
+    def events(self, events):
+        self._events = events
 
     @property
     def player_list(self) -> list[Player]:

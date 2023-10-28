@@ -6,10 +6,10 @@ from output_messages import output_messages as output
 BACK_KEYWORD = 'back'
 
 
-
 class UserMenu:
     def __init__(self):
         self._campaign_manager = CampaignManager()
+        self._events_manager = EventsManager()
 
     def display_main_menu(self):
         while True:
@@ -25,7 +25,6 @@ class UserMenu:
             else:
                 print(output.invalid_choice())
 
-
     def display_editor_menu(self):
         while True:
             print(output.campaign_editor_choices())
@@ -37,6 +36,10 @@ class UserMenu:
                     self.display_edit_existing_campaigns_menu()
                     break
                 elif user_choice == 3:
+                    # Wouldn't this run another instance of display_main_menu
+                    # and never finishing the display_main_menu from before?
+                    # Unless I'm getting it wrong
+                    # -Jun
                     self.display_main_menu()
                     break
                 else:
@@ -44,9 +47,9 @@ class UserMenu:
             except ValueError:
                 print(output.invalid_choice_int_expected())
 
-
     def display_new_campaign_menu(self):
         while True:
+            user_input = None
             try:
                 user_input = input(output.campaign_name_prompt()).strip()
                 if len(user_input) == 0:
@@ -118,6 +121,8 @@ class UserMenu:
                 user_choice = int(input("Enter your choice (1-8):"))
                 if user_choice == 1:
                     self.edit_campaign_name_menu()
+                elif user_choice == 2:
+                    self.edit_events_menu()
                 elif user_choice == 4:
                     self.manage_campaign_players()
                 elif 1 <= user_choice <= 6:
@@ -148,6 +153,79 @@ class UserMenu:
             self._campaign_manager.delete_campaign()
         except OSError:
             print(output.delete_missing_config_file(campaign_name))
+
+    # Edit events stuff start -Jun ==========================
+    def edit_events_menu(self):
+        self._events_manager.events_tree = self._campaign_manager.current_campaign.events
+        user_choice = None
+        while user_choice != 4:
+            # @TODO: print tree structure here
+            print("printing event tree here...")
+            # print(self._events_manager.events_tree)
+            for event in self._events_manager.events_tree.values():
+                print(f"|| Event ID: {event.event_id} -> choices: {event.choices}")
+            print("1. Create new event\n"
+                  "2. Edit an existing event\n"
+                  # I just realized, if it's like this then event should have
+                  # a 'choice_name/choice_description for when it's being called
+                  # as a choice
+                  # @TODO: add choice_name/choice_description for an event
+                  "3. Link events (create choices)\n"
+                  "4. Return to edit campaign menu")
+            user_choice = int(input("Enter your choice (1-3):"))
+            if user_choice == 1:
+                self.display_new_event_menu()
+            elif user_choice == 2:
+                self.display_edit_existing_events_menu()
+            elif user_choice == 4:
+                self._campaign_manager.current_campaign.events = self._events_manager.events_tree
+                self._campaign_manager.save_campaign()
+                return
+            else:
+                print("Invalid choice, please try again.")
+
+    def display_new_event_menu(self):
+        print("Creating new event...")
+        # @TODO: exception handling
+        description = input("Enter event description/dialogue here: ")
+        self._events_manager.create_event(description)
+        self._campaign_manager.current_campaign.events = self._events_manager.events_tree
+        self._campaign_manager.save_campaign()
+
+    # honestly could be done so much better...
+    def display_edit_existing_events_menu(self):
+        # @TODO: exception handling
+        # @TODO: use choice_name/choice_description
+        while True:
+            print(self._events_manager.events_tree)
+            event_id = input("Enter event you'd like to edit: ")
+            if event_id not in self._events_manager.events_tree:
+                print(f"Event {event_id} not found")
+                return
+            print(f"Editing event {event_id}")
+            # print(self._events_manager.events_tree[event_id])
+            user_choice = None
+            while user_choice != 3:
+                print("1. Edit description\n"
+                      # nothing else yet
+                      "2. Edit something else...\n"
+                      "3. Cancel edit")
+                user_choice = int(input("Enter choice here (1-3): "))
+                if user_choice == 1:
+                    new_desc = input("Enter new description: ")
+                    self._events_manager.edit_event(event_id, "description", new_desc)
+                # @TODO: add other value
+                elif user_choice == 2:
+                    pass
+                elif user_choice == 3:
+                    return
+                else:
+                    print("Invalid choice please try again.")
+                self._campaign_manager.current_campaign.events = self._events_manager.events_tree
+                self._campaign_manager.save_campaign()
+                print("Edit is done")
+
+    # Edit events stuff end =================================
 
     def edit_campaign_name_menu(self):
         while True:
@@ -289,6 +367,7 @@ class UserMenu:
             choice_count = self.display_campaign_list_choices()
             user_choice = int(input(f"Enter your choice (1-{1 + choice_count}):"))
             if choice_count + 1 > user_choice > 0:
+                # @TODO: change to use CampaignManager
                 self.start_campaign(campaign_list[user_choice - 1])
             elif user_choice == 1 + choice_count:
                 self.display_player_menu()

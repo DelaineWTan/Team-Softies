@@ -1,11 +1,50 @@
 import os
 from json import dump, load, JSONEncoder
-from object_classes import Campaign, Player, NPC
+from object_classes import Campaign, Player, NPC, DialogueEvent
 import re
 from CustomExceptions import forbidden_filename_chars_error as fb
 
 
 BAD_FILENAME_CHARS = r'/\\<>:\"|?*'
+
+
+class EventsManager:
+    def __init__(self):
+        self._events_tree = {}
+
+    @property
+    def events_tree(self):
+        return self._events_tree
+
+    @events_tree.setter
+    def events_tree(self, events_tree):
+        self._events_tree = events_tree
+
+    def create_event(self, description):
+        new_event_id = 0
+        while str(new_event_id) in self._events_tree:
+            new_event_id += 1
+        new_event_id = str(new_event_id)
+        created_event = DialogueEvent(new_event_id, description)
+        self._events_tree[new_event_id] = created_event
+
+    def edit_event(self, event_id, to_edit, new_value):
+        if event_id not in self._events_tree:
+            return False
+        if to_edit == "description":
+            self._events_tree[event_id].description = new_value
+        else:
+            return False
+
+        return True
+
+    def delete_event(self, event_id):
+        is_successful = True
+        try:
+            del self._events_tree[event_id]
+        except KeyError:
+            is_successful = False
+        return is_successful
 
 
 class CampaignManager:
@@ -55,7 +94,7 @@ class CampaignManager:
 
     def load_campaigns(self) -> None:
         self._campaigns = self._file_manager.load_config_files()
-    
+
     def rename_campaign(self, new_name) -> None:
         if self._file_manager.validate_filename(new_name) is False:
             raise fb.ForbiddenFilenameCharsError
@@ -68,7 +107,7 @@ class CampaignManager:
 
 class ClassObjEncoder(JSONEncoder):
     def default(self, obj):
-        if isinstance(obj, (Player, NPC)):
+        if isinstance(obj, (Player, NPC, DialogueEvent)):
             return obj.__dict__
         return super().default(obj)
 
@@ -100,7 +139,6 @@ class FileManager:
         except OSError:
             raise OSError
 
-
     def load_config_files(self):
         campaign_files = [x for x in os.listdir(self._path) if x.endswith('.json')]
         parsed_campaigns = list()
@@ -111,7 +149,12 @@ class FileManager:
 
                 name = json_data['_name']
                 desc = json_data['_short_desc']
-                events = json_data['_events']
+                # events = json_data['_events']
+                # this should work, but haven't tested it yet
+                # @TODO: make it work with CombatEvents as well
+                events = [(key, DialogueEvent(value['_event_id'], value['_description'], value['_choices'])) for
+                          key, value in json_data['_events'].items()]
+                events = dict(events)
                 # @TODO properly extract properties of character dicts for players and npcs
                 playable_chars = [Player(player["name"]) for player in json_data['_player_list']]
                 non_playable_chars = [NPC(npc["name"]) for npc in json_data['_npc_list']]
@@ -128,7 +171,6 @@ class FileManager:
             os.remove(file_path)
         except OSError:
             raise OSError
-
 
     def validate_filename(self, file_name) -> bool:
         invalid_chars = fr'[{BAD_FILENAME_CHARS}]'
