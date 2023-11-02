@@ -2,7 +2,6 @@ from manager_classes import *
 from object_classes import *
 from output_messages import output_messages as output
 
-
 BACK_KEYWORD = 'back'
 
 
@@ -312,50 +311,61 @@ class UserMenu:
                 continue
             if user_choice == 2:
                 self._change_campaign_property(self._campaign_manager.current_campaign.player_list[player_index]
-                                          , "description",
-                                          self._campaign_manager.current_campaign.player_list[player_index].description
-                                          , "description")
+                                               , "description",
+                                               self._campaign_manager.current_campaign.player_list[
+                                                   player_index].description
+                                               , "description")
                 continue
             if user_choice == 3:
-                self._change_campaign_property(self._campaign_manager.current_campaign.player_list[player_index], "base_hp",
-                                          self._campaign_manager.current_campaign.player_list[player_index].base_hp
-                                          , "base hit points")
+                self._change_campaign_property(self._campaign_manager.current_campaign.player_list[player_index],
+                                               "base_hp",
+                                               self._campaign_manager.current_campaign.player_list[player_index].base_hp
+                                               , "base hit points")
                 continue
             if user_choice == 4:
-                self._change_campaign_property(self._campaign_manager.current_campaign.player_list[player_index], "base_atk",
-                                          self._campaign_manager.current_campaign.player_list[player_index].base_atk
-                                          , "base attack")
+                self._change_campaign_property(self._campaign_manager.current_campaign.player_list[player_index],
+                                               "base_atk",
+                                               self._campaign_manager.current_campaign.player_list[
+                                                   player_index].base_atk
+                                               , "base attack")
                 continue
             if user_choice == 5:
-                self._change_campaign_property(self._campaign_manager.current_campaign.player_list[player_index], "base_spd",
-                                          self._campaign_manager.current_campaign.player_list[player_index].base_spd
-                                          , "base speed")
+                self._change_campaign_property(self._campaign_manager.current_campaign.player_list[player_index],
+                                               "base_spd",
+                                               self._campaign_manager.current_campaign.player_list[
+                                                   player_index].base_spd
+                                               , "base speed")
                 continue
             if user_choice == 6:
                 self._change_campaign_property(self._campaign_manager.current_campaign.player_list[player_index]
-                                          , "exp_per_lvl_up",
-                                          self._campaign_manager.current_campaign.player_list[player_index].exp_per_lvl_up
-                                          , "level up experience")
+                                               , "exp_per_lvl_up",
+                                               self._campaign_manager.current_campaign.player_list[
+                                                   player_index].exp_per_lvl_up
+                                               , "level up experience")
                 continue
             if user_choice == 7:
-                self._change_campaign_property(self._campaign_manager.current_campaign.player_list[player_index], "max_lvl",
-                                          self._campaign_manager.current_campaign.player_list[player_index].max_lvl
-                                          , "max level")
+                self._change_campaign_property(self._campaign_manager.current_campaign.player_list[player_index],
+                                               "max_lvl",
+                                               self._campaign_manager.current_campaign.player_list[player_index].max_lvl
+                                               , "max level")
                 continue
             if user_choice == 8:
-                self._change_campaign_property(self._campaign_manager.current_campaign.player_list[player_index], "hp_mod",
-                                          self._campaign_manager.current_campaign.player_list[player_index].hp_mod
-                                          , "hit point gain per level")
+                self._change_campaign_property(self._campaign_manager.current_campaign.player_list[player_index],
+                                               "hp_mod",
+                                               self._campaign_manager.current_campaign.player_list[player_index].hp_mod
+                                               , "hit point gain per level")
                 continue
             if user_choice == 9:
-                self._change_campaign_property(self._campaign_manager.current_campaign.player_list[player_index], "atk_mod",
-                                          self._campaign_manager.current_campaign.player_list[player_index].atk_mod
-                                          , "attack gain per level")
+                self._change_campaign_property(self._campaign_manager.current_campaign.player_list[player_index],
+                                               "atk_mod",
+                                               self._campaign_manager.current_campaign.player_list[player_index].atk_mod
+                                               , "attack gain per level")
                 continue
             if user_choice == 10:
-                self._change_campaign_property(self._campaign_manager.current_campaign.player_list[player_index], "spd_mod",
-                                          self._campaign_manager.current_campaign.player_list[player_index].spd_mod
-                                          , "speed gain per level")
+                self._change_campaign_property(self._campaign_manager.current_campaign.player_list[player_index],
+                                               "spd_mod",
+                                               self._campaign_manager.current_campaign.player_list[player_index].spd_mod
+                                               , "speed gain per level")
                 continue
             if user_choice == 12:
                 break
