@@ -49,18 +49,14 @@ class Player(Character):
 
 
 class NPC(Character):
-    friendly = bool
-
-    def __init__(self, name: str):
-        super().__init__(name)
+    def __init__(self, friendly=False, **kwargs):
+        self.friendly = friendly
+        super().__init__(**kwargs)
 
 
 class Item:
-    name = ""
-
-    def __init__(self, name: str):
+    def __init__(self, name: str = "nameless item"):
         self.name = name
-
 
 # class Event:
 #     name = ""
