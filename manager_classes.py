@@ -1,6 +1,6 @@
 import os
-from json import dump, load, JSONEncoder
-from object_classes import Campaign, Player, NPC, DialogueEvent
+from json import dump, load, JSONEncoder, decoder
+from object_classes import Campaign, Player, NPC, Item, DialogueEvent
 import re
 from CustomExceptions import forbidden_filename_chars_error as fb
 
@@ -107,7 +107,7 @@ class CampaignManager:
 
 class ClassObjEncoder(JSONEncoder):
     def default(self, obj):
-        if isinstance(obj, (Player, NPC, DialogueEvent)):
+        if isinstance(obj, (Player, NPC, Item, DialogueEvent)):
             return obj.__dict__
         return super().default(obj)
 
@@ -143,26 +143,28 @@ class FileManager:
         campaign_files = [x for x in os.listdir(self._path) if x.endswith('.json')]
         parsed_campaigns = list()
 
-        for index, js in enumerate(campaign_files):
-            with open(f'{self._path}{js}', 'r') as json_file:
-                json_data = load(json_file)
+        for index, campaign_name in enumerate(campaign_files):
+            try:
+                with open(f'{self._path}{campaign_name}', 'r') as json_file:
+                    json_data = load(json_file)
 
-                name = json_data['_name']
-                desc = json_data['_short_desc']
-                # events = json_data['_events']
-                # this should work, but haven't tested it yet
-                # @TODO: make it work with CombatEvents as well
-                events = [(key, DialogueEvent(value['_event_id'], value['_description'], value['_choices'])) for
-                          key, value in json_data['_events'].items()]
-                events = dict(events)
-                # @TODO properly extract properties of character dicts for players and npcs
-                playable_chars = [Player(player["name"]) for player in json_data['_player_list']]
-                non_playable_chars = [NPC(npc["name"]) for npc in json_data['_npc_list']]
-                items = json_data['_items']
+                    name = json_data['_name']
+                    desc = json_data['_short_desc']
+                    # events = json_data['_events']
+                    # this should work, but haven't tested it yet
+                    # @TODO: make it work with CombatEvents as well
+                    events = [(key, DialogueEvent(value['_event_id'], value['_description'], value['_choices'])) for
+                              key, value in json_data['_events'].items()]
+                    events = dict(events)
+                    # @TODO properly extract properties of character dicts for players and npcs
+                    playable_chars = [Player(player["name"]) for player in json_data['_player_list']]
+                    non_playable_chars = [NPC(npc["name"]) for npc in json_data['_npc_list']]
+                    items = json_data['_items']
 
-                parsed_campaigns.append(Campaign(name, desc, events, playable_chars,
-                                                 non_playable_chars, items))
-
+                    parsed_campaigns.append(Campaign(name, desc, events, playable_chars,
+                                                     non_playable_chars, items))
+            except decoder.JSONDecodeError:
+                print(f"WARNING: config file for campaign {campaign_name} is corrupted. Skipping...")
         return parsed_campaigns
 
     def delete_config_file(self, file_name):
