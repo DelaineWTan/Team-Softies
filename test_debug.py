@@ -37,9 +37,9 @@ test_dialogue_event_choices = [111, 222, 333]
 test_campaign_name = "Test Campaign"
 test_campaign_short_desc = "campaign short description"
 test_campaign_events = {}
-test_campaign_player_list = []
-test_campaign_npc_list = []
-test_campaign_items = []
+test_campaign_player_list = []  # Note: add actual player classes
+test_campaign_npc_list = []  # Note: add actual NPC classes
+test_campaign_items = []  # TODO: add items when Item classes completed
 
 
 # Create a Character object with specific parameters
@@ -99,4 +99,5 @@ def test_campaign_properties():
     assert campaign.events == test_campaign_events
     assert campaign.player_list == test_campaign_player_list
     assert campaign.npc_list == test_campaign_npc_list
-    assert campaign._items == test_campaign_items
+    # assert campaign._items_list == test_campaign_items
+

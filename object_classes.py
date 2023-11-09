@@ -132,7 +132,7 @@ class CombatEvent(Event):
 
 class Campaign:
     def __init__(self, name, short_desc="", events={}, player_list=[Player("Anon")],
-                 npc_list=[], items=[]):
+                 npc_list=[], items_list=[]):
         self._name = name
         self._previous_name = name
         self._short_desc = short_desc
@@ -140,7 +140,7 @@ class Campaign:
         # @TODO do we want to have potentially more than 1 character per campaign?
         self._player_list = player_list  # players are characters
         self._npc_list = npc_list  # list of NPCs, this can be empty
-        self._items = items  # list of item objects, this can be empty
+        self._items_list = items_list  # list of item objects, this can be empty
 
     @property
     def name(self) -> str:
@@ -182,10 +182,8 @@ class Campaign:
     def npc_list(self) -> list[NPC]:
         return self._npc_list
 
-
-
     def __str__(self):
         return (f"Campaign: \"{self._name}\""
                 f" This campaign has {len(self._events)} events, {len(self._npc_list)} player characters, "
-                f"{len(self._npc_list)} NPC characters, and {len(self._items)} "
+                f"{len(self._npc_list)} NPC characters, and {len(self._items_list)} "
                 f"items.")
