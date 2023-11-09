@@ -57,30 +57,7 @@ class NPC(Character):
 class Item:
     def __init__(self, name: str = "nameless item"):
         self.name = name
-
-# class Event:
-#     name = ""
-#     description = ""
-#     next = None
-#     outcome = None
-#
-#     def __init__(self, name, description):
-#         self.name = name
-#         self.description = description
-#
-#     def setNextEvent(self, event):
-#         self.next = event
-#
-#     def eventOutcome(self, outcome):  # function will take in a universal object
-#         if outcome.type == Event:
-#             self.setNextEvent(outcome)
-#
-#         if outcome.type == Item:
-#             pass  # give player an item
-#
-#         if outcome.type == NPC:
-#             pass  # trigger battle!
-
+        
 
 class Event(abc.ABC):
     @abc.abstractmethod
@@ -151,16 +128,16 @@ class CombatEvent(Event):
 
 
 class Campaign:
-    def __init__(self, name, short_desc="", sequence_of_events={}, player_list=[Player("Anon")],
-                 npc_list=[], items=[]):
+    def __init__(self, name, short_desc="", events={}, player_list=[Player("Anon")],
+                 npc_list=[], items_list=[]):
         self._name = name
         self._previous_name = name
         self._short_desc = short_desc
-        self._events = sequence_of_events
+        self._events = events
         # @TODO do we want to have potentially more than 1 character per campaign?
         self._player_list = player_list  # players are characters
         self._npc_list = npc_list  # list of NPCs, this can be empty
-        self._items = items  # list of item objects, this can be empty
+        self._items_list = items_list  # list of item objects, this can be empty
 
     @property
     def name(self) -> str:
@@ -205,5 +182,5 @@ class Campaign:
     def __str__(self):
         return (f"Campaign: \"{self._name}\""
                 f" This campaign has {len(self._events)} events, {len(self._npc_list)} player characters, "
-                f"{len(self._npc_list)} NPC characters, and {len(self._items)} "
+                f"{len(self._npc_list)} NPC characters, and {len(self._items_list)} "
                 f"items.")

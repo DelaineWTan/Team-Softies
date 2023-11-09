@@ -1,6 +1,7 @@
-from object_classes import Character, Player, DialogueEvent
+from object_classes import Character, Player, DialogueEvent, Campaign
 
 # Property values for reuse in tests, note that these values are different from the default values
+# Test property values for the Player class
 test_ascii_art = "\n⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⣬⡛⣿⣿⣿⣯⢻\n" \
                  "⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡟⢻⣿⣿⢟⣻⣿⣿⣿⣿⣿⣿⣮⡻⣿⣿⣧ \n" \
                  "⣿⣿⣿⣿⣿⢻⣿⣿⣿⣿⣿⣿⣆⠻⡫⣢⠿⣿⣿⣿⣿⣿⣿⣿⣷⣜⢻⣿ \n" \
@@ -26,9 +27,19 @@ test_max_lvl = 15
 test_hp_mod = 10
 test_atk_mod = 3
 test_spd_mod = 5
+
+# Test property values for DialogueEvent class
 test_dialogue_event_id = 123
 test_dialogue_event_description = "dialogue event description"
 test_dialogue_event_choices = [111, 222, 333]
+
+# Test property values for campaign class
+test_campaign_name = "Test Campaign"
+test_campaign_short_desc = "campaign short description"
+test_campaign_events = {}
+test_campaign_player_list = []  # Note: add actual player classes
+test_campaign_npc_list = []  # Note: add actual NPC classes
+test_campaign_items = []  # TODO: add items when Item classes completed
 
 
 # Create a Character object with specific parameters
@@ -77,3 +88,16 @@ def test_dialogue_event_properties():
     assert dialogue_event.event_id == test_dialogue_event_id
     assert dialogue_event.description == test_dialogue_event_description
     assert dialogue_event.choices == test_dialogue_event_choices
+
+
+# Create a Campaign object with specific parameters and test them
+def test_campaign_properties():
+    campaign = Campaign(test_campaign_name, test_campaign_short_desc, test_campaign_events, test_campaign_player_list,
+                        test_campaign_npc_list, test_campaign_items)
+    assert campaign.name == test_campaign_name
+    assert campaign.short_desc == test_campaign_short_desc
+    assert campaign.events == test_campaign_events
+    assert campaign.player_list == test_campaign_player_list
+    assert campaign.npc_list == test_campaign_npc_list
+    # assert campaign._items_list == test_campaign_items
+

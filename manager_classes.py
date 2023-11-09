@@ -180,3 +180,11 @@ class FileManager:
             return False
 
         return True
+
+    @property
+    def path(self):
+        return self._path
+
+    @path.setter
+    def path(self, path):
+        self._path = path
