@@ -22,3 +22,6 @@ jobs:
     - name: Analysing the code with radon
       run: |
         radon cc -a ./
+    - name: Acceptance Tests using unittest
+      run: |
+        python ./test_acceptance.py
