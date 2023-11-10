@@ -125,14 +125,40 @@ class CombatEventTest(unittest.TestCase):
 
 
 class ChoiceEventTest(unittest.TestCase):
-    def test_select_choice_option(self):
-        # Test choice event: Selecting a choice option
-        # Assertions go here
+
+    @classmethod
+    def setUpClass(cls):
+        cls._menu = UserMenu()
+
+    @classmethod
+    def tearDownClass(cls):
+        # cls._menu.display_main_menu()
         pass
 
-    def test_select_end_game_choice(self):
-        # Test choice event: Selecting an end game choice option
+    @patch('builtins.input', side_effect=['1'])
+    def test_select_choice_option(self, mock_input):
+        # Test combat event: Selecting "Attack" option
+        with patch('sys.stdout', new_callable=StringIO) as mock_stdout:
+            self._menu.run_choice_event()
         # Assertions go here
+        printed_output = mock_stdout.getvalue().strip()
+        expected_output = ("You encounter a fork in the forest path. What do you do?\n"
+                           "1. Take the left path.\n2. Take the right path.\n"
+                           "You took the left path.")
+        self.assertEqual(printed_output, expected_output)
+        pass
+
+    @patch('builtins.input', side_effect=['2'])
+    def test_select_end_game_choice(self, mock_input):
+        # Test combat event: Selecting "Attack" option
+        with patch('sys.stdout', new_callable=StringIO) as mock_stdout:
+            self._menu.run_choice_event()
+        # Assertions go here
+        printed_output = mock_stdout.getvalue().strip()
+        expected_output = ("You encounter a fork in the forest path. What do you do?\n"
+                           "1. Take the left path.\n2. Take the right path.\n"
+                           "You took the right path.")
+        self.assertEqual(printed_output, expected_output)
         pass
 
 
