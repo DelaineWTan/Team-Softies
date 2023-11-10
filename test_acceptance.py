@@ -32,6 +32,8 @@ class MainMenuTest(unittest.TestCase):
 
 
 class EditorMenuTest(unittest.TestCase):
+    # Tests only work with an empty game_configs dir
+
     @classmethod
     def setUpClass(cls):
         # Code to set up resources before all tests in this class
