@@ -265,15 +265,18 @@ class UserMenu:
             print("You are in player mode. Choices:")
             print("1. Play campaign")
             print("2. Return to main menu")
-            user_choice = int(input("Enter your choice (1-2):"))
-            if user_choice == 1:
-                self.display_play_existing_campaigns_menu()
-                break
-            elif user_choice == 2:
-                self.display_main_menu()
-                break
-            else:
-                print("Invalid choice, please try again.")
+            try:
+                user_choice = int(input("Enter your choice (1-2):"))
+                if user_choice == 1:
+                    self.display_play_existing_campaigns_menu()
+                    break
+                elif user_choice == 2:
+                    self.display_main_menu()
+                    break
+                else:
+                    print("Invalid choice, please try again.")
+            except ValueError:
+                print(output.invalid_choice_int_expected())
 
     def manage_campaign_players(self):
         while True:
