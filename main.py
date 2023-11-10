@@ -406,8 +406,10 @@ class UserMenu:
             elif user_choice == 2:
                 print("You defended yourself!")
                 print(f"{enemy_name} hit you for 1 damage!")
+                break
             elif user_choice == 3:
                 self.use_item_menu()
+                break
             elif user_choice == 4:
                 print("You fled successfully!")
                 break
