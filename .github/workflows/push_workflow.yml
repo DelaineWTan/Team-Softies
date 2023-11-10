@@ -15,10 +15,13 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install pylint radon
+        pip install pylint radon unittest
     - name: Analysing the code with pylint
       run: |
         pylint $(git ls-files '*.py') --fail-under=5.0
     - name: Analysing the code with radon
       run: |
         radon cc -a ./
+    - name: Acceptance Tests using unittest
+      run: |
+        python ./test_acceptance.py
