@@ -12,9 +12,11 @@ class UserMenu:
         self._events_manager = EventsManager()
 
     def display_main_menu(self):
+        print(f'Welcome to our text-based RPG maker!')
         while True:
             print("1. Editor mode")
             print("2. Player mode")
+            print("3. Quit")
             user_choice = int(input("Enter your choice (1-2):"))
             if user_choice == 1:
                 self.display_editor_menu()
@@ -22,6 +24,8 @@ class UserMenu:
             elif user_choice == 2:
                 self.display_player_menu()
                 break
+            elif user_choice == 3:
+                return
             else:
                 print(output.invalid_choice())
 
@@ -452,6 +456,5 @@ class UserMenu:
 
 
 if __name__ == '__main__':
-    print(f'Welcome to our text-based RPG maker!')
     menu = UserMenu()
     menu.display_main_menu()
