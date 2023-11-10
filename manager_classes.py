@@ -90,7 +90,6 @@ class CampaignManager:
         self._file_manager.delete_config_file(campaign_name)
         self.campaigns.remove(self.current_campaign)
         self.set_no_current_campaign()
-        print(f"Deleted campaign: {campaign_name}")
 
     def load_campaigns(self) -> None:
         self._campaigns = self._file_manager.load_config_files()
@@ -159,7 +158,7 @@ class FileManager:
                     # @TODO properly extract properties of character dicts for players and npcs
                     playable_chars = [Player(player["name"]) for player in json_data['_player_list']]
                     non_playable_chars = [NPC(npc["name"]) for npc in json_data['_npc_list']]
-                    items = json_data['_items']
+                    items = json_data['_items_list']
 
                     parsed_campaigns.append(Campaign(name, desc, events, playable_chars,
                                                      non_playable_chars, items))

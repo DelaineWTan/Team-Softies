@@ -5,6 +5,10 @@ from io import StringIO
 import inspect
 # Project Module Imports
 from main import UserMenu
+from output_messages import output_messages as output
+from manager_classes import FileManager
+from object_classes import Campaign
+import os
 
 
 class MainMenuTest(unittest.TestCase):
@@ -57,30 +61,88 @@ class MainMenuTest(unittest.TestCase):
 
 
 class EditorMenuTest(unittest.TestCase):
+    # Tests only work with an empty game_configs dir
+
     @classmethod
     def setUpClass(cls):
         # Code to set up resources before all tests in this class
-        pass
+        cls._menu = UserMenu()
+        cls._file_name = "unittest.json"
+        cls._configs_path = "game_configs"
+        cls._file_manager = FileManager()
+        cls._campaign = Campaign("unittest")
 
     @classmethod
     def tearDownClass(cls):
         # Code to clean up resources after all tests in this class
-        pass
+        file_path = os.path.join(cls._configs_path, cls._file_name)
+        if os.path.isfile(file_path):
+            os.remove(file_path)
 
-    def test_select_new_campaign(self):
+    @patch('builtins.input', side_effect=['1', 'unittest', '9', '2', '3'])
+    def test_select_new_campaign(self, mock_input):
+        file_path = os.path.join(self._configs_path, self._file_name)
+        if os.path.isfile(file_path):
+            os.remove(file_path)
+
+        new_campaign_text = 'New campaign created: unittest'
+        campaign_list = 'Campaign list:\n1. unittest\n2. Back\n'
+
         # Test scenario 2: Selecting "New campaign" from the editor menu
+        with patch('sys.stdout', new_callable=StringIO) as mock_stdout:
+            self._menu.display_editor_menu()
         # Assertions go here
-        pass
+        print_output = mock_stdout.getvalue().strip()
+        expected_output = (output.campaign_editor_choices() + '\n' + new_campaign_text + 
+                           output.campaign_editing_choices('unittest') + '\n' + campaign_list + 
+                           output.campaign_editor_choices())
 
-    def test_select_edit_campaign(self):
+        self.assertTrue(print_output, expected_output)
+        self.assertTrue(os.path.isfile(file_path))
+
+    @patch('builtins.input', side_effect=['2', '2', '3'])
+    def test_select_edit_campaign(self, mock_input):
+        file_path = os.path.join(self._configs_path, self._file_name)
+        if not os.path.isfile(file_path):
+            self._file_manager.create_config_file(self._campaign)
+
+        campaign_list = 'Campaign list:\n1. unittest\n2. Back\n'
+
         # Test scenario 2: Selecting "Edit campaign" from the editor menu
+        with patch('sys.stdout', new_callable=StringIO) as mock_stdout:
+            self._menu.display_editor_menu()
         # Assertions go here
-        pass
+        print_output = mock_stdout.getvalue().strip()
+        expected_output = (output.campaign_editor_choices() + '\n' + campaign_list + 
+                           output.campaign_editor_choices())
 
-    def test_select_delete_campaign(self):
+        self.assertEqual(print_output, expected_output)
+
+    @patch('builtins.input', side_effect=['2', '1', '7', '1', '3'])
+    def test_select_delete_campaign(self, mock_input):
+        # Creates file to delete for test
+        file_path = os.path.join(self._configs_path, self._file_name)
+        if not os.path.isfile(file_path):
+            self._file_manager.create_config_file(self._campaign)
+
+        campaign_list = 'Campaign list:\n1. unittest\n2. Back\n'
+        post_campaign_list = 'Campaign list:\n'
+        post_campaign_list_options = '1. Back\n'
+
         # Test scenario 2: Selecting "Delete campaign" from the edit campaign menu
+        with patch('sys.stdout', new_callable=StringIO) as mock_stdout:
+            self._menu.display_editor_menu()
+
         # Assertions go here
-        pass
+        print_output = mock_stdout.getvalue().strip()
+        expected_output = (output.campaign_editor_choices() + '\n' + campaign_list + 
+                           output.campaign_editing_choices(self._campaign.name) + '\n' + 
+                           output.delete_campaign(self._campaign.name) + '\n' +  
+                           post_campaign_list + output.no_campaigns_available() + '\n' +
+                           post_campaign_list_options + output.campaign_editor_choices())
+
+        self.assertEqual(print_output, expected_output)
+        self.assertFalse(os.path.isfile(file_path))
 
 
 class CombatEventTest(unittest.TestCase):
@@ -109,7 +171,7 @@ class CombatEventTest(unittest.TestCase):
         self.assertEqual(printed_output, expected_output)
         pass
 
-    @patch('builtins.input', side_effect=['2'])
+    @patch('builtins.input', side_effect=['2', '2'])
     def test_select_defend_option(self, mock_input):
         # Test combat event: Selecting "Attack" option
         with patch('sys.stdout', new_callable=StringIO) as mock_stdout:
