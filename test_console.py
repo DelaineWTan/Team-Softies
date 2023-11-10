@@ -16,7 +16,9 @@ class TestStringMethods(unittest.TestCase):
         self.assertEqual(printed_output, "Welcome to our text-based RPG maker!\n1. Editor mode\n2. Player mode\n3. "
                                          "Quit\nYou are in the editor mode. Choices:\n    1. Create new campaign\n    "
                                          "2. Select existing campaign\n    3. Return to main menu\n"
-                                         "1. Editor mode\n2. Player mode\n3. Quit\n")
+                                         "Welcome to our text-based RPG maker!\n1. Editor mode\n2. Player mode\n"
+                                         "3. Quit\n")
+
 
     @patch('builtins.input', side_effect=['1', 'no choice', '3', '3'])  # mock input order (edit, invalid, return, quit)
     def test_menu_editor_invalid_option(self, mock_input):
@@ -32,6 +34,7 @@ class TestStringMethods(unittest.TestCase):
                                          "input should be a number corresponding to the list of choices.\nYou are in "
                                          "the editor mode. Choices:\n    1. Create new campaign\n    2. Select "
                                          "existing campaign\n    3. Return to main menu\n"
+                                         "Welcome to our text-based RPG maker!\n"
                                          "1. Editor mode\n2. Player mode\n3. Quit")
 
     @patch('builtins.input', return_value='3')
