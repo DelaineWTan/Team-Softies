@@ -20,7 +20,7 @@ class UserMenu:
             user_choice = int(input("Enter your choice (1-2):"))
             if user_choice == 1:
                 self.display_editor_menu()
-                break
+                continue
             elif user_choice == 2:
                 self.display_player_menu()
                 break
@@ -38,13 +38,13 @@ class UserMenu:
                     self.display_new_campaign_menu()
                 elif user_choice == 2:
                     self.display_edit_existing_campaigns_menu()
-                    break
+                    continue
                 elif user_choice == 3:
                     # Wouldn't this run another instance of display_main_menu
                     # and never finishing the display_main_menu from before?
                     # Unless I'm getting it wrong
                     # -Jun
-                    self.display_main_menu()
+                    # self.display_main_menu()
                     break
                 else:
                     print("Invalid choice, please try again.")
@@ -64,7 +64,7 @@ class UserMenu:
                 self._campaign_manager.create_campaign(user_input)
                 self._campaign_manager.set_current_campaign(len(self._campaign_manager.campaigns) - 1)
                 print(f"New campaign created: {user_input}")
-                self.display_edit_campaign_menu()
+                self.display_edit_campaign_menu(True)
                 break
             except FileExistsError:
                 print(f'{user_input} already exists as another name.')
@@ -91,7 +91,7 @@ class UserMenu:
         print("Campaign list:")
         choice_count = 0
         if len(self._campaign_manager.campaigns) == 0:
-            print("No campaigns available.")
+            print(output.no_campaigns_available())
         else:
             for index, campaign in enumerate(self._campaign_manager.campaign_names()):
                 choice_count += 1
@@ -107,17 +107,18 @@ class UserMenu:
                 user_choice = int(input(f"Enter your choice (1-{1 + choice_count}):"))
                 if choice_count + 1 > user_choice > 0:
                     self._campaign_manager.set_current_campaign(user_choice - 1)
-                    print(f'--*{self._campaign_manager.current_campaign.name}*--')
-                    self.display_edit_campaign_menu()
+                    # print(f'--*{self._campaign_manager.current_campaign.name}*--')
+                    self.display_edit_campaign_menu(False)
+                    continue
                 elif user_choice == 1 + choice_count:
-                    self.display_editor_menu()
+                    # self.display_editor_menu()
                     break
                 else:
                     print("Invalid choice, please try again.")
             except ValueError:
                 print(output.invalid_choice_int_expected())
 
-    def display_edit_campaign_menu(self):
+    def display_edit_campaign_menu(self, from_campaign_creation):
         # @TODO implement all these campaign management options
         while True:
             print(output.campaign_editing_choices(self._campaign_manager.current_campaign.name))
@@ -133,12 +134,15 @@ class UserMenu:
                     print("Made a valid choice 1-6")
                 elif user_choice == 7:
                     self.delete_campaign(self._campaign_manager.current_campaign.name)
+                    if from_campaign_creation:
+                        self.display_edit_existing_campaigns_menu()
                     break
                 elif user_choice == 8:
                     pass
                 elif user_choice == 9:
                     self._campaign_manager.set_no_current_campaign()
-                    self.display_edit_existing_campaigns_menu()
+                    if from_campaign_creation:
+                        self.display_edit_existing_campaigns_menu()
                     break
                 else:
                     print(output.invalid_choice())
@@ -153,7 +157,7 @@ class UserMenu:
 
     def delete_campaign(self, campaign_name: str) -> None:
         try:
-            print(f"Deleted campaign: {campaign_name}")
+            print(output.delete_campaign(campaign_name))
             self._campaign_manager.delete_campaign()
         except OSError:
             print(output.delete_missing_config_file(campaign_name))

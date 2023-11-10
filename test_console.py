@@ -19,6 +19,7 @@ class TestStringMethods(unittest.TestCase):
                                          "Welcome to our text-based RPG maker!\n1. Editor mode\n2. Player mode\n"
                                          "3. Quit\n")
 
+
     @patch('builtins.input', side_effect=['1', 'no choice', '3', '3'])  # mock input order (edit, invalid, return, quit)
     def test_menu_editor_invalid_option(self, mock_input):
         with patch('sys.stdout', new_callable=StringIO) as mock_stdout:
