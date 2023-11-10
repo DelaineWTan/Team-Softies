@@ -12,8 +12,8 @@ class UserMenu:
         self._events_manager = EventsManager()
 
     def display_main_menu(self):
-        print(f'Welcome to our text-based RPG maker!')
         while True:
+            print(f'Welcome to our text-based RPG maker!')
             print("1. Editor mode")
             print("2. Player mode")
             print("3. Quit")
