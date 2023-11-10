@@ -32,6 +32,16 @@ class output_messages:
 
 
     @staticmethod
+    def no_campaigns_available():
+        return 'No campaigns available.'
+
+
+    @staticmethod
+    def delete_campaign(campaign_name: str):
+        return f'Deleted campaign: {campaign_name}'
+
+
+    @staticmethod
     def invalid_choice():
         return 'Invalid choice, please try again.'
     
