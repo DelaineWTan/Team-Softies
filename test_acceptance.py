@@ -81,7 +81,7 @@ class CombatEventTest(unittest.TestCase):
         pass
 
     @patch('builtins.input', side_effect=['2'])
-    def test_select_defend_option(self):
+    def test_select_defend_option(self, mock_input):
         # Test combat event: Selecting "Attack" option
         with patch('sys.stdout', new_callable=StringIO) as mock_stdout:
             self._menu.run_combat_event()
@@ -96,7 +96,7 @@ class CombatEventTest(unittest.TestCase):
         pass
 
     @patch('builtins.input', side_effect=['3'])
-    def test_select_item_option(self):
+    def test_select_item_option(self, mock_input):
         # Test combat event: Selecting "Attack" option
         with patch('sys.stdout', new_callable=StringIO) as mock_stdout:
             self._menu.run_combat_event()
@@ -110,7 +110,7 @@ class CombatEventTest(unittest.TestCase):
         pass
 
     @patch('builtins.input', side_effect=['4'])
-    def test_select_flee_option(self):
+    def test_select_flee_option(self, mock_input):
         # Test combat event: Selecting "Attack" option
         with patch('sys.stdout', new_callable=StringIO) as mock_stdout:
             self._menu.run_combat_event()
@@ -119,7 +119,7 @@ class CombatEventTest(unittest.TestCase):
         expected_output = ("You are fighting a Level 1 Goblin!\n"
                            "1. Attack\n2. Defend\n3. Use Item\n4. Flee\n"
                            # "Enter your choice (1-4):\n"
-                           "You fled successfully!\n")
+                           "You fled successfully!")
         self.assertEqual(printed_output, expected_output)
         pass
 
