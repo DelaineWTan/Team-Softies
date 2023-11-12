@@ -61,6 +61,20 @@ class CampaignManager:
     @property
     def current_campaign(self) -> Campaign:
         return self._current_campaign
+    
+    def edit_campaign_property(self, prop_name: str, new_prop_value) -> None:       
+        if hasattr(self._current_campaign, prop_name):
+            self._process_new_campaign_name(prop_name, new_prop_value)
+
+            setattr(self._current_campaign, prop_name, new_prop_value)
+        else:
+            print(f"Error: changing invalid campaign property...")
+
+    def _process_new_campaign_name(self, prop_name, new_prop_value):
+        if prop_name == 'name' and self._file_manager.is_valid_filename(new_prop_value):
+            self._current_campaign.previous_name = self._current_campaign.name
+        elif prop_name == 'name' and not self._file_manager.is_valid_filename(new_prop_value):
+            raise fb.ForbiddenFilenameCharsError
 
     def set_current_campaign(self, index: int) -> None:
         # edit to return bool if successful? Would be useful for making
@@ -81,7 +95,7 @@ class CampaignManager:
         self._current_campaign.previous_name = None
 
     def create_campaign(self, name: str) -> None:
-        if self._file_manager.validate_filename(name) is False:
+        if self._file_manager.is_valid_filename(name) is False:
             raise fb.ForbiddenFilenameCharsError
         campaign = Campaign(name)
         self._file_manager.create_config_file(campaign)
@@ -97,7 +111,7 @@ class CampaignManager:
         self._campaigns = self._file_manager.load_config_files()
 
     def rename_campaign(self, new_name) -> None:
-        if self._file_manager.validate_filename(new_name) is False:
+        if self._file_manager.is_valid_filename(new_name) is False:
             raise fb.ForbiddenFilenameCharsError
         self._current_campaign.previous_name = self._current_campaign.name
         self._current_campaign.name = new_name
@@ -134,7 +148,8 @@ class FileManager:
         try:
             file_name = f'{self._path}{campaign.name}{self._config_extension}'
             if campaign.previous_name:
-                os.rename(f'{self._path}{campaign.previous_name}{self._config_extension}', file_name)
+                os.rename(f'{self._path}{campaign.previous_name}{self._config_extension}',
+                           file_name)
             
             with open(file_name, 'wb') as file_object:
                 pickle.dump(campaign, file_object)
@@ -163,11 +178,10 @@ class FileManager:
         except OSError:
             raise OSError
 
-    def validate_filename(self, file_name) -> bool:
+    def is_valid_filename(self, file_name) -> bool:
         invalid_chars = fr'[{BAD_FILENAME_CHARS}]'
         if re.search(invalid_chars, file_name):
             return False
-
         return True
 
     @property

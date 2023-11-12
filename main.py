@@ -125,7 +125,7 @@ class UserMenu:
             try:
                 user_choice = int(input("Enter your choice (1-8):"))
                 if user_choice == 1:
-                    self.edit_campaign_name_menu()
+                    self._change_prop('name', 'Campaign Name')
                 elif user_choice == 2:
                     self.edit_events_menu()
                 elif user_choice == 4:
@@ -138,7 +138,7 @@ class UserMenu:
                         self.display_edit_existing_campaigns_menu()
                     break
                 elif user_choice == 8:
-                    pass
+                    self._campaign_manager.edit_campaign_property()
                 elif user_choice == 9:
                     self._campaign_manager.set_no_current_campaign()
                     if from_campaign_creation:
@@ -148,6 +148,8 @@ class UserMenu:
                     print(output.invalid_choice())
             except ValueError:
                 print(output.invalid_choice_int_expected())
+            except AttributeError:
+                print("caught attr error")
 
     def edit_campaign_description(self, desc: str) -> None:
         # print("Edit your description below:")
@@ -244,7 +246,6 @@ class UserMenu:
                 elif user_input.lower() == BACK_KEYWORD:
                     break
                 else:
-
                     self._campaign_manager.rename_campaign(user_input)
                     self._campaign_manager.save_campaign()
                     break
@@ -254,6 +255,21 @@ class UserMenu:
                 print(output.invalid_OS_filename(user_input))
             except fb.ForbiddenFilenameCharsError:
                 print(output.invalid_chars_campaign_name(user_input))
+
+    def _change_prop(self, prop_name, display_prop):
+        while True:
+            print(f"Current {display_prop}: {getattr(self._campaign_manager.current_campaign, 
+                                                     prop_name)}")
+            user_input = input(f'Enter new {display_prop}: ')
+
+            if len(user_input) == 0:
+                    print("Input cannot be empty, please try again.")
+            elif user_input.lower() == BACK_KEYWORD:
+                break
+            else:
+                self._campaign_manager.edit_campaign_property(prop_name, user_input)
+                self._campaign_manager.save_campaign() # can take out if saving too much
+                break
 
     # generic function to change any property in campaign
     def _change_campaign_property(self, campaign_obj, prop_name: str, current_prop: str, display_prop):
