@@ -78,6 +78,7 @@ class CampaignManager:
 
     def save_campaign(self) -> None:
         self._file_manager.save_config_file(self.current_campaign)
+        self._current_campaign.previous_name = None
 
     def create_campaign(self, name: str) -> None:
         if self._file_manager.validate_filename(name) is False:
@@ -131,16 +132,16 @@ class FileManager:
 
     def save_config_file(self, campaign: Campaign) -> None:
         try:
-            file_name = f'{self._path}{campaign.previous_name}{self._config_extension}'
+            file_name = f'{self._path}{campaign.name}{self._config_extension}'
+            if campaign.previous_name:
+                os.rename(f'{self._path}{campaign.previous_name}{self._config_extension}', file_name)
+            
             with open(file_name, 'wb') as file_object:
                 # dump(campaign.__dict__, file_object, indent=3, cls=ClassObjEncoder)
                 pickle.dump(campaign, file_object)
-
-            if campaign.name != file_object.name:
-                os.rename(file_name, f'{self._path}{campaign.name}{self._config_extension}')
             file_object.close()
-        except FileExistsError:
-            raise FileExistsError
+        # except FileExistsError:
+        #     raise FileExistsError
         except OSError:
             raise OSError
 
@@ -170,9 +171,9 @@ class FileManager:
 
                     # parsed_campaigns.append(Campaign(name, desc, events, playable_chars,
                     #                                  non_playable_chars, items))
+                    file_object.close()
             except decoder.JSONDecodeError:
                 print(f"WARNING: config file for campaign {campaign_name} is corrupted. Skipping...")
-        file_object.close()
         return parsed_campaigns
 
     def delete_config_file(self, file_name) -> None:
