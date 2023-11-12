@@ -106,6 +106,7 @@ class CampaignManager:
         self._current_campaign.short_desc = new_desc
 
 
+# May not need this anymore since we serialize/deserialize campaign object in/from file
 class ClassObjEncoder(JSONEncoder):
     def default(self, obj):
         if isinstance(obj, (Player, NPC, Item, DialogueEvent)):
@@ -122,7 +123,6 @@ class FileManager:
         try:
             file_name = f'{self._path}{campaign.name}{self._config_extension}'
             with open(file_name, 'xb') as file_object:
-                # dump(campaign.__dict__, file_object, indent=3, cls=ClassObjEncoder)
                 pickle.dump(campaign, file_object)
             file_object.close()
         except FileExistsError:
@@ -137,11 +137,8 @@ class FileManager:
                 os.rename(f'{self._path}{campaign.previous_name}{self._config_extension}', file_name)
             
             with open(file_name, 'wb') as file_object:
-                # dump(campaign.__dict__, file_object, indent=3, cls=ClassObjEncoder)
                 pickle.dump(campaign, file_object)
             file_object.close()
-        # except FileExistsError:
-        #     raise FileExistsError
         except OSError:
             raise OSError
 
@@ -152,25 +149,8 @@ class FileManager:
         for index, campaign_name in enumerate(campaign_files):
             try:
                 with open(f'{self._path}{campaign_name}', 'rb') as file_object:
-                    # json_data = load(json_file)
                     campaign = pickle.load(file_object)
                     parsed_campaigns.append(campaign)
-
-                    # name = json_data['_name']
-                    # desc = json_data['_short_desc']
-                    # # events = json_data['_events']
-                    # # this should work, but haven't tested it yet
-                    # # @TODO: make it work with CombatEvents as well
-                    # events = [(key, DialogueEvent(value['_event_id'], value['_description'], value['_choices'])) for
-                    #           key, value in json_data['_events'].items()]
-                    # events = dict(events)
-                    # # @TODO properly extract properties of character dicts for players and npcs
-                    # playable_chars = [Player(player["name"]) for player in json_data['_player_list']]
-                    # non_playable_chars = [NPC(npc["name"]) for npc in json_data['_npc_list']]
-                    # items = json_data['_items_list']
-
-                    # parsed_campaigns.append(Campaign(name, desc, events, playable_chars,
-                    #                                  non_playable_chars, items))
                     file_object.close()
             except decoder.JSONDecodeError:
                 print(f"WARNING: config file for campaign {campaign_name} is corrupted. Skipping...")
