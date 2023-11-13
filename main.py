@@ -138,7 +138,7 @@ class UserMenu:
                         self.display_edit_existing_campaigns_menu()
                     break
                 elif user_choice == 8:
-                    self._campaign_manager.edit_campaign_property()
+                    self._change_prop('short_desc', 'Campaign Description')
                 elif user_choice == 9:
                     self._campaign_manager.set_no_current_campaign()
                     if from_campaign_creation:
@@ -150,12 +150,6 @@ class UserMenu:
                 print(output.invalid_choice_int_expected())
             except AttributeError:
                 print("caught attr error")
-
-    def edit_campaign_description(self, desc: str) -> None:
-        # print("Edit your description below:")
-        # ask for input
-        # insert current desc on input field
-        pass
 
     def delete_campaign(self, campaign_name: str) -> None:
         try:
@@ -258,8 +252,8 @@ class UserMenu:
 
     def _change_prop(self, prop_name, display_prop):
         while True:
-            print(f"Current {display_prop}: {getattr(self._campaign_manager.current_campaign, 
-                                                     prop_name)}")
+            print(f"Current {display_prop}: " +
+                  f"{getattr(self._campaign_manager.current_campaign, prop_name)}")
             user_input = input(f'Enter new {display_prop}: ')
 
             if len(user_input) == 0:
