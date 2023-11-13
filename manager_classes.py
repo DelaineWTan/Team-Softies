@@ -62,23 +62,21 @@ class CampaignManager:
     def current_campaign(self) -> Campaign:
         return self._current_campaign
     
-    def edit_campaign_property(self, prop_name: str, new_prop_value) -> None:       
-        if hasattr(self._current_campaign, prop_name):
+    def edit_campaign_property(self, campaign_prop, prop_name: str, new_prop_value) -> None:       
+        if hasattr(campaign_prop, prop_name):
             self._process_new_campaign_name(prop_name, new_prop_value)
 
-            setattr(self._current_campaign, prop_name, new_prop_value)
+            setattr(campaign_prop, prop_name, new_prop_value)
         else:
             print(f"Error: changing invalid campaign property...")
 
-    def _process_new_campaign_name(self, prop_name, new_prop_value):
+    def _process_new_campaign_name(self, prop_name: str, new_prop_value) -> None:
         if prop_name == 'name' and self._file_manager.is_valid_filename(new_prop_value):
             self._current_campaign.previous_name = self._current_campaign.name
         elif prop_name == 'name' and not self._file_manager.is_valid_filename(new_prop_value):
             raise fb.ForbiddenFilenameCharsError
 
     def set_current_campaign(self, index: int) -> None:
-        # edit to return bool if successful? Would be useful for making
-        # custom exceptions
         self._current_campaign = self._campaigns[index]
 
     def set_no_current_campaign(self) -> None:
@@ -110,14 +108,14 @@ class CampaignManager:
     def load_campaigns(self) -> None:
         self._campaigns = self._file_manager.load_config_files()
 
-    def rename_campaign(self, new_name) -> None:
-        if self._file_manager.is_valid_filename(new_name) is False:
-            raise fb.ForbiddenFilenameCharsError
-        self._current_campaign.previous_name = self._current_campaign.name
-        self._current_campaign.name = new_name
+    # def rename_campaign(self, new_name) -> None:
+    #     if self._file_manager.is_valid_filename(new_name) is False:
+    #         raise fb.ForbiddenFilenameCharsError
+    #     self._current_campaign.previous_name = self._current_campaign.name
+    #     self._current_campaign.name = new_name
 
-    def edit_description(self, new_desc: str):
-        self._current_campaign.short_desc = new_desc
+    # def edit_description(self, new_desc: str):
+    #     self._current_campaign.short_desc = new_desc
 
 
 # May not need this anymore since we serialize/deserialize campaign object in/from file

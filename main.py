@@ -125,7 +125,7 @@ class UserMenu:
             try:
                 user_choice = int(input("Enter your choice (1-8):"))
                 if user_choice == 1:
-                    self._change_prop('name', 'Campaign Name')
+                    self._change_campaign_property_menu(self._campaign_manager.current_campaign, 'name', 'Campaign Name')
                 elif user_choice == 2:
                     self.edit_events_menu()
                 elif user_choice == 4:
@@ -138,7 +138,7 @@ class UserMenu:
                         self.display_edit_existing_campaigns_menu()
                     break
                 elif user_choice == 8:
-                    self._change_prop('short_desc', 'Campaign Description')
+                    self._change_campaign_property_menu(self._campaign_manager.current_campaign, 'short_desc', 'Campaign Description')
                 elif user_choice == 9:
                     self._campaign_manager.set_no_current_campaign()
                     if from_campaign_creation:
@@ -231,48 +231,45 @@ class UserMenu:
 
     # Edit events stuff end =================================
 
-    def edit_campaign_name_menu(self):
-        while True:
+    # def edit_campaign_name_menu(self):
+    #     while True:
+    #         try:
+    #             user_input = input(output.campaign_name_prompt()).strip()
+    #             if len(user_input) == 0:
+    #                 print("Name cannot be empty, please try again.")
+    #             elif user_input.lower() == BACK_KEYWORD:
+    #                 break
+    #             else:
+    #                 self._campaign_manager.rename_campaign(user_input)
+    #                 self._campaign_manager.save_campaign()
+    #                 break
+    #         except ValueError:
+    #             print("Name cannot be empty, please try again.")
+    #         except OSError:
+    #             print(output.invalid_OS_filename(user_input))
+    #         except fb.ForbiddenFilenameCharsError:
+    #             print(output.invalid_chars_campaign_name(user_input))
+                
+
+    # generic function to change any property in campaign
+    def _change_campaign_property_menu(self, campaign_prop, prop_name: str, display_prop: str) -> None:
+        while True: 
             try:
-                user_input = input(output.campaign_name_prompt()).strip()
+                print(f"Current {display_prop}: {getattr(campaign_prop, prop_name)}")
+                user_input = input(f'Enter new {display_prop}: ')
+
                 if len(user_input) == 0:
-                    print("Name cannot be empty, please try again.")
+                        print("Input cannot be empty, please try again.")
                 elif user_input.lower() == BACK_KEYWORD:
                     break
                 else:
-                    self._campaign_manager.rename_campaign(user_input)
-                    self._campaign_manager.save_campaign()
+                    self._campaign_manager.edit_campaign_property(campaign_prop, prop_name, user_input)
+                    self._campaign_manager.save_campaign() # can take out if saving too much
                     break
-            except ValueError:
-                print("Name cannot be empty, please try again.")
             except OSError:
                 print(output.invalid_OS_filename(user_input))
             except fb.ForbiddenFilenameCharsError:
                 print(output.invalid_chars_campaign_name(user_input))
-
-    def _change_prop(self, prop_name, display_prop):
-        while True:
-            print(f"Current {display_prop}: " +
-                  f"{getattr(self._campaign_manager.current_campaign, prop_name)}")
-            user_input = input(f'Enter new {display_prop}: ')
-
-            if len(user_input) == 0:
-                    print("Input cannot be empty, please try again.")
-            elif user_input.lower() == BACK_KEYWORD:
-                break
-            else:
-                self._campaign_manager.edit_campaign_property(prop_name, user_input)
-                self._campaign_manager.save_campaign() # can take out if saving too much
-                break
-
-    # generic function to change any property in campaign
-    def _change_campaign_property(self, campaign_obj, prop_name: str, current_prop: str, display_prop):
-        print(f"Current {display_prop}: {current_prop}")
-        new_property = input(f"Enter new {display_prop}: ")
-        if hasattr(campaign_obj, prop_name):
-            setattr(campaign_obj, prop_name, new_property)
-        else:
-            print(f"Error: changing invalid campaign property...")
 
     def display_player_menu(self):
         while True:
@@ -325,58 +322,44 @@ class UserMenu:
 
             user_choice = int(input("Enter your choice (1-12):"))
             if user_choice == 1:
-                self._change_campaign_property(self._campaign_manager.current_campaign.player_list[player_index]
-                                               , "name",
-                                               self._campaign_manager.current_campaign.player_list[player_index].name
-                                               , "name")
-                # self._campaign_manager.current_campaign.player_list[player_index].name = new_name
+                self._change_campaign_property_menu(self._campaign_manager.current_campaign.player_list[player_index], 
+                                                    'name', 'name')
                 continue
             if user_choice == 2:
-                self._change_campaign_property(self._campaign_manager.current_campaign.player_list[player_index]
-                                          , "description",
-                                          self._campaign_manager.current_campaign.player_list[player_index].description
-                                          , "description")
+                self._change_campaign_property_menu(self._campaign_manager.current_campaign.player_list[player_index], 
+                                  'description', 'description')
                 continue
             if user_choice == 3:
-                self._change_campaign_property(self._campaign_manager.current_campaign.player_list[player_index], "base_hp",
-                                          self._campaign_manager.current_campaign.player_list[player_index].base_hp
-                                          , "base hit points")
+                self._change_campaign_property_menu(self._campaign_manager.current_campaign.player_list[player_index], 
+                                  'base_hp', 'base hit points')
                 continue
             if user_choice == 4:
-                self._change_campaign_property(self._campaign_manager.current_campaign.player_list[player_index], "base_atk",
-                                          self._campaign_manager.current_campaign.player_list[player_index].base_atk
-                                          , "base attack")
+                self._change_campaign_property_menu(self._campaign_manager.current_campaign.player_list[player_index], 
+                                  'base_atk', 'base attack')
                 continue
             if user_choice == 5:
-                self._change_campaign_property(self._campaign_manager.current_campaign.player_list[player_index], "base_spd",
-                                          self._campaign_manager.current_campaign.player_list[player_index].base_spd
-                                          , "base speed")
+                self._change_campaign_property_menu(self._campaign_manager.current_campaign.player_list[player_index], 
+                                  'base_spd', 'base speed')
                 continue
             if user_choice == 6:
-                self._change_campaign_property(self._campaign_manager.current_campaign.player_list[player_index]
-                                          , "exp_per_lvl_up",
-                                          self._campaign_manager.current_campaign.player_list[player_index].exp_per_lvl_up
-                                          , "level up experience")
+                self._change_campaign_property_menu(self._campaign_manager.current_campaign.player_list[player_index], 
+                                  'exp_per_lvl_up', 'level up experience')
                 continue
             if user_choice == 7:
-                self._change_campaign_property(self._campaign_manager.current_campaign.player_list[player_index], "max_lvl",
-                                          self._campaign_manager.current_campaign.player_list[player_index].max_lvl
-                                          , "max level")
+                self._change_campaign_property_menu(self._campaign_manager.current_campaign.player_list[player_index], 
+                                  'max_lvl', 'max level')
                 continue
             if user_choice == 8:
-                self._change_campaign_property(self._campaign_manager.current_campaign.player_list[player_index], "hp_mod",
-                                          self._campaign_manager.current_campaign.player_list[player_index].hp_mod
-                                          , "hit point gain per level")
+                self._change_campaign_property_menu(self._campaign_manager.current_campaign.player_list[player_index], 
+                                  'hp_mod', 'hit point gain per level')
                 continue
             if user_choice == 9:
-                self._change_campaign_property(self._campaign_manager.current_campaign.player_list[player_index], "atk_mod",
-                                          self._campaign_manager.current_campaign.player_list[player_index].atk_mod
-                                          , "attack gain per level")
+                self._change_campaign_property_menu(self._campaign_manager.current_campaign.player_list[player_index], 
+                                  'atk_mod', 'attack gain per level')
                 continue
             if user_choice == 10:
-                self._change_campaign_property(self._campaign_manager.current_campaign.player_list[player_index], "spd_mod",
-                                          self._campaign_manager.current_campaign.player_list[player_index].spd_mod
-                                          , "speed gain per level")
+                self._change_campaign_property_menu(self._campaign_manager.current_campaign.player_list[player_index], 
+                                  'spd_mod', 'speed gain per level')
                 continue
             if user_choice == 12:
                 break
