@@ -46,6 +46,9 @@ class EventsManager:
             is_successful = False
         return is_successful
 
+    def link_event(self, event_id_1, event_id_2):
+        self._events_tree[event_id_1].choices.append(event_id_2)
+
 
 class CampaignManager:
     def __init__(self) -> None:

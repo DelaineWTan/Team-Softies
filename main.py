@@ -164,12 +164,15 @@ class UserMenu:
 
     # Edit events stuff start -Jun ==========================
     def edit_events_menu(self):
+        # @TODO: potentially have a case where when it breaks, it still saves the
+        #   events so that the files don't get corrupted. Same should go for campaigns,
+        #   if it's not implemented yet.
         self._events_manager.events_tree = self._campaign_manager.current_campaign.events
         user_choice = None
         while user_choice != 4:
             # @TODO: print tree structure here
             print("printing event tree here...")
-            # print(self._events_manager.events_tree)
+            print(self._events_manager.events_tree)
             for event in self._events_manager.events_tree.values():
                 print(f"|| Event ID: {event.event_id} -> choices: {event.choices}")
             print("1. Create new event\n"
@@ -185,6 +188,8 @@ class UserMenu:
                 self.display_new_event_menu()
             elif user_choice == 2:
                 self.display_edit_existing_events_menu()
+            elif user_choice == 3:
+                self.display_link_event_menu()
             elif user_choice == 4:
                 self._campaign_manager.current_campaign.events = self._events_manager.events_tree
                 self._campaign_manager.save_campaign()
@@ -200,12 +205,20 @@ class UserMenu:
         self._campaign_manager.current_campaign.events = self._events_manager.events_tree
         self._campaign_manager.save_campaign()
 
+    def display_link_event_menu(self):
+        print("Linking events...")
+        input1 = int(input("Enter first event id: "))
+        input2 = int(input("Enter second event id: "))
+        self._events_manager.link_event(input1, input2)
+        self._campaign_manager.current_campaign.events = self._events_manager.events_tree
+        self._campaign_manager.save_campaign()
+
     # honestly could be done so much better...
     def display_edit_existing_events_menu(self):
         # @TODO: exception handling
         # @TODO: use choice_name/choice_description
         while True:
-            print(self._events_manager.events_tree)
+            # print(self._events_manager.events_tree)
             event_id = input("Enter event you'd like to edit: ")
             if event_id not in self._events_manager.events_tree:
                 print(f"Event {event_id} not found")
