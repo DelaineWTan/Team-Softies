@@ -92,15 +92,20 @@ class CampaignFactory:
         CampaignFactory.campaigns = ConfigFileFactory.load_config_files()
 
     @staticmethod
-    def rename_campaign(new_name) -> None:
-        if ConfigFileFactory.validate_filename(new_name) is False:
-            raise fb.ForbiddenFilenameCharsError
-        CampaignFactory.current_campaign.previous_name = CampaignFactory.current_campaign.name
-        CampaignFactory.current_campaign.name = new_name
+    def edit_campaign_property(campaign_prop, prop_name: str, new_prop_value) -> None:       
+        if hasattr(campaign_prop, prop_name):
+            CampaignFactory._process_new_campaign_name(prop_name, new_prop_value)
+
+            setattr(campaign_prop, prop_name, new_prop_value)
+        else:
+            print(f"Error: changing invalid campaign property...")
 
     @staticmethod
-    def edit_description(new_desc: str):
-        CampaignFactory.current_campaign.short_desc = new_desc
+    def _process_new_campaign_name(prop_name: str, new_prop_value) -> None:
+        if prop_name == 'name' and ConfigFileFactory.validate_filename(new_prop_value):
+            CampaignFactory.current_campaign.previous_name = CampaignFactory.current_campaign.name
+        elif prop_name == 'name' and not ConfigFileFactory.validate_filename(new_prop_value):
+            raise fb.ForbiddenFilenameCharsError
 
 
 class ConfigFileFactory:
