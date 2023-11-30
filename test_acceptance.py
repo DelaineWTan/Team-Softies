@@ -6,7 +6,7 @@ import inspect
 # Project Module Imports
 from main import UserMenu
 from output_messages import output_messages as output
-from manager_classes import FileManager
+from factory_classes import FileManager
 from object_classes import Campaign
 import os
 
