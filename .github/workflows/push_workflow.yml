@@ -15,7 +15,7 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install pylint radon
+        pip install pylint pytest radon coverage
     - name: Analysing the code with pylint
       run: |
         pylint $(git ls-files '*.py') --fail-under=5.0
@@ -24,4 +24,12 @@ jobs:
         radon cc -a ./
     - name: Acceptance Tests using unittest
       run: |
-        python ./test_acceptance.py
+        python ./tests/test_acceptance.py
+    - name: Acceptance Tests using unittest
+      run: |
+        python ./tests/test_acceptance.py
+    - name: Coverage Report
+      run: |
+        coverage run -m pytest ./tests/test_acceptance.py 
+        coverage report -m        
+
