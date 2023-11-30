@@ -109,8 +109,8 @@ class CampaignManager:
     def edit_description(self, new_desc: str):
         self._current_campaign.short_desc = new_desc
 
-    def start_campaign(self):
-        
+    # def start_campaign(self):
+
 
 
 class ClassObjEncoder(JSONEncoder):

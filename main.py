@@ -395,7 +395,7 @@ class UserMenu:
                     # print(f'--*{self._campaign_manager.current_campaign.name}*--')
                     # self.display_edit_campaign_menu(False)
                     print(f"Playing {self._campaign_manager.current_campaign.name} Campaign")
-                    self._campaign_manager.start_campaign()
+                    # self._campaign_manager.start_campaign()
                     continue
                 elif user_choice == 1 + choice_count:
                     # self.display_editor_menu()
