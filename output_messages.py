@@ -1,4 +1,4 @@
-from manager_classes import BAD_FILENAME_CHARS
+from factory_classes import BAD_FILENAME_CHARS
 
 
 
