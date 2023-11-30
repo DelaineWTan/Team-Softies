@@ -425,6 +425,7 @@ class UserMenu:
             print("4. Flee")
             user_choice = int(input(f"Enter your choice (1-4):"))
             if user_choice == 1:
+                # @TODO max hp and current hp are still using default values
                 if player.base_spd >= enemy.base_spd:
                     print(f"You attack first!")
                     self.combat_attack(player, enemy)
