@@ -71,7 +71,7 @@ class EditorMenuTest(unittest.TestCase):
         # Code to set up resources before all tests in this class
         cls._menu = UserMenu()
         cls._file_name = "unittest.bin"
-        cls._configs_path = "../game_configs"
+        cls._configs_path = "game_configs"
         cls._file_manager = ConfigFileFactory()
         cls._campaign = Campaign("unittest")
 
