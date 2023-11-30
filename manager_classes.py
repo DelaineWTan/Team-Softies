@@ -115,10 +115,12 @@ class CampaignManager:
         self._current_campaign.short_desc = new_desc
 
     def start_campaign(self):
-        # get initial event, event 0,
-        #
+        # get initial event, event 0
+        # print event 0
+        # print event 0 choices
+        # print chosen event
+        # repeat till end
         init_event = self._current_campaign.events["0"]
-
 
 
 class ClassObjEncoder(JSONEncoder):
