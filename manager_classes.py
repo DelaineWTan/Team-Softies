@@ -3,6 +3,7 @@ from json import dump, load, JSONEncoder, decoder
 from object_classes import Campaign, Player, NPC, Item, DialogueEvent
 import re
 from CustomExceptions import forbidden_filename_chars_error as fb
+import pickle
 
 
 BAD_FILENAME_CHARS = r'/\\<>:\"|?*'
@@ -75,8 +76,9 @@ class CampaignManager:
     def campaign_names(self) -> list:
         return [campaign.name for campaign in self._campaigns]
 
-    def save_campaign(self):
+    def save_campaign(self) -> None:
         self._file_manager.save_config_file(self.current_campaign)
+        self._current_campaign.previous_name = None
 
     def create_campaign(self, name: str) -> None:
         if self._file_manager.validate_filename(name) is False:
@@ -104,6 +106,7 @@ class CampaignManager:
         self._current_campaign.short_desc = new_desc
 
 
+# May not need this anymore since we serialize/deserialize campaign object in/from file
 class ClassObjEncoder(JSONEncoder):
     def default(self, obj):
         if isinstance(obj, (Player, NPC, Item, DialogueEvent)):
@@ -114,12 +117,14 @@ class ClassObjEncoder(JSONEncoder):
 class FileManager:
     def __init__(self):
         self._path = 'game_configs/'
+        self._config_extension = '.bin'
 
     def create_config_file(self, campaign: Campaign) -> None:
         try:
-            file_name = f'{self._path}{campaign.name}.json'
-            with open(file_name, 'x') as file_object:
-                dump(campaign.__dict__, file_object, indent=3, cls=ClassObjEncoder)
+            file_name = f'{self._path}{campaign.name}{self._config_extension}'
+            with open(file_name, 'xb') as file_object:
+                pickle.dump(campaign, file_object)
+            file_object.close()
         except FileExistsError:
             raise FileExistsError
         except OSError:
@@ -127,48 +132,33 @@ class FileManager:
 
     def save_config_file(self, campaign: Campaign) -> None:
         try:
-            file_name = f'{self._path}{campaign.previous_name}.json'
-            with open(file_name, 'w') as file_object:
-                dump(campaign.__dict__, file_object, indent=3, cls=ClassObjEncoder)
-
-            if campaign.name != file_object.name:
-                os.rename(file_name, f'{self._path}{campaign.name}.json')
-        except FileExistsError:
-            raise FileExistsError
+            file_name = f'{self._path}{campaign.name}{self._config_extension}'
+            if campaign.previous_name:
+                os.rename(f'{self._path}{campaign.previous_name}{self._config_extension}', file_name)
+            
+            with open(file_name, 'wb') as file_object:
+                pickle.dump(campaign, file_object)
+            file_object.close()
         except OSError:
             raise OSError
 
-    def load_config_files(self):
-        campaign_files = [x for x in os.listdir(self._path) if x.endswith('.json')]
+    def load_config_files(self) -> list:
+        campaign_files = [x for x in os.listdir(self._path) if x.endswith(self._config_extension)]
         parsed_campaigns = list()
 
         for index, campaign_name in enumerate(campaign_files):
             try:
-                with open(f'{self._path}{campaign_name}', 'r') as json_file:
-                    json_data = load(json_file)
-
-                    name = json_data['_name']
-                    desc = json_data['_short_desc']
-                    # events = json_data['_events']
-                    # this should work, but haven't tested it yet
-                    # @TODO: make it work with CombatEvents as well
-                    events = [(key, DialogueEvent(value['_event_id'], value['_description'], value['_choices'])) for
-                              key, value in json_data['_events'].items()]
-                    events = dict(events)
-                    # @TODO properly extract properties of character dicts for players and npcs
-                    playable_chars = [Player(player["name"]) for player in json_data['_player_list']]
-                    non_playable_chars = [NPC(npc["name"]) for npc in json_data['_npc_list']]
-                    items = json_data['_items_list']
-
-                    parsed_campaigns.append(Campaign(name, desc, events, playable_chars,
-                                                     non_playable_chars, items))
+                with open(f'{self._path}{campaign_name}', 'rb') as file_object:
+                    campaign = pickle.load(file_object)
+                    parsed_campaigns.append(campaign)
+                    file_object.close()
             except decoder.JSONDecodeError:
                 print(f"WARNING: config file for campaign {campaign_name} is corrupted. Skipping...")
         return parsed_campaigns
 
-    def delete_config_file(self, file_name):
+    def delete_config_file(self, file_name) -> None:
         try:
-            file_path = f'{self._path}{file_name}.json'
+            file_path = f'{self._path}{file_name}{self._config_extension}'
             os.remove(file_path)
         except OSError:
             raise OSError

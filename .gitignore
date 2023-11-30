@@ -239,3 +239,4 @@ fabric.properties
 
 # Game configs
 game_configs/*.json
+game_configs/*.bin
