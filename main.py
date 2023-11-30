@@ -125,7 +125,7 @@ class UserMenu:
             try:
                 user_choice = int(input("Enter your choice (1-8):"))
                 if user_choice == 1:
-                    self._change_campaign_property_menu(self._campaign_manager.current_campaign, 'name', 'Campaign Name')
+                    self._change_campaign_property_menu(self._campaign_factory.current_campaign, 'name', 'Campaign Name')
                 elif user_choice == 2:
                     self.edit_events_menu()
                 elif user_choice == 4:
@@ -138,7 +138,7 @@ class UserMenu:
                         self.display_edit_existing_campaigns_menu()
                     break
                 elif user_choice == 8:
-                    self._change_campaign_property_menu(self._campaign_manager.current_campaign, 'short_desc', 'Campaign Description')
+                    self._change_campaign_property_menu(self._campaign_factory.current_campaign, 'short_desc', 'Campaign Description')
                 elif user_choice == 9:
                     self._campaign_factory.set_no_current_campaign()
                     if from_campaign_creation:
@@ -275,7 +275,7 @@ class UserMenu:
                     break
                 else:
 
-                    self._campaign_factory.rename_campaign(user_input)
+                    self._campaign_factory.edit_campaign_property(campaign_prop, prop_name, user_input)
                     self._campaign_factory.save_campaign()
                     break
             except OSError:
