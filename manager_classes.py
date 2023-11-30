@@ -21,12 +21,12 @@ class EventsManager:
     def events_tree(self, events_tree):
         self._events_tree = events_tree
 
-    def create_event(self, description):
+    def create_event(self, description, dialogue):
         new_event_id = 0
         while str(new_event_id) in self._events_tree:
             new_event_id += 1
         new_event_id = str(new_event_id)
-        created_event = DialogueEvent(new_event_id, description)
+        created_event = DialogueEvent(new_event_id, description, dialogue)
         self._events_tree[new_event_id] = created_event
 
     def edit_event(self, event_id, to_edit, new_value):
@@ -34,10 +34,13 @@ class EventsManager:
             return False
         if to_edit == "description":
             self._events_tree[event_id].description = new_value
+        if to_edit == "dialogue":
+            self._events_tree[event_id].dialogue = new_value
         else:
             return False
 
         return True
+        # self._events_tree[event_id][to_edit] = new_value
 
     def delete_event(self, event_id):
         is_successful = True
@@ -46,6 +49,9 @@ class EventsManager:
         except KeyError:
             is_successful = False
         return is_successful
+
+    def link_event(self, event_id_1, event_id_2):
+        self._events_tree[event_id_1].choices.append(event_id_2)
 
 
 class CampaignManager:
@@ -104,6 +110,9 @@ class CampaignManager:
 
     def edit_description(self, new_desc: str):
         self._current_campaign.short_desc = new_desc
+
+    # def start_campaign(self):
+
 
 
 # May not need this anymore since we serialize/deserialize campaign object in/from file
