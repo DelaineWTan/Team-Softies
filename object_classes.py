@@ -145,7 +145,7 @@ class Campaign:
     def __init__(self, name, short_desc="", events={}, player_list=[Player("Anon")],
                  npc_list=[], items_list=[]):
         self._name = name
-        self._previous_name = name
+        self._previous_name = None
         self._short_desc = short_desc
         self._events = events
         # @TODO do we want to have potentially more than 1 character per campaign?
