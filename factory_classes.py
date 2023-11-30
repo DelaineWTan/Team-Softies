@@ -107,17 +107,6 @@ class CampaignFactory:
         elif prop_name == 'name' and not ConfigFileFactory.validate_filename(new_prop_value):
             raise fb.ForbiddenFilenameCharsError
 
-    @staticmethod
-    def rename_campaign(new_name) -> None:
-        if ConfigFileFactory.validate_filename(new_name) is False:
-            raise fb.ForbiddenFilenameCharsError
-        CampaignFactory.current_campaign.previous_name = CampaignFactory.current_campaign.name
-        CampaignFactory.current_campaign.name = new_name
-
-    @staticmethod
-    def edit_description(new_desc: str):
-        CampaignFactory.current_campaign.short_desc = new_desc
-
 
 class ConfigFileFactory:
     _path = 'game_configs/'
