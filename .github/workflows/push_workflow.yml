@@ -24,4 +24,4 @@ jobs:
         radon cc -a ./
     - name: Acceptance Tests using unittest
       run: |
-        python ./test_acceptance.py
+        python ./tests/test_acceptance.py

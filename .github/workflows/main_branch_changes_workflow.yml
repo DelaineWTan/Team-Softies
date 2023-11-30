@@ -36,4 +36,4 @@ jobs:
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
     - name: Test with pytest using test_release.py
       run: |
-        pytest ./test_release.py
+        pytest ./tests/test_release.py
