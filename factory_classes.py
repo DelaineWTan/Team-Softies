@@ -69,31 +69,31 @@ class CampaignFactory:
 
     @staticmethod
     def save_campaign() -> None:
-        FileManager.save_config_file(CampaignFactory.current_campaign)
+        ConfigFileFactory.save_config_file(CampaignFactory.current_campaign)
         CampaignFactory.current_campaign.previous_name = None
 
     @staticmethod
     def create_campaign(name: str) -> None:
-        if FileManager.validate_filename(name) is False:
+        if ConfigFileFactory.validate_filename(name) is False:
             raise fb.ForbiddenFilenameCharsError
         campaign = Campaign(name)
-        FileManager.create_config_file(campaign)
+        ConfigFileFactory.create_config_file(campaign)
         CampaignFactory.add_campaign(campaign)
 
     @staticmethod
     def delete_campaign() -> None:
         campaign_name = CampaignFactory.current_campaign.name
-        FileManager.delete_config_file(campaign_name)
+        ConfigFileFactory.delete_config_file(campaign_name)
         CampaignFactory.campaigns.remove(CampaignFactory.current_campaign)
         CampaignFactory.set_no_current_campaign()
 
     @staticmethod
     def load_campaigns() -> None:
-        CampaignFactory.campaigns = FileManager.load_config_files()
+        CampaignFactory.campaigns = ConfigFileFactory.load_config_files()
 
     @staticmethod
     def rename_campaign(new_name) -> None:
-        if FileManager.validate_filename(new_name) is False:
+        if ConfigFileFactory.validate_filename(new_name) is False:
             raise fb.ForbiddenFilenameCharsError
         CampaignFactory.current_campaign.previous_name = CampaignFactory.current_campaign.name
         CampaignFactory.current_campaign.name = new_name
@@ -103,14 +103,14 @@ class CampaignFactory:
         CampaignFactory.current_campaign.short_desc = new_desc
 
 
-class FileManager:
+class ConfigFileFactory:
     _path = 'game_configs/'
     _config_extension = '.bin'
 
     @staticmethod
     def create_config_file(campaign: Campaign) -> None:
         try:
-            file_name = f'{FileManager._path}{campaign.name}{FileManager._config_extension}'
+            file_name = f'{ConfigFileFactory._path}{campaign.name}{ConfigFileFactory._config_extension}'
             with open(file_name, 'xb') as file_object:
                 pickle.dump(campaign, file_object)
             file_object.close()
@@ -122,9 +122,9 @@ class FileManager:
     @staticmethod
     def save_config_file(campaign: Campaign) -> None:
         try:
-            file_name = f'{FileManager._path}{campaign.name}{FileManager._config_extension}'
+            file_name = f'{ConfigFileFactory._path}{campaign.name}{ConfigFileFactory._config_extension}'
             if campaign.previous_name:
-                os.rename(f'{FileManager._path}{campaign.previous_name}{FileManager._config_extension}', file_name)
+                os.rename(f'{ConfigFileFactory._path}{campaign.previous_name}{ConfigFileFactory._config_extension}', file_name)
 
             with open(file_name, 'wb') as file_object:
                 pickle.dump(campaign, file_object)
@@ -134,12 +134,12 @@ class FileManager:
 
     @staticmethod
     def load_config_files() -> list:
-        campaign_files = [x for x in os.listdir(FileManager._path) if x.endswith(FileManager._config_extension)]
+        campaign_files = [x for x in os.listdir(ConfigFileFactory._path) if x.endswith(ConfigFileFactory._config_extension)]
         parsed_campaigns = list()
 
         for index, campaign_name in enumerate(campaign_files):
             try:
-                with open(f'{FileManager._path}{campaign_name}', 'rb') as file_object:
+                with open(f'{ConfigFileFactory._path}{campaign_name}', 'rb') as file_object:
                     campaign = pickle.load(file_object)
                     parsed_campaigns.append(campaign)
                     file_object.close()
@@ -150,7 +150,7 @@ class FileManager:
     @staticmethod
     def delete_config_file(file_name) -> None:
         try:
-            file_path = f'{FileManager._path}{file_name}{FileManager._config_extension}'
+            file_path = f'{ConfigFileFactory._path}{file_name}{ConfigFileFactory._config_extension}'
             os.remove(file_path)
         except OSError:
             raise OSError
@@ -165,8 +165,8 @@ class FileManager:
 
     @property
     def path(self):
-        return FileManager._path
+        return ConfigFileFactory._path
 
     @path.setter
     def path(self, path):
-        FileManager._path = path
+        ConfigFileFactory._path = path
