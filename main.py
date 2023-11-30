@@ -1,6 +1,7 @@
 from manager_classes import *
 from object_classes import *
 from output_messages import output_messages as output
+import random
 
 
 BACK_KEYWORD = 'back'
@@ -379,16 +380,16 @@ class UserMenu:
             user_choice = int(input(f"Enter your choice (1-{1 + choice_count}):"))
             if choice_count + 1 > user_choice > 0:
                 # @TODO: change to use CampaignManager
-                self.start_campaign(campaign_list[user_choice - 1])
+                self.start_campaign(self._campaign_manager.campaigns[user_choice - 1])
             elif user_choice == 1 + choice_count:
                 self.display_player_menu()
                 break
             else:
                 print("Invalid choice, please try again.")
 
-    def start_campaign(self):
+    def start_campaign(self, campaign: Campaign):
         # @TODO properly extract campaign data to start campaign event sequence
-        self.run_combat_event()
+        self.run_combat_event(campaign.player_list[0], campaign.npc_list[0])
         self.run_choice_event()
         # game ended, return to main menu
         self.run_last_choice_event()
@@ -396,23 +397,61 @@ class UserMenu:
         print("########################################################################")
         self.display_main_menu()
 
-    # @TODO Fake combat event
-    def run_combat_event(self):
-        enemy_name = "Level 1 Goblin"
+    def combat_attack(self, attacker: Character, defender: Character):
+        hit_mod = random.random()
+
+        if hit_mod <= 0.1:
+            print("A critical Hit!")
+            hit_mod = 1.2
+        else:
+            hit_mod = 1
+
+        damage = attacker.base_atk * hit_mod
+        print(f"{attacker.name} attacked {defender.name} for {damage} damage!")
+        defender.current_hp -= damage
+
+
+    def run_combat_event(self, player: Player, enemy:NPC) -> Player:
+        print(f"You engaged combat with {enemy.name}!")
+        print(player.ascii_art)
+        print(enemy.ascii_art)
         while True:
-            print(f"You are fighting a {enemy_name}!")
+            print(f"You are fighting {enemy.name}!")
+            print(f"{player.name} HP: {player.current_hp}/{player.max_hp}")
+            print(f"{enemy.name} HP: {enemy.current_hp}/{enemy.max_hp}")
             print("1. Attack")
             print("2. Defend")
             print("3. Use Item")
             print("4. Flee")
             user_choice = int(input(f"Enter your choice (1-4):"))
             if user_choice == 1:
-                print(f"You attacked the {enemy_name} for 5 damage!")
-                print(f"{enemy_name} died!")
-                break
+                if player.base_spd >= enemy.base_spd:
+                    print(f"You attack first!")
+                    self.combat_attack(player, enemy)
+                    if enemy.current_hp <= 0:
+                        print(f"You defeated {enemy.name}!")
+                        print(f"You gained {enemy.exp} experience.")
+                        break
+                    print(f"{enemy.name} attacks!")
+                    self.combat_attack(enemy, player)
+                    if player.current_hp <= 0:
+                        print(f"You were defeated...")
+                        break
+                else:
+                    print(f"{enemy.name} attacks!")
+                    self.combat_attack(enemy, player)
+                    if player.current_hp <= 0:
+                        print(f"You were defeated...")
+                        break
+                    print(f"You attack!")
+                    self.combat_attack(player, enemy)
+                    if enemy.current_hp <= 0:
+                        print(f"You defeated {enemy.name}!")
+                        print(f"You gained {enemy.exp} experience.")
+                        break
             elif user_choice == 2:
                 print("You defended yourself!")
-                print(f"{enemy_name} hit you for 1 damage!")
+                print(f"{enemy.name} hit you for 1 damage!")
                 break
             elif user_choice == 3:
                 self.use_item_menu()
