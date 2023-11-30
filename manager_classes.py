@@ -50,7 +50,12 @@ class EventsManager:
         return is_successful
 
     def link_event(self, event_id_1, event_id_2):
-        self._events_tree[event_id_1].choices.append(event_id_2)
+        if event_id_2 in self._events_tree[event_id_1].choices:
+            print(f"Event {event_id_1} is already connected to event {event_id_2}")
+            print("Returning...")
+        else:
+            self._events_tree[event_id_1].choices.append(event_id_2)
+            print("Link successful!")
 
 
 class CampaignManager:
@@ -109,7 +114,10 @@ class CampaignManager:
     def edit_description(self, new_desc: str):
         self._current_campaign.short_desc = new_desc
 
-    # def start_campaign(self):
+    def start_campaign(self):
+        # get initial event, event 0,
+        #
+        init_event = self._current_campaign.events["0"]
 
 
 

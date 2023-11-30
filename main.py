@@ -238,8 +238,8 @@ class UserMenu:
 
     def display_link_event_menu(self):
         print("Linking events...")
-        input1 = int(input("Enter first event id: "))
-        input2 = int(input("Enter second event id: "))
+        input1 = input("Enter first event id: ")
+        input2 = input("Enter second event id: ")
         self._events_manager.link_event(input1, input2)
         self._campaign_manager.current_campaign.events = self._events_manager.events_tree
         self._campaign_manager.save_campaign()
