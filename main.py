@@ -1,4 +1,4 @@
-from manager_classes import *
+from factory_classes import *
 from object_classes import *
 from output_messages import output_messages as output
 
@@ -8,8 +8,8 @@ BACK_KEYWORD = 'back'
 
 class UserMenu:
     def __init__(self):
-        self._campaign_manager = CampaignManager()
-        self._events_manager = EventsManager()
+        self._campaign_factory = CampaignFactory
+        self._events_factory = EventFactory
 
     def display_main_menu(self):
         while True:
@@ -61,8 +61,8 @@ class UserMenu:
                 elif user_input.lower() == BACK_KEYWORD:
                     break
 
-                self._campaign_manager.create_campaign(user_input)
-                self._campaign_manager.set_current_campaign(len(self._campaign_manager.campaigns) - 1)
+                self._campaign_factory.create_campaign(user_input)
+                self._campaign_factory.set_current_campaign(len(self._campaign_factory.campaigns) - 1)
                 print(f"New campaign created: {user_input}")
                 self.display_edit_campaign_menu(True)
                 break
@@ -90,10 +90,10 @@ class UserMenu:
     def display_campaign_list_choices(self):
         print("Campaign list:")
         choice_count = 0
-        if len(self._campaign_manager.campaigns) == 0:
+        if len(self._campaign_factory.campaigns) == 0:
             print(output.no_campaigns_available())
         else:
-            for index, campaign in enumerate(self._campaign_manager.campaign_names()):
+            for index, campaign in enumerate(self._campaign_factory.campaign_names()):
                 choice_count += 1
                 print(f"{index + 1}. {campaign}")
         print(f"{1 + choice_count}. Back")
@@ -102,11 +102,11 @@ class UserMenu:
     def display_edit_existing_campaigns_menu(self):
         while True:
             try:
-                self._campaign_manager.load_campaigns()
+                self._campaign_factory.load_campaigns()
                 choice_count = self.display_campaign_list_choices()
                 user_choice = int(input(f"Enter your choice (1-{1 + choice_count}):"))
                 if choice_count + 1 > user_choice > 0:
-                    self._campaign_manager.set_current_campaign(user_choice - 1)
+                    self._campaign_factory.set_current_campaign(user_choice - 1)
                     # print(f'--*{self._campaign_manager.current_campaign.name}*--')
                     self.display_edit_campaign_menu(False)
                     continue
@@ -121,11 +121,11 @@ class UserMenu:
     def display_edit_campaign_menu(self, from_campaign_creation):
         # @TODO implement all these campaign management options
         while True:
-            print(output.campaign_editing_choices(self._campaign_manager.current_campaign.name))
+            print(output.campaign_editing_choices(self._campaign_factory.current_campaign.name))
             try:
                 user_choice = int(input("Enter your choice (1-8):"))
                 if user_choice == 1:
-                    self.edit_campaign_name_menu()
+                    self._change_campaign_property_menu(self._campaign_factory.current_campaign, 'name', 'Campaign Name')
                 elif user_choice == 2:
                     self.edit_events_menu()
                 elif user_choice == 4:
@@ -133,14 +133,14 @@ class UserMenu:
                 elif 1 <= user_choice <= 6:
                     print("Made a valid choice 1-6")
                 elif user_choice == 7:
-                    self.delete_campaign(self._campaign_manager.current_campaign.name)
+                    self.delete_campaign(self._campaign_factory.current_campaign.name)
                     if from_campaign_creation:
                         self.display_edit_existing_campaigns_menu()
                     break
                 elif user_choice == 8:
-                    pass
+                    self._change_campaign_property_menu(self._campaign_factory.current_campaign, 'short_desc', 'Campaign Description')
                 elif user_choice == 9:
-                    self._campaign_manager.set_no_current_campaign()
+                    self._campaign_factory.set_no_current_campaign()
                     if from_campaign_creation:
                         self.display_edit_existing_campaigns_menu()
                     break
@@ -148,17 +148,13 @@ class UserMenu:
                     print(output.invalid_choice())
             except ValueError:
                 print(output.invalid_choice_int_expected())
-
-    def edit_campaign_description(self, desc: str) -> None:
-        # print("Edit your description below:")
-        # ask for input
-        # insert current desc on input field
-        pass
+            except AttributeError:
+                print("caught attr error")
 
     def delete_campaign(self, campaign_name: str) -> None:
         try:
             print(output.delete_campaign(campaign_name))
-            self._campaign_manager.delete_campaign()
+            self._campaign_factory.delete_campaign()
         except OSError:
             print(output.delete_missing_config_file(campaign_name))
 
@@ -167,7 +163,7 @@ class UserMenu:
         # @TODO: potentially have a case where when it breaks, it still saves the
         #   events so that the files don't get corrupted. Same should go for campaigns,
         #   if it's not implemented yet.
-        self._events_manager.events_tree = self._campaign_manager.current_campaign.events
+        self._events_factory.events_tree = self._campaign_factory.current_campaign.events
         user_choice = None
         while user_choice != 4:
             # @TODO: print tree structure here
@@ -175,7 +171,7 @@ class UserMenu:
             # print(self._events_manager.events_tree)
             # for event in self._events_manager.events_tree.values():
             #     print(f"|| Event ID: {event.event_id} -> choices: {event.choices}")
-            self._events_manager.print_events()
+            self._events_factory.print_events()
             print("1. Create new event\n"
                   "2. Edit an existing event\n"
                   "3. Link events (create choices)\n"
@@ -188,8 +184,8 @@ class UserMenu:
             elif user_choice == 3:
                 self.display_link_event_menu()
             elif user_choice == 4:
-                self._campaign_manager.current_campaign.events = self._events_manager.events_tree
-                self._campaign_manager.save_campaign()
+                self._campaign_factory.current_campaign.events = self._events_factory.events_tree
+                self._campaign_factory.save_campaign()
                 return
             else:
                 print("Invalid choice, please try again.")
@@ -199,9 +195,9 @@ class UserMenu:
         # @TODO: exception handling
         description = input("Enter small event description (max 15 chars) here: ")
         dialogue = input("Enter event dialogue here: ")
-        self._events_manager.create_event(description, dialogue)
-        self._campaign_manager.current_campaign.events = self._events_manager.events_tree
-        self._campaign_manager.save_campaign()
+        self._events_factory.create_event(description, dialogue)
+        self._campaign_factory.current_campaign.events = self._events_factory.events_tree
+        self._campaign_factory.save_campaign()
 
     # honestly could be done so much better...
     def display_edit_existing_events_menu(self):
@@ -210,7 +206,7 @@ class UserMenu:
         while True:
             # print(self._events_manager.events_tree)
             event_id = input("Enter event you'd like to edit: ")
-            if event_id not in self._events_manager.events_tree:
+            if event_id not in self._events_factory.events_tree:
                 print(f"Event {event_id} not found")
                 return
             print(f"Editing event {event_id}")
@@ -224,57 +220,68 @@ class UserMenu:
                 user_choice = int(input("Enter choice here (1-3): "))
                 if user_choice == 1:
                     new_desc = input("Enter new description (max 15 chars): ")
-                    self._events_manager.edit_event(event_id, "description", new_desc)
+                    self._events_factory.edit_event(event_id, "description", new_desc)
                 elif user_choice == 2:
                     new_dialogue = input("Enter new dialogue: ")
-                    self._events_manager.edit_event(event_id, "dialogue", new_dialogue)
+                    self._events_factory.edit_event(event_id, "dialogue", new_dialogue)
                 # @TODO: implement deleting link between events
                 elif user_choice == 3:
                     return
                 else:
                     print("Invalid choice please try again.")
-                self._campaign_manager.current_campaign.events = self._events_manager.events_tree
-                self._campaign_manager.save_campaign()
+                self._campaign_factory.current_campaign.events = self._events_factory.events_tree
+                self._campaign_factory.save_campaign()
                 print("Edit is done")
 
     def display_link_event_menu(self):
         print("Linking events...")
         input1 = input("Enter first event id: ")
         input2 = input("Enter second event id: ")
-        self._events_manager.link_event(input1, input2)
-        self._campaign_manager.current_campaign.events = self._events_manager.events_tree
-        self._campaign_manager.save_campaign()
+        self._events_factory.link_event(input1, input2)
+        self._campaign_factory.current_campaign.events = self._events_factory.events_tree
+        self._campaign_factory.save_campaign()
 
     # Edit events stuff end =================================
 
-    def edit_campaign_name_menu(self):
+    # def edit_campaign_name_menu(self):
+    #     while True:
+    #         try:
+    #             user_input = input(output.campaign_name_prompt()).strip()
+    #             if len(user_input) == 0:
+    #                 print("Name cannot be empty, please try again.")
+    #             elif user_input.lower() == BACK_KEYWORD:
+    #                 break
+    #             else:
+    #                 self._campaign_manager.rename_campaign(user_input)
+    #                 self._campaign_manager.save_campaign()
+    #                 break
+    #         except ValueError:
+    #             print("Name cannot be empty, please try again.")
+    #         except OSError:
+    #             print(output.invalid_OS_filename(user_input))
+    #         except fb.ForbiddenFilenameCharsError:
+    #             print(output.invalid_chars_campaign_name(user_input))
+
+    # generic function to change any property in campaign
+    def _change_campaign_property_menu(self, campaign_prop, prop_name: str, display_prop: str) -> None:
         while True:
             try:
-                user_input = input(output.campaign_name_prompt()).strip()
+                print(f"Current {display_prop}: {getattr(campaign_prop, prop_name)}")
+                user_input = input(f'Enter new {display_prop}: ')
+
                 if len(user_input) == 0:
-                    print("Name cannot be empty, please try again.")
+                        print("Input cannot be empty, please try again.")
                 elif user_input.lower() == BACK_KEYWORD:
                     break
                 else:
 
-                    self._campaign_manager.rename_campaign(user_input)
-                    self._campaign_manager.save_campaign()
+                    self._campaign_factory.edit_campaign_property(campaign_prop, prop_name, user_input)
+                    self._campaign_factory.save_campaign()
                     break
-            except ValueError:
-                print("Name cannot be empty, please try again.")
             except OSError:
                 print(output.invalid_OS_filename(user_input))
             except fb.ForbiddenFilenameCharsError:
                 print(output.invalid_chars_campaign_name(user_input))
-
-    # generic function to change any property in campaign
-    def _change_campaign_property(self, campaign_obj, prop_name: str, current_prop: str, display_prop):
-        print(f"Current {display_prop}: {current_prop}")
-        new_property = input(f"Enter new {display_prop}: ")
-        if hasattr(campaign_obj, prop_name):
-            setattr(campaign_obj, prop_name, new_property)
-        else:
-            print(f"Error: changing invalid campaign property...")
 
     def display_player_menu(self):
         while True:
@@ -296,11 +303,11 @@ class UserMenu:
     def manage_campaign_players(self):
         while True:
             print(f" --Player Character List-- ")
-            for index, player in enumerate(self._campaign_manager.current_campaign.player_list):
+            for index, player in enumerate(self._campaign_factory.current_campaign.player_list):
                 print(f"{index + 1}. {player.name}")
             player_index = int(
-                input(f"Enter your choice (1-{len(self._campaign_manager.current_campaign.player_list)}):")) - 1
-            if 0 <= player_index <= (len(self._campaign_manager.current_campaign.player_list)):
+                input(f"Enter your choice (1-{len(self._campaign_factory.current_campaign.player_list)}):")) - 1
+            if 0 <= player_index <= (len(self._campaign_factory.current_campaign.player_list)):
                 self.manage_single_campaign_player(player_index)
                 break
             else:
@@ -309,7 +316,7 @@ class UserMenu:
     def manage_single_campaign_player(self, player_index):
         while True:
             print(f" --Player Character Details-- ")
-            print(f"{self._campaign_manager.current_campaign.player_list[player_index]}")
+            print(f"{self._campaign_factory.current_campaign.player_list[player_index]}")
             print(f" -------- ")
             print("1. Change player name")
             print("2. Change player description")
@@ -326,58 +333,58 @@ class UserMenu:
 
             user_choice = int(input("Enter your choice (1-12):"))
             if user_choice == 1:
-                self._change_campaign_property(self._campaign_manager.current_campaign.player_list[player_index]
+                self._change_campaign_property(self._campaign_factory.current_campaign.player_list[player_index]
                                                , "name",
-                                               self._campaign_manager.current_campaign.player_list[player_index].name
+                                               self._campaign_factory.current_campaign.player_list[player_index].name
                                                , "name")
                 # self._campaign_manager.current_campaign.player_list[player_index].name = new_name
                 continue
             if user_choice == 2:
-                self._change_campaign_property(self._campaign_manager.current_campaign.player_list[player_index]
+                self._change_campaign_property(self._campaign_factory.current_campaign.player_list[player_index]
                                           , "description",
-                                          self._campaign_manager.current_campaign.player_list[player_index].description
+                                          self._campaign_factory.current_campaign.player_list[player_index].description
                                           , "description")
                 continue
             if user_choice == 3:
-                self._change_campaign_property(self._campaign_manager.current_campaign.player_list[player_index], "base_hp",
-                                          self._campaign_manager.current_campaign.player_list[player_index].base_hp
-                                          , "base hit points")
+                self._change_campaign_property(self._campaign_factory.current_campaign.player_list[player_index], "base_hp",
+                                               self._campaign_factory.current_campaign.player_list[player_index].base_hp
+                                               , "base hit points")
                 continue
             if user_choice == 4:
-                self._change_campaign_property(self._campaign_manager.current_campaign.player_list[player_index], "base_atk",
-                                          self._campaign_manager.current_campaign.player_list[player_index].base_atk
-                                          , "base attack")
+                self._change_campaign_property(self._campaign_factory.current_campaign.player_list[player_index], "base_atk",
+                                               self._campaign_factory.current_campaign.player_list[player_index].base_atk
+                                               , "base attack")
                 continue
             if user_choice == 5:
-                self._change_campaign_property(self._campaign_manager.current_campaign.player_list[player_index], "base_spd",
-                                          self._campaign_manager.current_campaign.player_list[player_index].base_spd
-                                          , "base speed")
+                self._change_campaign_property(self._campaign_factory.current_campaign.player_list[player_index], "base_spd",
+                                               self._campaign_factory.current_campaign.player_list[player_index].base_spd
+                                               , "base speed")
                 continue
             if user_choice == 6:
-                self._change_campaign_property(self._campaign_manager.current_campaign.player_list[player_index]
+                self._change_campaign_property(self._campaign_factory.current_campaign.player_list[player_index]
                                           , "exp_per_lvl_up",
-                                          self._campaign_manager.current_campaign.player_list[player_index].exp_per_lvl_up
+                                          self._campaign_factory.current_campaign.player_list[player_index].exp_per_lvl_up
                                           , "level up experience")
                 continue
             if user_choice == 7:
-                self._change_campaign_property(self._campaign_manager.current_campaign.player_list[player_index], "max_lvl",
-                                          self._campaign_manager.current_campaign.player_list[player_index].max_lvl
-                                          , "max level")
+                self._change_campaign_property(self._campaign_factory.current_campaign.player_list[player_index], "max_lvl",
+                                               self._campaign_factory.current_campaign.player_list[player_index].max_lvl
+                                               , "max level")
                 continue
             if user_choice == 8:
-                self._change_campaign_property(self._campaign_manager.current_campaign.player_list[player_index], "hp_mod",
-                                          self._campaign_manager.current_campaign.player_list[player_index].hp_mod
-                                          , "hit point gain per level")
+                self._change_campaign_property(self._campaign_factory.current_campaign.player_list[player_index], "hp_mod",
+                                               self._campaign_factory.current_campaign.player_list[player_index].hp_mod
+                                               , "hit point gain per level")
                 continue
             if user_choice == 9:
-                self._change_campaign_property(self._campaign_manager.current_campaign.player_list[player_index], "atk_mod",
-                                          self._campaign_manager.current_campaign.player_list[player_index].atk_mod
-                                          , "attack gain per level")
+                self._change_campaign_property(self._campaign_factory.current_campaign.player_list[player_index], "atk_mod",
+                                               self._campaign_factory.current_campaign.player_list[player_index].atk_mod
+                                               , "attack gain per level")
                 continue
             if user_choice == 10:
-                self._change_campaign_property(self._campaign_manager.current_campaign.player_list[player_index], "spd_mod",
-                                          self._campaign_manager.current_campaign.player_list[player_index].spd_mod
-                                          , "speed gain per level")
+                self._change_campaign_property(self._campaign_factory.current_campaign.player_list[player_index], "spd_mod",
+                                               self._campaign_factory.current_campaign.player_list[player_index].spd_mod
+                                               , "speed gain per level")
                 continue
             if user_choice == 12:
                 break
@@ -387,20 +394,19 @@ class UserMenu:
     def display_play_existing_campaigns_menu(self):
         while True:
             try:
-                self._campaign_manager.load_campaigns()
+                self._campaign_factory.load_campaigns()
                 choice_count = self.display_campaign_list_choices()
                 user_choice = int(input(f"Enter your choice (1-{1 + choice_count}):"))
                 if choice_count + 1 > user_choice > 0:
-                    self._campaign_manager.set_current_campaign(user_choice - 1)
+                    self._campaign_factory.set_current_campaign(user_choice - 1)
                     # print(f'--*{self._campaign_manager.current_campaign.name}*--')
                     # self.display_edit_campaign_menu(False)
-                    print(f"Playing {self._campaign_manager.current_campaign.name} Campaign")
+                    print(f"Playing {self._campaign_factory.current_campaign.name} Campaign")
                     # self._campaign_manager.start_campaign()
                     # self._campaign_manager.start_campaign()
                     self.start_campaign()
                     continue
                 elif user_choice == 1 + choice_count:
-                    print("Getting out")
                     # self.display_editor_menu()
                     break
                 else:
@@ -422,8 +428,8 @@ class UserMenu:
 
     def start_campaign(self):
         # @TODO properly extract campaign data to start campaign event sequence
-        self._events_manager.events_tree = self._campaign_manager.current_campaign.events
-        self._events_manager.start_events()
+        self._events_factory.events_tree = self._campaign_factory.current_campaign.events
+        self._events_factory.start_events()
 
         # self.run_combat_event()
         # self.run_choice_event()
