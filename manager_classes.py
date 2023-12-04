@@ -58,6 +58,35 @@ class EventsManager:
             self._events_tree[event_id_1].choices.append(event_id_2)
             print("Link successful!")
 
+    def print_events(self):
+        for event in self._events_tree.values():
+            print(f"| {event.event_id} : {event.description} -> {event.choices}")
+
+    def start_events(self):
+        # get initial event, event 0
+        init_event = self.events_tree["0"]
+        temp_event = init_event
+        # print event 0
+        while len(temp_event.choices) != 0:
+            print(f"| -=+ {temp_event.description} +=-")
+            print(f"| {temp_event.dialogue}")
+            print("Choose an option:")
+            choice_count = 1
+            count_to_choices = {}
+            for n in temp_event.choices:
+                print(f"{choice_count}. Choice {n}")
+                count_to_choices[choice_count] = n
+                choice_count += 1
+            player_choice = int(input("Choice: "))
+            temp_event = self.events_tree[count_to_choices[player_choice]]
+        print(f"| -=+ {temp_event.description} +=-")
+        print(f"| {temp_event.dialogue}")
+        print("Campaign ended. Going back to campaign list...")
+
+        # print event 0 choices
+        # print chosen event
+        # repeat till end
+
 
 class CampaignManager:
     def __init__(self) -> None:
@@ -117,12 +146,7 @@ class CampaignManager:
         self._current_campaign.short_desc = new_desc
 
     def start_campaign(self):
-        # get initial event, event 0
-        # print event 0
-        # print event 0 choices
-        # print chosen event
-        # repeat till end
-        init_event = self._current_campaign.events["0"]
+        self.current_campaign.events["0"].start_events()
 
 
 # May not need this anymore since we serialize/deserialize campaign object in/from file
