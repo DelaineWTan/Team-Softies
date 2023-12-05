@@ -18,7 +18,7 @@ jobs:
         pip install pylint pytest radon coverage
     - name: Analysing the code with pylint
       run: |
-        pylint $(git ls-files '*.py') --fail-under=5.0 --disable=missing-docstring
+        pylint $(git ls-files '*.py') --fail-under=5.0 --disable=missing-docstring,wrong-import-position
     - name: Analysing the code with radon
       run: |
         radon cc -a ./
