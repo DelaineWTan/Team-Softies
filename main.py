@@ -3,7 +3,6 @@ from object_classes import *
 from output_messages import output_messages as output
 import random
 
-
 BACK_KEYWORD = 'back'
 
 
@@ -126,7 +125,8 @@ class UserMenu:
             try:
                 user_choice = int(input("Enter your choice (1-8):"))
                 if user_choice == 1:
-                    self._change_campaign_property_menu(self._campaign_factory.current_campaign, 'name', 'Campaign Name')
+                    self._change_campaign_property_menu(self._campaign_factory.current_campaign, 'name',
+                                                        'Campaign Name')
                 elif user_choice == 2:
                     self.edit_events_menu()
                 elif user_choice == 4:
@@ -139,7 +139,8 @@ class UserMenu:
                         self.display_edit_existing_campaigns_menu()
                     break
                 elif user_choice == 8:
-                    self._change_campaign_property_menu(self._campaign_factory.current_campaign, 'short_desc', 'Campaign Description')
+                    self._change_campaign_property_menu(self._campaign_factory.current_campaign, 'short_desc',
+                                                        'Campaign Description')
                 elif user_choice == 9:
                     self._campaign_factory.set_no_current_campaign()
                     if from_campaign_creation:
@@ -271,7 +272,7 @@ class UserMenu:
                 user_input = input(f'Enter new {display_prop}: ')
 
                 if len(user_input) == 0:
-                        print("Input cannot be empty, please try again.")
+                    print("Input cannot be empty, please try again.")
                 elif user_input.lower() == BACK_KEYWORD:
                     break
                 else:
@@ -342,48 +343,59 @@ class UserMenu:
                 continue
             if user_choice == 2:
                 self._change_campaign_property(self._campaign_factory.current_campaign.player_list[player_index]
-                                          , "description",
-                                          self._campaign_factory.current_campaign.player_list[player_index].description
-                                          , "description")
+                                               , "description",
+                                               self._campaign_factory.current_campaign.player_list[
+                                                   player_index].description
+                                               , "description")
                 continue
             if user_choice == 3:
-                self._change_campaign_property(self._campaign_factory.current_campaign.player_list[player_index], "base_hp",
+                self._change_campaign_property(self._campaign_factory.current_campaign.player_list[player_index],
+                                               "base_hp",
                                                self._campaign_factory.current_campaign.player_list[player_index].base_hp
                                                , "base hit points")
                 continue
             if user_choice == 4:
-                self._change_campaign_property(self._campaign_factory.current_campaign.player_list[player_index], "base_atk",
-                                               self._campaign_factory.current_campaign.player_list[player_index].base_atk
+                self._change_campaign_property(self._campaign_factory.current_campaign.player_list[player_index],
+                                               "base_atk",
+                                               self._campaign_factory.current_campaign.player_list[
+                                                   player_index].base_atk
                                                , "base attack")
                 continue
             if user_choice == 5:
-                self._change_campaign_property(self._campaign_factory.current_campaign.player_list[player_index], "base_spd",
-                                               self._campaign_factory.current_campaign.player_list[player_index].base_spd
+                self._change_campaign_property(self._campaign_factory.current_campaign.player_list[player_index],
+                                               "base_spd",
+                                               self._campaign_factory.current_campaign.player_list[
+                                                   player_index].base_spd
                                                , "base speed")
                 continue
             if user_choice == 6:
                 self._change_campaign_property(self._campaign_factory.current_campaign.player_list[player_index]
-                                          , "exp_per_lvl_up",
-                                          self._campaign_factory.current_campaign.player_list[player_index].exp_per_lvl_up
-                                          , "level up experience")
+                                               , "exp_per_lvl_up",
+                                               self._campaign_factory.current_campaign.player_list[
+                                                   player_index].exp_per_lvl_up
+                                               , "level up experience")
                 continue
             if user_choice == 7:
-                self._change_campaign_property(self._campaign_factory.current_campaign.player_list[player_index], "max_lvl",
+                self._change_campaign_property(self._campaign_factory.current_campaign.player_list[player_index],
+                                               "max_lvl",
                                                self._campaign_factory.current_campaign.player_list[player_index].max_lvl
                                                , "max level")
                 continue
             if user_choice == 8:
-                self._change_campaign_property(self._campaign_factory.current_campaign.player_list[player_index], "hp_mod",
+                self._change_campaign_property(self._campaign_factory.current_campaign.player_list[player_index],
+                                               "hp_mod",
                                                self._campaign_factory.current_campaign.player_list[player_index].hp_mod
                                                , "hit point gain per level")
                 continue
             if user_choice == 9:
-                self._change_campaign_property(self._campaign_factory.current_campaign.player_list[player_index], "atk_mod",
+                self._change_campaign_property(self._campaign_factory.current_campaign.player_list[player_index],
+                                               "atk_mod",
                                                self._campaign_factory.current_campaign.player_list[player_index].atk_mod
                                                , "attack gain per level")
                 continue
             if user_choice == 10:
-                self._change_campaign_property(self._campaign_factory.current_campaign.player_list[player_index], "spd_mod",
+                self._change_campaign_property(self._campaign_factory.current_campaign.player_list[player_index],
+                                               "spd_mod",
                                                self._campaign_factory.current_campaign.player_list[player_index].spd_mod
                                                , "speed gain per level")
                 continue
@@ -453,11 +465,8 @@ class UserMenu:
         print(f"{attacker.name} attacked {defender.name} for {damage} damage!")
         defender.current_hp -= damage
 
-
-    def run_combat_event(self, player: Player, enemy:NPC) -> Player:
+    def run_combat_event(self, player: Player, enemy: NPC) -> Player:
         print(f"You engaged combat with {enemy.name}!")
-        print(player.ascii_art)
-        print(enemy.ascii_art)
         while True:
             print(f"You are fighting {enemy.name}!")
             print(f"{player.name} HP: {player.current_hp}/{player.max_hp}")
@@ -496,10 +505,8 @@ class UserMenu:
             elif user_choice == 2:
                 print("You defended yourself!")
                 print(f"{enemy.name} hit you for 1 damage!")
-                break
             elif user_choice == 3:
                 self.use_item_menu()
-                break
             elif user_choice == 4:
                 print("You fled successfully!")
                 break

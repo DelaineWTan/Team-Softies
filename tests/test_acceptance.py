@@ -12,6 +12,8 @@ from main import UserMenu
 from output_messages import output_messages as output
 from factory_classes import ConfigFileFactory
 from object_classes import Campaign
+from object_classes import Player
+from object_classes import NPC
 
 
 class MainMenuTest(unittest.TestCase):
@@ -159,11 +161,13 @@ class CombatEventTest(unittest.TestCase):
         # cls._menu.display_main_menu()
         pass
 
-    @patch('builtins.input', side_effect=['1'])
+    @patch('builtins.input', side_effect=['1','1'])
     def test_select_attack_option(self, mock_input):
         # Test combat event: Selecting "Attack" option
+        test_player = Player()
+        test_enemy = NPC()
         with patch('sys.stdout', new_callable=StringIO) as mock_stdout:
-            self._menu.run_combat_event()
+            self._menu.run_combat_event(test_player,test_enemy)
         # Assertions go here
         printed_output = mock_stdout.getvalue().strip()
         expected_output = ("You are fighting a Level 1 Goblin!\n"
@@ -174,11 +178,13 @@ class CombatEventTest(unittest.TestCase):
         self.assertEqual(printed_output, expected_output)
         pass
 
-    @patch('builtins.input', side_effect=['2', '2'])
+    @patch('builtins.input', side_effect=['2', '2','4'])
     def test_select_defend_option(self, mock_input):
-        # Test combat event: Selecting "Attack" option
+        # Test combat event: Selecting "Defend" option
+        test_player = Player()
+        test_enemy = NPC()
         with patch('sys.stdout', new_callable=StringIO) as mock_stdout:
-            self._menu.run_combat_event()
+            self._menu.run_combat_event(test_player, test_enemy)
         # Assertions go here
         printed_output = mock_stdout.getvalue().strip()
         expected_output = ("You are fighting a Level 1 Goblin!\n"
@@ -189,11 +195,13 @@ class CombatEventTest(unittest.TestCase):
         self.assertEqual(printed_output, expected_output)
         pass
 
-    @patch('builtins.input', side_effect=['3'])
+    @patch('builtins.input', side_effect=['3','4'])
     def test_select_item_option(self, mock_input):
-        # Test combat event: Selecting "Attack" option
+        # Test combat event: Selecting "Item" option
+        test_player = Player()
+        test_enemy = NPC()
         with patch('sys.stdout', new_callable=StringIO) as mock_stdout:
-            self._menu.run_combat_event()
+            self._menu.run_combat_event(test_player, test_enemy)
         # Assertions go here
         printed_output = mock_stdout.getvalue().strip()
         expected_output = ("You are fighting a Level 1 Goblin!\n"
@@ -205,9 +213,11 @@ class CombatEventTest(unittest.TestCase):
 
     @patch('builtins.input', side_effect=['4'])
     def test_select_flee_option(self, mock_input):
-        # Test combat event: Selecting "Attack" option
+        # Test combat event: Selecting "Flee" option
+        test_player = Player()
+        test_enemy = NPC()
         with patch('sys.stdout', new_callable=StringIO) as mock_stdout:
-            self._menu.run_combat_event()
+            self._menu.run_combat_event(test_player, test_enemy)
         # Assertions go here
         printed_output = mock_stdout.getvalue().strip()
         expected_output = ("You are fighting a Level 1 Goblin!\n"
