@@ -1,5 +1,6 @@
 import sys
 import os
+
 # Add the path to your project's root directory
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 # Package Module Imports
@@ -24,6 +25,7 @@ def measure_latency(test_func):
         elapsed_time = time.time() - start_time
         print(f"Test {test_func.__name__} took {elapsed_time * 1000:.2f} milliseconds.")
         return result
+
     return wrapper
 
 
@@ -33,8 +35,9 @@ class MainMenuTest(unittest.TestCase):
         self.user_menu = UserMenu()
 
     @measure_latency
-    @patch('builtins.input', side_effect=['1', 'no choice', '3', '3'])  # mock input order (edit, invalid, return, quit)
-    def test_select_edit_choice(self, mock_input):
+    @patch('builtins.input', side_effect=['1', 'no choice', '3',
+                                          '3'])  # mock input order (edit, invalid, return, quit)
+    def test_select_edit_choice(self, _):
         # Test scenario: Selecting "Edit" choice from the main menu
         with patch('sys.stdout', new_callable=StringIO) as mock_stdout:
             self.user_menu.display_main_menu()
@@ -44,17 +47,22 @@ class MainMenuTest(unittest.TestCase):
         expected_output = ("Welcome to our text-based RPG maker!\n"
                            "1. Editor mode\n2. Player mode\n3. Quit\n"
                            "You are in the editor mode. Choices:\n"
-                           "    1. Create new campaign\n    2. Select existing campaign\n    3. Return to main menu\n"
-                           "Invalid choice, input should be a number corresponding to the list of choices.\n"
+                           "    1. Create new campaign\n    2. Select existing campaign\n    3. "
+                           "Return to main menu\n"
+                           "Invalid choice, input should be a number corresponding to the list of "
+                           "choices.\n"
                            "You are in the editor mode. Choices:\n"
-                           "    1. Create new campaign\n    2. Select existing campaign\n    3. Return to main menu\n"
-                           "Welcome to our text-based RPG maker!\n1. Editor mode\n2. Player mode\n3. Quit")
+                           "    1. Create new campaign\n    2. Select existing campaign\n    3. "
+                           "Return to main menu\n"
+                           "Welcome to our text-based RPG maker!\n1. Editor mode\n2. Player "
+                           "mode\n3. Quit")
 
         self.assertEqual(printed_output, expected_output)
 
     @measure_latency
-    @patch('builtins.input', side_effect=['2', 'no choice', '2', '3'])  # mock input order (play, invalid, return, quit)
-    def test_select_play_choice(self, mock_input):
+    @patch('builtins.input', side_effect=['2', 'no choice', '2',
+                                          '3'])  # mock input order (play, invalid, return, quit)
+    def test_select_play_choice(self, _):
         # Test scenario: Selecting "Play" choice from the main menu
         with patch('sys.stdout', new_callable=StringIO) as mock_stdout:
             self.user_menu.display_main_menu()
@@ -99,7 +107,7 @@ class EditorMenuTest(unittest.TestCase):
 
     @measure_latency
     @patch('builtins.input', side_effect=['1', 'unittest', '9', '2', '3'])
-    def test_select_new_campaign(self, mock_input):
+    def test_select_new_campaign(self, _):
         file_path = os.path.join(self._configs_path, self._file_name)
         if os.path.isfile(file_path):
             os.remove(file_path)
@@ -112,8 +120,8 @@ class EditorMenuTest(unittest.TestCase):
             self._menu.display_editor_menu()
         # Assertions go here
         print_output = mock_stdout.getvalue().strip()
-        expected_output = (output.campaign_editor_choices() + '\n' + new_campaign_text + 
-                           output.campaign_editing_choices('unittest') + '\n' + campaign_list + 
+        expected_output = (output.campaign_editor_choices() + '\n' + new_campaign_text +
+                           output.campaign_editing_choices('unittest') + '\n' + campaign_list +
                            output.campaign_editor_choices())
 
         self.assertTrue(print_output, expected_output)
@@ -121,7 +129,7 @@ class EditorMenuTest(unittest.TestCase):
 
     @measure_latency
     @patch('builtins.input', side_effect=['2', '2', '3'])
-    def test_select_edit_campaign(self, mock_input):
+    def test_select_edit_campaign(self, _):
         file_path = os.path.join(self._configs_path, self._file_name)
         if not os.path.isfile(file_path):
             self._file_manager.create_config_file(self._campaign)
@@ -133,14 +141,14 @@ class EditorMenuTest(unittest.TestCase):
             self._menu.display_editor_menu()
         # Assertions go here
         print_output = mock_stdout.getvalue().strip()
-        expected_output = (output.campaign_editor_choices() + '\n' + campaign_list + 
+        expected_output = (output.campaign_editor_choices() + '\n' + campaign_list +
                            output.campaign_editor_choices())
 
         self.assertEqual(print_output, expected_output)
 
     @measure_latency
     @patch('builtins.input', side_effect=['2', '1', '7', '1', '3'])
-    def test_select_delete_campaign(self, mock_input):
+    def test_select_delete_campaign(self, _):
         # Creates file to delete for test
         file_path = os.path.join(self._configs_path, self._file_name)
         if not os.path.isfile(file_path):
@@ -156,9 +164,9 @@ class EditorMenuTest(unittest.TestCase):
 
         # Assertions go here
         print_output = mock_stdout.getvalue().strip()
-        expected_output = (output.campaign_editor_choices() + '\n' + campaign_list + 
-                           output.campaign_editing_choices(self._campaign.name) + '\n' + 
-                           output.delete_campaign(self._campaign.name) + '\n' +  
+        expected_output = (output.campaign_editor_choices() + '\n' + campaign_list +
+                           output.campaign_editing_choices(self._campaign.name) + '\n' +
+                           output.delete_campaign(self._campaign.name) + '\n' +
                            post_campaign_list + output.no_campaigns_available() + '\n' +
                            post_campaign_list_options + output.campaign_editor_choices())
 
@@ -178,13 +186,13 @@ class CombatEventTest(unittest.TestCase):
         pass
 
     @measure_latency
-    @patch('builtins.input', side_effect=['1','1'])
-    def test_select_attack_option(self, mock_input):
+    @patch('builtins.input', side_effect=['1', '1'])
+    def test_select_attack_option(self, _):
         # Test combat event: Selecting "Attack" option
         test_player = Player()
         test_enemy = NPC()
         with patch('sys.stdout', new_callable=StringIO) as mock_stdout:
-            self._menu.run_combat_event(test_player,test_enemy)
+            self._menu.run_combat_event(test_player, test_enemy)
         # Assertions go here
         printed_output = mock_stdout.getvalue().strip()
         expected_output = ("You are fighting a Level 1 Goblin!\n"
@@ -197,8 +205,8 @@ class CombatEventTest(unittest.TestCase):
         pass
 
     @measure_latency
-    @patch('builtins.input', side_effect=['2', '2','4'])
-    def test_select_defend_option(self, mock_input):
+    @patch('builtins.input', side_effect=['2', '2', '4'])
+    def test_select_defend_option(self, _):
         # Test combat event: Selecting "Defend" option
         test_player = Player()
         test_enemy = NPC()
@@ -212,13 +220,12 @@ class CombatEventTest(unittest.TestCase):
                            "You defended yourself!\n"
                            "Level 1 Goblin hit you for 1 damage!")
         # self.assertEqual(printed_output, expected_output)
-        self.assertTrue(True,True)
+        self.assertTrue(True, True)
         pass
 
-
     @measure_latency
-    @patch('builtins.input', side_effect=['3','4'])
-    def test_select_item_option(self, mock_input):
+    @patch('builtins.input', side_effect=['3', '4'])
+    def test_select_item_option(self, _):
         # Test combat event: Selecting "Item" option
         test_player = Player()
         test_enemy = NPC()
@@ -236,7 +243,7 @@ class CombatEventTest(unittest.TestCase):
 
     @measure_latency
     @patch('builtins.input', side_effect=['4'])
-    def test_select_flee_option(self, mock_input):
+    def test_select_flee_option(self, _):
         # Test combat event: Selecting "Flee" option
         test_player = Player()
         test_enemy = NPC()
@@ -266,7 +273,7 @@ class ChoiceEventTest(unittest.TestCase):
 
     @measure_latency
     @patch('builtins.input', side_effect=['1'])
-    def test_select_choice_option(self, mock_input):
+    def test_select_choice_option(self, _):
         # Test combat event: Selecting "Attack" option
         with patch('sys.stdout', new_callable=StringIO) as mock_stdout:
             self._menu.run_choice_event()
@@ -280,7 +287,7 @@ class ChoiceEventTest(unittest.TestCase):
 
     @measure_latency
     @patch('builtins.input', side_effect=['2'])
-    def test_select_end_game_choice(self, mock_input):
+    def test_select_end_game_choice(self, _):
         # Test combat event: Selecting "Attack" option
         with patch('sys.stdout', new_callable=StringIO) as mock_stdout:
             self._menu.run_choice_event()
@@ -312,7 +319,9 @@ def run_tests_in_loop(num_iterations=100):
         result = test_runner.run(test_suite)
 
         # Optionally, you can collect and print more information about the test results
-        print(f"Tests run: {result.testsRun}, Failures: {len(result.failures)}, Errors: {len(result.errors)}")
+        print(
+            f"Tests run: {result.testsRun}, Failures: {len(result.failures)}, Errors: "
+            f"{len(result.errors)}")
 
     total_elapsed_time = time.time() - start_time
     print(f"\nTotal time for {num_iterations} iterations: {total_elapsed_time:.2f} seconds")
