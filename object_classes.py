@@ -86,23 +86,29 @@ class Item:
 
 class Event(abc.ABC):
     @abc.abstractmethod
-    def run_event(self):
+    def print_event(self):
         pass
 
 
 class DialogueEvent(Event):
-    def __init__(self, event_id=99999, description="null event", choices=[]):
+    def __init__(self, event_id=99999, description="null event", dialogue="null dialogue", choices=None):
+        if choices is None:
+            choices = []
         self._event_id = event_id
         self._description = description
+        self._dialogue = dialogue
         # @TODO choices should be event ids plus the text associated with the choice
         if choices is None:
             self._choices = []  # list of next event ids
         else:
             self._choices = choices
 
-    def run_event(self):
+    # Might deprecate later... -Jun
+    def print_event(self):
         print(self._description)
-        print("running the dialogue event idk")
+        print(self._dialogue)
+        print("\n")
+        print("your choices: ")
 
     @property
     def description(self):
@@ -111,6 +117,14 @@ class DialogueEvent(Event):
     @description.setter
     def description(self, description):
         self._description = description
+
+    @property
+    def dialogue(self):
+        return self._dialogue
+
+    @dialogue.setter
+    def dialogue(self, dialogue):
+        self._dialogue = dialogue
 
     @property
     def event_id(self):
@@ -147,7 +161,7 @@ class CombatEvent(Event):
         self._description = description  # will the combat event have a description?
         self._list_of_choices = []  # idk
 
-    def run_event(self):
+    def print_event(self):
         print(self._description)
         print("running the combat event idk")
 
@@ -156,7 +170,7 @@ class Campaign:
     def __init__(self, name, short_desc="", events={}, player_list=[Player("Anon")],
                  npc_list=[NPC()], items_list=[]):
         self._name = name
-        self._previous_name = name
+        self._previous_name = None
         self._short_desc = short_desc
         self._events = events
         # @TODO do we want to have potentially more than 1 character per campaign?

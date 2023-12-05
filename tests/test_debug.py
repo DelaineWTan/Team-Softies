@@ -1,3 +1,8 @@
+import sys
+import os
+# Add the path to your project's root directory
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
 from object_classes import Character, Player, DialogueEvent, Campaign
 
 # Property values for reuse in tests, note that these values are different from the default values

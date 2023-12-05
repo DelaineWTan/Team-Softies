@@ -1,3 +1,7 @@
+import sys
+import os
+# Add the path to your project's root directory
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 # Package Module Imports
 import unittest
 from unittest.mock import patch
@@ -6,9 +10,8 @@ import inspect
 # Project Module Imports
 from main import UserMenu
 from output_messages import output_messages as output
-from manager_classes import FileManager
+from factory_classes import ConfigFileFactory
 from object_classes import Campaign
-import os
 
 
 class MainMenuTest(unittest.TestCase):
@@ -67,9 +70,9 @@ class EditorMenuTest(unittest.TestCase):
     def setUpClass(cls):
         # Code to set up resources before all tests in this class
         cls._menu = UserMenu()
-        cls._file_name = "unittest.json"
+        cls._file_name = "unittest.bin"
         cls._configs_path = "game_configs"
-        cls._file_manager = FileManager()
+        cls._file_manager = ConfigFileFactory()
         cls._campaign = Campaign("unittest")
 
     @classmethod

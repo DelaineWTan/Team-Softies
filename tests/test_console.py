@@ -1,3 +1,9 @@
+import sys
+import os
+
+# Add the path to your project's root directory
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
 import unittest
 from main import UserMenu
 from unittest.mock import patch
