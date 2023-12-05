@@ -92,7 +92,7 @@ class CampaignFactory:
         CampaignFactory.campaigns = ConfigFileFactory.load_config_files()
 
     @staticmethod
-    def edit_campaign_property(campaign_prop, prop_name: str, new_prop_value) -> None:       
+    def edit_campaign_property(campaign_prop, prop_name: str, new_prop_value) -> None:
         if hasattr(campaign_prop, prop_name):
             CampaignFactory._process_new_campaign_name(prop_name, new_prop_value)
 
@@ -129,7 +129,9 @@ class ConfigFileFactory:
         try:
             file_name = f'{ConfigFileFactory._path}{campaign.name}{ConfigFileFactory._config_extension}'
             if campaign.previous_name:
-                os.rename(f'{ConfigFileFactory._path}{campaign.previous_name}{ConfigFileFactory._config_extension}', file_name)
+                os.rename(
+                    f'{ConfigFileFactory._path}{campaign.previous_name}{ConfigFileFactory._config_extension}',
+                    file_name)
 
             with open(file_name, 'wb') as file_object:
                 pickle.dump(campaign, file_object)
@@ -139,7 +141,8 @@ class ConfigFileFactory:
 
     @staticmethod
     def load_config_files() -> list:
-        campaign_files = [x for x in os.listdir(ConfigFileFactory._path) if x.endswith(ConfigFileFactory._config_extension)]
+        campaign_files = [x for x in os.listdir(ConfigFileFactory._path) if
+                          x.endswith(ConfigFileFactory._config_extension)]
         parsed_campaigns = list()
 
         for index, campaign_name in enumerate(campaign_files):
@@ -149,7 +152,8 @@ class ConfigFileFactory:
                     parsed_campaigns.append(campaign)
                     file_object.close()
             except decoder.JSONDecodeError:
-                print(f"WARNING: config file for campaign {campaign_name} is corrupted. Skipping...")
+                print(
+                    f"WARNING: config file for campaign {campaign_name} is corrupted. Skipping...")
         return parsed_campaigns
 
     @staticmethod
