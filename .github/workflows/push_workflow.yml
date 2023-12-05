@@ -25,9 +25,6 @@ jobs:
     - name: Acceptance Tests using unittest
       run: |
         python ./tests/test_acceptance.py
-    - name: Acceptance Tests using unittest
-      run: |
-        python ./tests/test_acceptance.py
     - name: Coverage Report
       run: |
         coverage run -m pytest ./tests/test_acceptance.py 
