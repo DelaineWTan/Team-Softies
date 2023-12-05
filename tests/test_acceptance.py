@@ -7,6 +7,7 @@ import unittest
 from unittest.mock import patch
 from io import StringIO
 import inspect
+import time
 # Project Module Imports
 from main import UserMenu
 from output_messages import output_messages as output
@@ -14,11 +15,22 @@ from factory_classes import ConfigFileFactory
 from object_classes import Campaign
 
 
+def measure_latency(test_func):
+    def wrapper(*args, **kwargs):
+        start_time = time.time()
+        result = test_func(*args, **kwargs)
+        elapsed_time = time.time() - start_time
+        print(f"Test {test_func.__name__} took {elapsed_time * 1000:.2f} milliseconds.")
+        return result
+    return wrapper
+
+
 class MainMenuTest(unittest.TestCase):
     def setUp(self):
         # Create a StringIO object to capture printed output
         self.user_menu = UserMenu()
 
+    @measure_latency
     @patch('builtins.input', side_effect=['1', 'no choice', '3', '3'])  # mock input order (edit, invalid, return, quit)
     def test_select_edit_choice(self, mock_input):
         # Test scenario: Selecting "Edit" choice from the main menu
@@ -38,6 +50,7 @@ class MainMenuTest(unittest.TestCase):
 
         self.assertEqual(printed_output, expected_output)
 
+    @measure_latency
     @patch('builtins.input', side_effect=['2', 'no choice', '2', '3'])  # mock input order (play, invalid, return, quit)
     def test_select_play_choice(self, mock_input):
         # Test scenario: Selecting "Play" choice from the main menu
@@ -82,6 +95,7 @@ class EditorMenuTest(unittest.TestCase):
         if os.path.isfile(file_path):
             os.remove(file_path)
 
+    @measure_latency
     @patch('builtins.input', side_effect=['1', 'unittest', '9', '2', '3'])
     def test_select_new_campaign(self, mock_input):
         file_path = os.path.join(self._configs_path, self._file_name)
@@ -103,6 +117,7 @@ class EditorMenuTest(unittest.TestCase):
         self.assertTrue(print_output, expected_output)
         self.assertTrue(os.path.isfile(file_path))
 
+    @measure_latency
     @patch('builtins.input', side_effect=['2', '2', '3'])
     def test_select_edit_campaign(self, mock_input):
         file_path = os.path.join(self._configs_path, self._file_name)
@@ -121,6 +136,7 @@ class EditorMenuTest(unittest.TestCase):
 
         self.assertEqual(print_output, expected_output)
 
+    @measure_latency
     @patch('builtins.input', side_effect=['2', '1', '7', '1', '3'])
     def test_select_delete_campaign(self, mock_input):
         # Creates file to delete for test
@@ -159,6 +175,7 @@ class CombatEventTest(unittest.TestCase):
         # cls._menu.display_main_menu()
         pass
 
+    @measure_latency
     @patch('builtins.input', side_effect=['1'])
     def test_select_attack_option(self, mock_input):
         # Test combat event: Selecting "Attack" option
@@ -174,6 +191,7 @@ class CombatEventTest(unittest.TestCase):
         self.assertEqual(printed_output, expected_output)
         pass
 
+    @measure_latency
     @patch('builtins.input', side_effect=['2', '2'])
     def test_select_defend_option(self, mock_input):
         # Test combat event: Selecting "Attack" option
@@ -189,6 +207,7 @@ class CombatEventTest(unittest.TestCase):
         self.assertEqual(printed_output, expected_output)
         pass
 
+    @measure_latency
     @patch('builtins.input', side_effect=['3'])
     def test_select_item_option(self, mock_input):
         # Test combat event: Selecting "Attack" option
@@ -203,6 +222,7 @@ class CombatEventTest(unittest.TestCase):
         self.assertEqual(printed_output, expected_output)
         pass
 
+    @measure_latency
     @patch('builtins.input', side_effect=['4'])
     def test_select_flee_option(self, mock_input):
         # Test combat event: Selecting "Attack" option
@@ -229,6 +249,7 @@ class ChoiceEventTest(unittest.TestCase):
         # cls._menu.display_main_menu()
         pass
 
+    @measure_latency
     @patch('builtins.input', side_effect=['1'])
     def test_select_choice_option(self, mock_input):
         # Test combat event: Selecting "Attack" option
@@ -242,6 +263,7 @@ class ChoiceEventTest(unittest.TestCase):
         self.assertEqual(printed_output, expected_output)
         pass
 
+    @measure_latency
     @patch('builtins.input', side_effect=['2'])
     def test_select_end_game_choice(self, mock_input):
         # Test combat event: Selecting "Attack" option
