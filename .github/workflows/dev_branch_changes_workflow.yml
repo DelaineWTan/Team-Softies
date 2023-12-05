@@ -36,4 +36,4 @@ jobs:
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
     - name: Test with pytest using test_debug.py
       run: |
-        pytest /tests/test_debug.py
+        pytest ./test_debug.py
