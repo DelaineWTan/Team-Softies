@@ -278,5 +278,31 @@ class ChoiceEventTest(unittest.TestCase):
         pass
 
 
+def run_tests_in_loop(num_iterations=100):
+    start_time = time.time()
+
+    for _ in range(num_iterations):
+        print(f"\n--- Iteration {_ + 1} ---")
+
+        # Reload the test cases for each iteration
+        test_suite = unittest.TestLoader().loadTestsFromTestCase(MainMenuTest)
+        test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(EditorMenuTest))
+        test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(CombatEventTest))
+        test_suite.addTests(unittest.TestLoader().loadTestsFromTestCase(ChoiceEventTest))
+
+        # Create a new TextTestRunner instance for each iteration
+        test_runner = unittest.TextTestRunner()
+
+        # Run the tests using the new test_suite and test_runner
+        result = test_runner.run(test_suite)
+
+        # Optionally, you can collect and print more information about the test results
+        print(f"Tests run: {result.testsRun}, Failures: {len(result.failures)}, Errors: {len(result.errors)}")
+
+    total_elapsed_time = time.time() - start_time
+    print(f"\nTotal time for {num_iterations} iterations: {total_elapsed_time:.2f} seconds")
+
+
 if __name__ == '__main__':
-    unittest.main()
+    num_iterations = 100  # You can adjust the number of iterations
+    run_tests_in_loop(num_iterations)
