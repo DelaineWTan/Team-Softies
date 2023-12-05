@@ -46,6 +46,33 @@ class EventFactory:
     def link_event(event_id_1, event_id_2):
         EventFactory.events_tree[event_id_1].choices.append(event_id_2)
 
+    @staticmethod
+    def print_events():
+        for event in EventFactory.events_tree.values():
+            print(f"| {event.event_id} : {event.description} -> {event.choices}")
+
+    @staticmethod
+    def start_events():
+        # get initial event, event 0
+        init_event = EventFactory.events_tree["0"]
+        temp_event = init_event
+        # print event 0
+        while len(temp_event.choices) != 0:
+            print(f"| -=+ {temp_event.description} +=-")
+            print(f"| {temp_event.dialogue}")
+            print("Choose an option:")
+            choice_count = 1
+            count_to_choices = {}
+            for n in temp_event.choices:
+                print(f"{choice_count}. Choice {n}")
+                count_to_choices[choice_count] = n
+                choice_count += 1
+            player_choice = int(input("Choice: "))
+            temp_event = EventFactory.events_tree[count_to_choices[player_choice]]
+        print(f"| -=+ {temp_event.description} +=-")
+        print(f"| {temp_event.dialogue}")
+        print("Campaign ended. Going back to campaign list...")
+
 
 class CampaignFactory:
     campaigns = []
