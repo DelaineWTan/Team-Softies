@@ -1,12 +1,7 @@
-import sys
-import os
 import unittest
 from unittest.mock import patch
 from io import StringIO
 from main import UserMenu
-
-# Add the path to your project's root directory
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 
 class TestStringMethods(unittest.TestCase):
