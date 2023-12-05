@@ -98,7 +98,7 @@ class CampaignFactory:
 
             setattr(campaign_prop, prop_name, new_prop_value)
         else:
-            print(f"Error: changing invalid campaign property...")
+            print("Error: changing invalid campaign property...")
 
     @staticmethod
     def _process_new_campaign_name(prop_name: str, new_prop_value) -> None:
@@ -115,7 +115,8 @@ class ConfigFileFactory:
     @staticmethod
     def create_config_file(campaign: Campaign) -> None:
         try:
-            file_name = f'{ConfigFileFactory._path}{campaign.name}{ConfigFileFactory._config_extension}'
+            file_name = (f'{ConfigFileFactory._path}{campaign.name}'
+                         f'{ConfigFileFactory._config_extension}')
             with open(file_name, 'xb') as file_object:
                 pickle.dump(campaign, file_object)
             file_object.close()
@@ -127,10 +128,12 @@ class ConfigFileFactory:
     @staticmethod
     def save_config_file(campaign: Campaign) -> None:
         try:
-            file_name = f'{ConfigFileFactory._path}{campaign.name}{ConfigFileFactory._config_extension}'
+            file_name = (f'{ConfigFileFactory._path}{campaign.name}'
+                         f'{ConfigFileFactory._config_extension}')
             if campaign.previous_name:
                 os.rename(
-                    f'{ConfigFileFactory._path}{campaign.previous_name}{ConfigFileFactory._config_extension}',
+                    f'{ConfigFileFactory._path}{campaign.previous_name}'
+                    f'{ConfigFileFactory._config_extension}',
                     file_name)
 
             with open(file_name, 'wb') as file_object:
