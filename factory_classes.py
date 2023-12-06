@@ -137,7 +137,9 @@ class CampaignFactory:
 
 class ConfigFileFactory:
     _path = 'game_configs/'
+    _path_backup = 'game_configs/backups/'
     _config_extension = '.bin'
+    _config_backup_extension = '.bin.bak'
 
     @staticmethod
     def create_config_file(campaign: Campaign) -> None:
