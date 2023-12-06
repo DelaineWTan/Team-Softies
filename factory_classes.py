@@ -1,6 +1,7 @@
 import os
 import re
 import pickle
+import shutil
 from json import decoder
 from object_classes import Campaign, DialogueEvent
 from CustomExceptions import forbidden_filename_chars_error as fb
@@ -97,6 +98,7 @@ class CampaignFactory:
     @staticmethod
     def save_campaign() -> None:
         ConfigFileFactory.save_config_file(CampaignFactory.current_campaign)
+        ConfigFileFactory.save_config_backup_file(CampaignFactory.current_campaign)
         CampaignFactory.current_campaign.previous_name = None
 
     @staticmethod
@@ -105,6 +107,7 @@ class CampaignFactory:
             raise fb.ForbiddenFilenameCharsError
         campaign = Campaign(name)
         ConfigFileFactory.create_config_file(campaign)
+        ConfigFileFactory.save_config_backup_file(campaign)
         CampaignFactory.add_campaign(campaign)
 
     @staticmethod
@@ -137,7 +140,6 @@ class CampaignFactory:
 
 class ConfigFileFactory:
     _path = 'game_configs/'
-    _path_backup = 'game_configs/backups/'
     _config_extension = '.bin'
     _config_backup_extension = '.bin.bak'
 
@@ -168,6 +170,22 @@ class ConfigFileFactory:
             with open(file_name, 'wb') as file_object:
                 pickle.dump(campaign, file_object)
             file_object.close()
+        except OSError:
+            raise OSError
+
+    @staticmethod
+    def save_config_backup_file(campaign: Campaign) -> None:
+        try:
+            file_name = (f'{ConfigFileFactory._path}{campaign.name}'
+                         f'{ConfigFileFactory._config_extension}')
+            bak_path = (f'{ConfigFileFactory._path}{campaign.name}'
+                        f'{ConfigFileFactory._config_backup_extension}')
+            if campaign.previous_name:
+                os.rename(
+                    f'{ConfigFileFactory._path}{campaign.previous_name}'
+                    f'{ConfigFileFactory._config_extension}',
+                    file_name)
+            shutil.copy(file_name, bak_path)
         except OSError:
             raise OSError
 
