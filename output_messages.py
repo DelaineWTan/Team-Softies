@@ -56,3 +56,11 @@ class output_messages:
     @staticmethod
     def delete_missing_config_file(filename: str) -> str:
         return f'\'{filename}\' cannot be deleted since it is not in the game_configs folder.'
+    
+    @staticmethod
+    def input_exceeds_max_length(length: int) -> str:
+        return f'Input length cannot be longer than {length}.'
+    
+    @staticmethod
+    def input_less_min_length(length: int) -> str:
+        return f'Input length cannot be less than {length}.'

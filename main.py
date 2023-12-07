@@ -2,6 +2,7 @@ from factory_classes import *
 from object_classes import *
 from output_messages import output_messages as output
 import random
+from CustomExceptions import input_length_error as ile
 
 BACK_KEYWORD = 'back'
 
@@ -56,8 +57,10 @@ class UserMenu:
             user_input = None
             try:
                 user_input = input(output.campaign_name_prompt()).strip()
-                if len(user_input) == 0:
-                    raise ValueError
+                if len(user_input) < self._campaign_factory.CAMPAIGN_NAME_LEN_MIN:
+                    raise ile.InputLengthError
+                if len(user_input) > self._campaign_factory.CAMPAIGN_NAME_LEN_MAX:
+                    raise ile.InputLengthError
                 elif user_input.lower() == BACK_KEYWORD:
                     break
 
@@ -67,13 +70,17 @@ class UserMenu:
                 self.display_edit_campaign_menu(True)
                 break
             except FileExistsError:
-                print(f'{user_input} already exists as another name.')
-            except ValueError:
-                print("Name cannot be empty, please try again.")
+                print(f'{user_input} already exists as another file.')
             except OSError:
                 print(output.invalid_OS_filename(user_input))
             except fb.ForbiddenFilenameCharsError:
                 print(output.invalid_chars_campaign_name(user_input))
+            except ile.InputLengthError:
+                if (len(user_input) < self._campaign_factory.CAMPAIGN_NAME_LEN_MIN):
+                    print(output.input_less_min_length(self._campaign_factory.CAMPAIGN_NAME_LEN_MIN))
+                else: 
+                    print(output.input_exceeds_max_length(self._campaign_factory.CAMPAIGN_NAME_LEN_MAX))
+            
 
     # def display_new_campaign_menu():
     #     while True:

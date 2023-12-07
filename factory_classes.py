@@ -75,6 +75,9 @@ class EventFactory:
 
 
 class CampaignFactory:
+    CAMPAIGN_NAME_LEN_MIN = 1
+    CAMPAIGN_NAME_LEN_MAX = 125
+
     campaigns = []
     current_campaign = None
 
