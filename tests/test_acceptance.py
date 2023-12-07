@@ -96,6 +96,7 @@ class EditorMenuTest(unittest.TestCase):
         # Code to set up resources before all tests in this class
         cls._menu = UserMenu()
         cls._file_name = "unittest.bin"
+        cls._backup_file_name = "unittest.bin.bak"
         cls._configs_path = "game_configs"
         cls._file_manager = ConfigFileFactory()
         cls._campaign = Campaign("unittest")
@@ -153,8 +154,11 @@ class EditorMenuTest(unittest.TestCase):
     def test_select_delete_campaign(self, _):
         # Creates file to delete for test
         file_path = os.path.join(self._configs_path, self._file_name)
+        backup_path = os.path.join(self._configs_path, self._backup_file_name)
         if not os.path.isfile(file_path):
             self._file_manager.create_config_file(self._campaign)
+        if not  os.path.isfile(backup_path):
+            self._file_manager.save_config_backup_file(self._campaign)
 
         campaign_list = 'Campaign list:\n1. unittest\n2. Back\n'
         post_campaign_list = 'Campaign list:\n'
@@ -174,6 +178,7 @@ class EditorMenuTest(unittest.TestCase):
 
         self.assertEqual(print_output, expected_output)
         self.assertFalse(os.path.isfile(file_path))
+        self.assertFalse(os.path.isfile(backup_path))
 
 
 class CombatEventTest(unittest.TestCase):
