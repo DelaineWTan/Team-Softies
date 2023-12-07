@@ -501,7 +501,7 @@ class UserMenu:
         #     else:
         #         print("Invalid choice, please try again.")
 
-    def start_campaign(self):
+    def start_campaign(self, campaign: Campaign):
         # @TODO properly extract campaign data to start campaign event sequence
         self._events_factory.events_tree = self._campaign_factory.current_campaign.events
         player = self._campaign_factory.current_campaign.player_list[0]
