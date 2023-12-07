@@ -29,6 +29,15 @@ class EditorBBTests(unittest.TestCase):
         + 'nyahnogiehsoyyeurelvoceaherevoiclotpaesihtenrumonivethuhjoe')
     CAMPAIGN_NAME_INVALID_MAX = ('Saaneniotordatawwaariehwehohuazeyajietaavoiseinhiohtitdeetiqauyu'
         + 'etatognualseokoseatciindeejaoheuhaumaameofuotseewhoseohtoephao')
+    
+    CAMPAIGN_NAME_INVALID_MIN_ALL_SPEC = '/'
+    CAMPAIGN_NAME_INVALID_LOWER_ALL_SPEC = '*/'
+    CAMPAIGN_NAME_INVALID_NOMINAL_ALL_SPEC = ('*?)()_(^$$^&*(?*/*/))*/}/*/*//*/*???<<<><'
+        + ':""?"::::":><>*&$&#%@%@')
+    CAMPAIGN_NAME_INVALID_UPPER_ALL_SPEC = ('*?)()_(^$$^&*(?*/*/))*/}/*/*//*/*???<<<><:"' 
+        + '"?"::::":><>*&$&#%@%@&*(?*/*/))*<</*/*//>/*???<<<><:*?)()_(')
+    CAMPAIGN_NAME_INVALID_MAX_ALL_SPEC = ('$$^&*(?*/*/))*/}/*/*//*/*???<<<><:*?)()_(^$$^&*(?*/*/))*/}/*/*//*/*???<<<><:""?"::::":><>*&$&#%@%@'
+        + '*?)()_(^$$^&*(?*/*/))*/}//*//**???<<><:""?"::::":><>*&$&#%@%@')
 
     @classmethod
     def setUpClass(cls):
@@ -122,5 +131,76 @@ class EditorBBTests(unittest.TestCase):
         actual_output = mock_stdout.getvalue().strip()
         expected_output = (output.campaign_editor_choices() + '\n' +
                            output.input_less_min_length(CampaignFactory.CAMPAIGN_NAME_LEN_MIN))
+        self.assertTrue(actual_output, expected_output)
+        self.assertFalse(os.path.isfile(file_path))
+
+    @patch('builtins.input', side_effect=['1', CAMPAIGN_NAME_INVALID_MIN_ALL_SPEC, 'back', '3'])
+    def test_create_campaign_invalid_spec_chars_boundary_value_min(self, _):
+        EditorBBTests.tearDownClass()
+        file_path = os.path.join(self._configs_path, self.CAMPAIGN_NAME_INVALID_MIN_ALL_SPEC + 
+                                 EditorBBTests._extension)
+        with patch('sys.stdout', new_callable=StringIO) as mock_stdout:
+            self._menu.display_editor_menu()
+
+        actual_output = mock_stdout.getvalue().strip()
+        expected_output = (output.campaign_editor_choices() + '\n' +
+            output.invalid_chars_campaign_name(self.CAMPAIGN_NAME_INVALID_MIN_ALL_SPEC))
+        self.assertTrue(actual_output, expected_output)
+        self.assertFalse(os.path.isfile(file_path))
+
+    @patch('builtins.input', side_effect=['1', CAMPAIGN_NAME_INVALID_LOWER_ALL_SPEC, 'back', '3'])
+    def test_create_campaign_invalid_spec_chars_boundary_value_lower(self, _):
+        EditorBBTests.tearDownClass()
+        file_path = os.path.join(self._configs_path, self.CAMPAIGN_NAME_INVALID_LOWER_ALL_SPEC + 
+                                 EditorBBTests._extension)
+        with patch('sys.stdout', new_callable=StringIO) as mock_stdout:
+            self._menu.display_editor_menu()
+
+        actual_output = mock_stdout.getvalue().strip()
+        expected_output = (output.campaign_editor_choices() + '\n' +
+            output.invalid_chars_campaign_name(self.CAMPAIGN_NAME_INVALID_LOWER_ALL_SPEC))
+        self.assertTrue(actual_output, expected_output)
+        self.assertFalse(os.path.isfile(file_path))
+
+    @patch('builtins.input', side_effect=['1', CAMPAIGN_NAME_INVALID_NOMINAL_ALL_SPEC, 'back',
+                                           '3'])
+    def test_create_campaign_invalid_spec_chars_boundary_value_nominal(self, _):
+        EditorBBTests.tearDownClass()
+        file_path = os.path.join(self._configs_path, self.CAMPAIGN_NAME_INVALID_NOMINAL_ALL_SPEC + 
+                                 EditorBBTests._extension)
+        with patch('sys.stdout', new_callable=StringIO) as mock_stdout:
+            self._menu.display_editor_menu()
+
+        actual_output = mock_stdout.getvalue().strip()
+        expected_output = (output.campaign_editor_choices() + '\n' +
+            output.invalid_chars_campaign_name(self.CAMPAIGN_NAME_INVALID_NOMINAL_ALL_SPEC))
+        self.assertTrue(actual_output, expected_output)
+        self.assertFalse(os.path.isfile(file_path))
+
+    @patch('builtins.input', side_effect=['1', CAMPAIGN_NAME_INVALID_UPPER_ALL_SPEC, 'back', '3'])
+    def test_create_campaign_invalid_spec_chars_boundary_value_upper(self, _):
+        EditorBBTests.tearDownClass()
+        file_path = os.path.join(self._configs_path, self.CAMPAIGN_NAME_INVALID_UPPER_ALL_SPEC + 
+                                 EditorBBTests._extension)
+        with patch('sys.stdout', new_callable=StringIO) as mock_stdout:
+            self._menu.display_editor_menu()
+
+        actual_output = mock_stdout.getvalue().strip()
+        expected_output = (output.campaign_editor_choices() + '\n' +
+            output.invalid_chars_campaign_name(self.CAMPAIGN_NAME_INVALID_UPPER_ALL_SPEC))
+        self.assertTrue(actual_output, expected_output)
+        self.assertFalse(os.path.isfile(file_path))
+
+    @patch('builtins.input', side_effect=['1', CAMPAIGN_NAME_INVALID_MAX_ALL_SPEC, 'back', '3'])
+    def test_create_campaign_invalid_spec_chars_boundary_value_max(self, _):
+        EditorBBTests.tearDownClass()
+        file_path = os.path.join(self._configs_path, self.CAMPAIGN_NAME_INVALID_MAX_ALL_SPEC + 
+                                 EditorBBTests._extension)
+        with patch('sys.stdout', new_callable=StringIO) as mock_stdout:
+            self._menu.display_editor_menu()
+
+        actual_output = mock_stdout.getvalue().strip()
+        expected_output = (output.campaign_editor_choices() + '\n' +
+            output.invalid_chars_campaign_name(self.CAMPAIGN_NAME_INVALID_MAX_ALL_SPEC))
         self.assertTrue(actual_output, expected_output)
         self.assertFalse(os.path.isfile(file_path))
