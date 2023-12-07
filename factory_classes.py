@@ -126,8 +126,7 @@ class EventFactory:
             print(f"| {temp_event.dialogue}")
 
             # @TODO handle combat event somehow else
-            print(temp_event.dialogue)
-            if "combat" in temp_event.dialogue.lower().strip():
+            if "combat" in temp_event.description.lower().strip():
                 EventFactory.run_combat_event(player, npc)
 
             print("Choose an option:")
