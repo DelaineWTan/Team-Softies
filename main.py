@@ -497,10 +497,6 @@ class UserMenu:
         # print("########################################################################")
         # self.display_main_menu()
 
-    # @TODO fake use item menu
-    def use_item_menu(self):
-        print("You used a potion and healed 1 hp!")
-
     # @TODO Fake choice event
     def run_choice_event(self):
         while True:

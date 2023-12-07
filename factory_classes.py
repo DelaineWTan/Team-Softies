@@ -26,6 +26,13 @@ class EventFactory:
         defender.current_hp -= damage
 
     @staticmethod
+    def use_item_menu(player: Player):
+        print("You used a potion and healed 3 hp!")
+        player.current_hp += 3
+        if player.current_hp > player.max_hp:
+            player.current_hp = player.max_hp
+
+    @staticmethod
     def run_combat_event(player: Player, enemy: NPC) -> Player:
         print(f"You engaged combat with {enemy.name}!")
         while True:
