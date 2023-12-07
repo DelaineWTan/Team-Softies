@@ -185,8 +185,7 @@ class UserMenu:
                   "2. Edit an existing event\n"
                   "3. Delete existing event\n"
                   "4. Link events (create choices)\n"
-                  "5. Unlink events (remove choices)\n"
-                  "6. Return to edit campaign menu")
+                  "5. Return to edit campaign menu")
             user_choice = int(input("Enter your choice (1-5):"))
             if user_choice == 1:
                 self.display_new_event_menu()
@@ -196,9 +195,10 @@ class UserMenu:
                 self.display_delete_event_menu()
             elif user_choice == 4:
                 self.display_link_event_menu()
+            # Out of scope :/
+            # elif user_choice == 5:
+            #     self.display_unlink_event_menu()
             elif user_choice == 5:
-                self.display_unlink_event_menu()
-            elif user_choice == 6:
                 self._campaign_factory.current_campaign.events = self._events_factory.events_tree
                 self._campaign_factory.save_campaign()
                 return
@@ -224,12 +224,11 @@ class UserMenu:
             if event_id not in self._events_factory.events_tree:
                 print(f"Event {event_id} not found")
                 return
-            print(f"Editing event {event_id}")
-            # print(self._events_manager.events_tree[event_id])
+            print(f"Editing event {event_id}: \"{self._events_factory.events_tree[event_id].description}\"")
+            print(f"Dialogue: {self._events_factory.events_tree[event_id].dialogue}")
             user_choice = None
             while user_choice != 3:
                 print("1. Edit description\n"
-                      # nothing else yet
                       "2. Edit dialogue\n"
                       "3. Cancel edit")
                 user_choice = int(input("Enter choice here (1-3): "))
@@ -262,9 +261,6 @@ class UserMenu:
         self._events_factory.delete_event(input_event_id)
         self._campaign_factory.current_campaign.events = self._events_factory.events_tree
         self._campaign_factory.save_campaign()
-
-    def display_unlink_event_menu(self):
-        pass
 
     # Edit events stuff end =================================
 
