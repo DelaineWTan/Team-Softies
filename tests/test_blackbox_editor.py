@@ -36,14 +36,14 @@ class EditorBBTests(unittest.TestCase):
         + ':""?"::::":><>*&$&#%@%@')
     CAMPAIGN_NAME_INVALID_UPPER_ALL_SPEC = ('*?)()_(^$$^&*(?*/*/))*/}/*/*//*/*???<<<><:"' 
         + '"?"::::":><>*&$&#%@%@&*(?*/*/))*<</*/*//>/*???<<<><:*?)()_(')
-    CAMPAIGN_NAME_INVALID_MAX_ALL_SPEC = ('$$^&*(?*/*/))*/}/*/*//*/*???<<<><:*?)()_(^$$^&*(?*/*/))*/}/*/*//*/*???<<<><:""?"::::":><>*&$&#%@%@'
+    CAMPAIGN_NAME_INVALID_MAX_ALL_SPEC = ('*?)()_(^$$^&*(?*/*/))*/}/*/*//*/*???<<<><:""?"::::":><>*&$&#%@%@'
         + '*?)()_(^$$^&*(?*/*/))*/}//*//**???<<><:""?"::::":><>*&$&#%@%@')
 
     @classmethod
     def setUpClass(cls):
         # Code to set up resources before all tests in this class
         cls._menu = UserMenu()
-        cls._file_name = "unittest.bin"
+        cls._file_name = "unittest"
         cls._extension = '.bin'
         cls._configs_path = "game_configs"
         cls._file_manager = ConfigFileFactory()
@@ -116,8 +116,9 @@ class EditorBBTests(unittest.TestCase):
 
         actual_output = mock_stdout.getvalue().strip()
         expected_output = (output.campaign_editor_choices() + '\n' +
-                           output.input_less_min_length(CampaignFactory.CAMPAIGN_NAME_LEN_MIN))
-        self.assertTrue(actual_output, expected_output)
+            output.input_less_min_length(CampaignFactory.CAMPAIGN_NAME_LEN_MIN) + 
+            '\n' + output.campaign_editor_choices())
+        self.assertEqual(actual_output, expected_output)
         self.assertFalse(os.path.isfile(file_path))
 
     @patch('builtins.input', side_effect=['1', CAMPAIGN_NAME_INVALID_MAX, 'back', '3'])
@@ -130,8 +131,9 @@ class EditorBBTests(unittest.TestCase):
 
         actual_output = mock_stdout.getvalue().strip()
         expected_output = (output.campaign_editor_choices() + '\n' +
-                           output.input_less_min_length(CampaignFactory.CAMPAIGN_NAME_LEN_MIN))
-        self.assertTrue(actual_output, expected_output)
+            output.input_exceeds_max_length(CampaignFactory.CAMPAIGN_NAME_LEN_MAX) + 
+            '\n' + output.campaign_editor_choices())
+        self.assertEqual(actual_output, expected_output)
         self.assertFalse(os.path.isfile(file_path))
 
     @patch('builtins.input', side_effect=['1', CAMPAIGN_NAME_INVALID_MIN_ALL_SPEC, 'back', '3'])
@@ -144,8 +146,9 @@ class EditorBBTests(unittest.TestCase):
 
         actual_output = mock_stdout.getvalue().strip()
         expected_output = (output.campaign_editor_choices() + '\n' +
-            output.invalid_chars_campaign_name(self.CAMPAIGN_NAME_INVALID_MIN_ALL_SPEC))
-        self.assertTrue(actual_output, expected_output)
+            output.invalid_chars_campaign_name(self.CAMPAIGN_NAME_INVALID_MIN_ALL_SPEC) + 
+            '\n' + output.campaign_editor_choices())
+        self.assertEqual(actual_output, expected_output)
         self.assertFalse(os.path.isfile(file_path))
 
     @patch('builtins.input', side_effect=['1', CAMPAIGN_NAME_INVALID_LOWER_ALL_SPEC, 'back', '3'])
@@ -158,8 +161,9 @@ class EditorBBTests(unittest.TestCase):
 
         actual_output = mock_stdout.getvalue().strip()
         expected_output = (output.campaign_editor_choices() + '\n' +
-            output.invalid_chars_campaign_name(self.CAMPAIGN_NAME_INVALID_LOWER_ALL_SPEC))
-        self.assertTrue(actual_output, expected_output)
+            output.invalid_chars_campaign_name(self.CAMPAIGN_NAME_INVALID_LOWER_ALL_SPEC) + 
+            '\n' + output.campaign_editor_choices())
+        self.assertEqual(actual_output, expected_output)
         self.assertFalse(os.path.isfile(file_path))
 
     @patch('builtins.input', side_effect=['1', CAMPAIGN_NAME_INVALID_NOMINAL_ALL_SPEC, 'back',
@@ -173,8 +177,9 @@ class EditorBBTests(unittest.TestCase):
 
         actual_output = mock_stdout.getvalue().strip()
         expected_output = (output.campaign_editor_choices() + '\n' +
-            output.invalid_chars_campaign_name(self.CAMPAIGN_NAME_INVALID_NOMINAL_ALL_SPEC))
-        self.assertTrue(actual_output, expected_output)
+            output.invalid_chars_campaign_name(self.CAMPAIGN_NAME_INVALID_NOMINAL_ALL_SPEC) + 
+            '\n' + output.campaign_editor_choices())
+        self.assertEqual(actual_output, expected_output)
         self.assertFalse(os.path.isfile(file_path))
 
     @patch('builtins.input', side_effect=['1', CAMPAIGN_NAME_INVALID_UPPER_ALL_SPEC, 'back', '3'])
@@ -187,8 +192,9 @@ class EditorBBTests(unittest.TestCase):
 
         actual_output = mock_stdout.getvalue().strip()
         expected_output = (output.campaign_editor_choices() + '\n' +
-            output.invalid_chars_campaign_name(self.CAMPAIGN_NAME_INVALID_UPPER_ALL_SPEC))
-        self.assertTrue(actual_output, expected_output)
+            output.invalid_chars_campaign_name(self.CAMPAIGN_NAME_INVALID_UPPER_ALL_SPEC) + 
+            '\n' + output.campaign_editor_choices())
+        self.assertEqual(actual_output, expected_output)
         self.assertFalse(os.path.isfile(file_path))
 
     @patch('builtins.input', side_effect=['1', CAMPAIGN_NAME_INVALID_MAX_ALL_SPEC, 'back', '3'])
@@ -201,14 +207,15 @@ class EditorBBTests(unittest.TestCase):
 
         actual_output = mock_stdout.getvalue().strip()
         expected_output = (output.campaign_editor_choices() + '\n' +
-            output.invalid_chars_campaign_name(self.CAMPAIGN_NAME_INVALID_MAX_ALL_SPEC))
-        self.assertTrue(actual_output, expected_output)
+            output.invalid_chars_campaign_name(self.CAMPAIGN_NAME_INVALID_MAX_ALL_SPEC) + 
+            '\n' + output.campaign_editor_choices())
+        self.assertEqual(actual_output, expected_output)
         self.assertFalse(os.path.isfile(file_path))
 
     @patch('builtins.input', side_effect=['1', 'unittest', 'back', '3'])
     def test_create_campaign_invalid_duplicate_name(self, _):
         # Creates file to delete for test
-        file_path = os.path.join(self._configs_path, self._file_name)
+        file_path = os.path.join(self._configs_path, self._file_name + self._extension)
         if not os.path.isfile(file_path):
             self._file_manager.create_config_file(self._campaign)
 
@@ -217,8 +224,8 @@ class EditorBBTests(unittest.TestCase):
 
         actual_output = mock_stdout.getvalue().strip()
         expected_output = (output.campaign_editor_choices() + '\n' +
-            output.filename_exists(self._file_name))
-        self.assertTrue(actual_output, expected_output)
+            output.filename_exists(self._file_name) + '\n' + output.campaign_editor_choices())
+        self.assertEqual(actual_output, expected_output)
         self.assertTrue(os.path.isfile(file_path))
 
     @patch('builtins.input', side_effect=['1', 'back', '3'])
