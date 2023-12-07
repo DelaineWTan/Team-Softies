@@ -228,6 +228,24 @@ class EditorBBTests(unittest.TestCase):
         self.assertEqual(actual_output, expected_output)
         self.assertTrue(os.path.isfile(file_path))
 
+    @patch('builtins.input', side_effect=['1', 'UNITTEST', 'back', '3'])
+    def test_create_campaign_invalid_duplicate_name_case_sensitive(self, _):
+        # Creates file to delete for test
+        file_path = os.path.join(self._configs_path, self._file_name + 
+                                 self._extension)
+        if not os.path.isfile(file_path):
+            self._file_manager.create_config_file(self._campaign)
+
+        with patch('sys.stdout', new_callable=StringIO) as mock_stdout:
+            self._menu.display_editor_menu()
+
+        actual_output = mock_stdout.getvalue().strip()
+        expected_output = (output.campaign_editor_choices() + '\n' +
+            output.filename_exists(self._file_name.upper()) + '\n' + 
+            output.campaign_editor_choices())
+        self.assertEqual(actual_output, expected_output)
+        self.assertTrue(os.path.isfile(file_path))
+
     @patch('builtins.input', side_effect=['1', 'back', '3'])
     def test_create_campaign_valid_back_prompt(self, _):
         with patch('sys.stdout', new_callable=StringIO) as mock_stdout:
@@ -237,3 +255,130 @@ class EditorBBTests(unittest.TestCase):
         expected_output = (output.campaign_editor_choices() + '\n' 
                            + output.campaign_editor_choices())
         self.assertEqual(actual_output, expected_output)
+
+    @patch('builtins.input', side_effect=['1', 'BACK', '3'])
+    def test_create_campaign_valid_back_prompt_case_max(self, _):
+        with patch('sys.stdout', new_callable=StringIO) as mock_stdout:
+            self._menu.display_editor_menu()
+
+        actual_output = mock_stdout.getvalue().strip()
+        expected_output = (output.campaign_editor_choices() + '\n' 
+                           + output.campaign_editor_choices())
+        self.assertEqual(actual_output, expected_output)
+
+    @patch('builtins.input', side_effect=['1', 'BAck', '3'])
+    def test_create_campaign_valid_back_prompt_case_nominal(self, _):
+        with patch('sys.stdout', new_callable=StringIO) as mock_stdout:
+            self._menu.display_editor_menu()
+
+        actual_output = mock_stdout.getvalue().strip()
+        expected_output = (output.campaign_editor_choices() + '\n' 
+                           + output.campaign_editor_choices())
+        self.assertEqual(actual_output, expected_output)
+
+    @patch('builtins.input', side_effect=['1', 'bacK', '3'])
+    def test_create_campaign_valid_back_prompt_case_min(self, _):
+        with patch('sys.stdout', new_callable=StringIO) as mock_stdout:
+            self._menu.display_editor_menu()
+
+        actual_output = mock_stdout.getvalue().strip()
+        expected_output = (output.campaign_editor_choices() + '\n' 
+                           + output.campaign_editor_choices())
+        self.assertEqual(actual_output, expected_output)
+
+    @patch('builtins.input', side_effect=['1', 'bac', '9', '2', '3'])
+    def test_create_campaign_invalid_back_prompt_min(self, _):
+        file_path = os.path.join(self._configs_path, 'bac.bin')
+        EditorBBTests.tearDownClass()
+
+        with patch('sys.stdout', new_callable=StringIO):
+            self._menu.display_editor_menu()
+
+        self.assertTrue(os.path.isfile(file_path))
+
+    @patch('builtins.input', side_effect=['1', 'try to back out from this', '9', '2', '3'])
+    def test_create_campaign_invalid_back_prompt_nominal(self, _):
+        file_path = os.path.join(self._configs_path, 'try to back out from this.bin')
+        EditorBBTests.tearDownClass()
+
+        with patch('sys.stdout', new_callable=StringIO):
+            self._menu.display_editor_menu()
+
+        self.assertTrue(os.path.isfile(file_path))
+
+    # =========================================================== #
+
+    @patch('builtins.input', side_effect=['2', '1', '1', CAMPAIGN_NAME_VALID_MIN, 
+                                          '9', '2', '3'])
+    def test_rename_campaign_valid_boundary_value_min(self, _):
+        EditorBBTests.tearDownClass()
+        # Creates file to delete for test
+        file_path = os.path.join(self._configs_path, self._file_name)
+        self._file_manager.create_config_file(self._campaign)
+
+        file_path = os.path.join(self._configs_path, self.CAMPAIGN_NAME_VALID_MIN + 
+                                 EditorBBTests._extension)
+        
+        with patch('sys.stdout', new_callable=StringIO):
+            self._menu.display_editor_menu()
+        self.assertTrue(os.path.isfile(file_path))
+        
+    @patch('builtins.input', side_effect=['2', '1', '1', CAMPAIGN_NAME_VALID_LOWER, 
+                                          '9', '2', '3'])
+    def test_rename_campaign_valid_boundary_value_lower(self, _):
+        EditorBBTests.tearDownClass()
+        # Creates file to delete for test
+        file_path = os.path.join(self._configs_path, self._file_name)
+        self._file_manager.create_config_file(self._campaign)
+
+        file_path = os.path.join(self._configs_path, self.CAMPAIGN_NAME_VALID_LOWER + 
+                                 EditorBBTests._extension)
+        
+        with patch('sys.stdout', new_callable=StringIO):
+            self._menu.display_editor_menu()
+        self.assertTrue(os.path.isfile(file_path))
+
+    @patch('builtins.input', side_effect=['2', '1', '1', CAMPAIGN_NAME_VALID_NOMINAL, 
+                                          '9', '2', '3'])
+    def test_rename_campaign_valid_boundary_value_nominal(self, _):
+        EditorBBTests.tearDownClass()
+        # Creates file to delete for test
+        file_path = os.path.join(self._configs_path, self._file_name)
+        self._file_manager.create_config_file(self._campaign)
+
+        file_path = os.path.join(self._configs_path, self.CAMPAIGN_NAME_VALID_NOMINAL + 
+                                 EditorBBTests._extension)
+        
+        with patch('sys.stdout', new_callable=StringIO):
+            self._menu.display_editor_menu()
+        self.assertTrue(os.path.isfile(file_path))
+
+    @patch('builtins.input', side_effect=['2', '1', '1', CAMPAIGN_NAME_VALID_UPPER, 
+                                          '9', '2', '3'])
+    def test_rename_campaign_valid_boundary_value_upper(self, _):
+        EditorBBTests.tearDownClass()
+        # Creates file to delete for test
+        file_path = os.path.join(self._configs_path, self._file_name)
+        self._file_manager.create_config_file(self._campaign)
+
+        file_path = os.path.join(self._configs_path, self.CAMPAIGN_NAME_VALID_UPPER + 
+                                 EditorBBTests._extension)
+        
+        with patch('sys.stdout', new_callable=StringIO):
+            self._menu.display_editor_menu()
+        self.assertTrue(os.path.isfile(file_path))
+
+    @patch('builtins.input', side_effect=['2', '1', '1', CAMPAIGN_NAME_VALID_MAX, 
+                                          '9', '2', '3'])
+    def test_rename_campaign_valid_boundary_value_max(self, _):
+        EditorBBTests.tearDownClass()
+        # Creates file to delete for test
+        file_path = os.path.join(self._configs_path, self._file_name)
+        self._file_manager.create_config_file(self._campaign)
+
+        file_path = os.path.join(self._configs_path, self.CAMPAIGN_NAME_VALID_MAX + 
+                                 EditorBBTests._extension)
+        
+        with patch('sys.stdout', new_callable=StringIO):
+            self._menu.display_editor_menu()
+        self.assertTrue(os.path.isfile(file_path))
