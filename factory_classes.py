@@ -1,6 +1,7 @@
 import os
 import re
 import pickle
+import shutil
 from json import decoder
 from object_classes import Campaign, DialogueEvent, Player, NPC, Character
 from CustomExceptions import forbidden_filename_chars_error as fb
@@ -106,12 +107,10 @@ class EventFactory:
 
     @staticmethod
     def delete_event(event_id):
-        is_successful = True
-        try:
-            del EventFactory.events_tree[event_id]
-        except KeyError:
-            is_successful = False
-        return is_successful
+        EventFactory.events_tree.pop(event_id)
+        for event in EventFactory.events_tree.values():
+            if event_id in event.choices:
+                event.choices.remove(event_id)
 
     @staticmethod
     def link_event(event_id_1, event_id_2):
@@ -119,8 +118,10 @@ class EventFactory:
 
     @staticmethod
     def print_events():
-        for event in EventFactory.events_tree.values():
-            print(f"| {event.event_id} : {event.description} -> {event.choices}")
+        # for event in EventFactory.events_tree.values():
+        #     print(f"| {event.event_id} : {event.description} -> {event.choices}")
+        list(map(lambda event: print(f"| {event.event_id} : {event.description} -> {event.choices}"),
+                 EventFactory.events_tree.values()))
 
     @staticmethod
     def start_events(player: Player, npc: NPC):
@@ -151,6 +152,9 @@ class EventFactory:
 
 
 class CampaignFactory:
+    CAMPAIGN_NAME_LEN_MIN = 1
+    CAMPAIGN_NAME_LEN_MAX = 125
+
     campaigns = []
     current_campaign = None
 
@@ -173,6 +177,7 @@ class CampaignFactory:
     @staticmethod
     def save_campaign() -> None:
         ConfigFileFactory.save_config_file(CampaignFactory.current_campaign)
+        ConfigFileFactory.save_config_backup_file(CampaignFactory.current_campaign)
         CampaignFactory.current_campaign.previous_name = None
 
     @staticmethod
@@ -181,6 +186,7 @@ class CampaignFactory:
             raise fb.ForbiddenFilenameCharsError
         campaign = Campaign(name)
         ConfigFileFactory.create_config_file(campaign)
+        ConfigFileFactory.save_config_backup_file(campaign)
         CampaignFactory.add_campaign(campaign)
 
     @staticmethod
@@ -195,13 +201,13 @@ class CampaignFactory:
         CampaignFactory.campaigns = ConfigFileFactory.load_config_files()
 
     @staticmethod
-    def edit_campaign_property(campaign_prop, prop_name: str, new_prop_value) -> None:       
+    def edit_campaign_property(campaign_prop, prop_name: str, new_prop_value) -> None:
         if hasattr(campaign_prop, prop_name):
             CampaignFactory._process_new_campaign_name(prop_name, new_prop_value)
 
             setattr(campaign_prop, prop_name, new_prop_value)
         else:
-            print(f"Error: changing invalid campaign property...")
+            print("Error: changing invalid campaign property...")
 
     @staticmethod
     def _process_new_campaign_name(prop_name: str, new_prop_value) -> None:
@@ -214,11 +220,13 @@ class CampaignFactory:
 class ConfigFileFactory:
     _path = 'game_configs/'
     _config_extension = '.bin'
+    _config_backup_extension = '.bin.bak'
 
     @staticmethod
     def create_config_file(campaign: Campaign) -> None:
         try:
-            file_name = f'{ConfigFileFactory._path}{campaign.name}{ConfigFileFactory._config_extension}'
+            file_name = (f'{ConfigFileFactory._path}{campaign.name}'
+                         f'{ConfigFileFactory._config_extension}')
             with open(file_name, 'xb') as file_object:
                 pickle.dump(campaign, file_object)
             file_object.close()
@@ -230,9 +238,13 @@ class ConfigFileFactory:
     @staticmethod
     def save_config_file(campaign: Campaign) -> None:
         try:
-            file_name = f'{ConfigFileFactory._path}{campaign.name}{ConfigFileFactory._config_extension}'
+            file_name = (f'{ConfigFileFactory._path}{campaign.name}'
+                         f'{ConfigFileFactory._config_extension}')
             if campaign.previous_name:
-                os.rename(f'{ConfigFileFactory._path}{campaign.previous_name}{ConfigFileFactory._config_extension}', file_name)
+                os.rename(
+                    f'{ConfigFileFactory._path}{campaign.previous_name}'
+                    f'{ConfigFileFactory._config_extension}',
+                    file_name)
 
             with open(file_name, 'wb') as file_object:
                 pickle.dump(campaign, file_object)
@@ -241,8 +253,25 @@ class ConfigFileFactory:
             raise OSError
 
     @staticmethod
+    def save_config_backup_file(campaign: Campaign) -> None:
+        try:
+            file_name = (f'{ConfigFileFactory._path}{campaign.name}'
+                         f'{ConfigFileFactory._config_extension}')
+            bak_path = (f'{ConfigFileFactory._path}{campaign.name}'
+                        f'{ConfigFileFactory._config_backup_extension}')
+            if campaign.previous_name:
+                os.rename(
+                    f'{ConfigFileFactory._path}{campaign.previous_name}'
+                    f'{ConfigFileFactory._config_backup_extension}',
+                    bak_path)
+            shutil.copy(file_name, bak_path)
+        except OSError:
+            raise OSError
+
+    @staticmethod
     def load_config_files() -> list:
-        campaign_files = [x for x in os.listdir(ConfigFileFactory._path) if x.endswith(ConfigFileFactory._config_extension)]
+        campaign_files = [x for x in os.listdir(ConfigFileFactory._path) if
+                          x.endswith(ConfigFileFactory._config_extension)]
         parsed_campaigns = list()
 
         for index, campaign_name in enumerate(campaign_files):
@@ -251,9 +280,40 @@ class ConfigFileFactory:
                     campaign = pickle.load(file_object)
                     parsed_campaigns.append(campaign)
                     file_object.close()
-            except decoder.JSONDecodeError:
-                print(f"WARNING: config file for campaign {campaign_name} is corrupted. Skipping...")
+            except (decoder.JSONDecodeError, pickle.UnpicklingError):
+                print(
+                    f"WARNING: config file for campaign {campaign_name} is corrupted. Checking for backup...")
+                if ConfigFileFactory.restore_backup_file(campaign_name):
+                    try:
+                        with open(f'{ConfigFileFactory._path}{campaign_name}', 'rb') as file_object:
+                            campaign = pickle.load(file_object)
+                            parsed_campaigns.append(campaign)
+                            file_object.close()
+                    except (decoder.JSONDecodeError, pickle.UnpicklingError):
+                        print(
+                            f"WARNING: config file for campaign {campaign_name} is corrupted. Skipping...")
+                else:
+                    print(
+                        f"WARNING: config file for campaign {campaign_name} is could not be restored. Skipping...")
         return parsed_campaigns
+
+    @staticmethod
+    def restore_backup_file(campaign_name_ext) -> bool:
+        campaign_name = campaign_name_ext.split('.')[0]
+        file_name = (f'{ConfigFileFactory._path}{campaign_name}'
+                     f'{ConfigFileFactory._config_extension}')
+        print(campaign_name)
+        bak_path = (f'{ConfigFileFactory._path}{campaign_name}'
+                    f'{ConfigFileFactory._config_backup_extension}')
+        try:
+            shutil.copy(bak_path, file_name)
+            return True
+        except (IsADirectoryError, PermissionError, shutil.SpecialFileError):
+            return False
+        except (IOError, OSError):
+            print(
+                f"WARNING: backup file for campaign {campaign_name} does not exist...")
+            return False
 
     @staticmethod
     def delete_config_file(file_name) -> None:

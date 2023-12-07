@@ -2,6 +2,7 @@ from factory_classes import *
 from object_classes import *
 from output_messages import output_messages as output
 import random
+from CustomExceptions import input_length_error as ile
 
 BACK_KEYWORD = 'back'
 
@@ -56,8 +57,10 @@ class UserMenu:
             user_input = None
             try:
                 user_input = input(output.campaign_name_prompt()).strip()
-                if len(user_input) == 0:
-                    raise ValueError
+                if len(user_input) < self._campaign_factory.CAMPAIGN_NAME_LEN_MIN:
+                    raise ile.InputLengthError
+                if len(user_input) > self._campaign_factory.CAMPAIGN_NAME_LEN_MAX:
+                    raise ile.InputLengthError
                 elif user_input.lower() == BACK_KEYWORD:
                     break
 
@@ -67,13 +70,17 @@ class UserMenu:
                 self.display_edit_campaign_menu(True)
                 break
             except FileExistsError:
-                print(f'{user_input} already exists as another name.')
-            except ValueError:
-                print("Name cannot be empty, please try again.")
+                print(output.filename_exists(user_input))
             except OSError:
                 print(output.invalid_OS_filename(user_input))
             except fb.ForbiddenFilenameCharsError:
                 print(output.invalid_chars_campaign_name(user_input))
+            except ile.InputLengthError:
+                if (len(user_input) < self._campaign_factory.CAMPAIGN_NAME_LEN_MIN):
+                    print(output.input_less_min_length(self._campaign_factory.CAMPAIGN_NAME_LEN_MIN))
+                else: 
+                    print(output.input_exceeds_max_length(self._campaign_factory.CAMPAIGN_NAME_LEN_MAX))
+            
 
     # def display_new_campaign_menu():
     #     while True:
@@ -152,8 +159,8 @@ class UserMenu:
                     print(output.invalid_choice())
             except ValueError:
                 print(output.invalid_choice_int_expected())
-            except AttributeError:
-                print("caught attr error")
+            # except AttributeError:
+            #     print("caught attr error")
 
     def delete_campaign(self, campaign_name: str) -> None:
         try:
@@ -178,16 +185,22 @@ class UserMenu:
             self._events_factory.print_events()
             print("1. Create new event\n"
                   "2. Edit an existing event\n"
-                  "3. Link events (create choices)\n"
-                  "4. Return to edit campaign menu")
-            user_choice = int(input("Enter your choice (1-3):"))
+                  "3. Delete existing event\n"
+                  "4. Link events (create choices)\n"
+                  "5. Return to edit campaign menu")
+            user_choice = int(input("Enter your choice (1-5):"))
             if user_choice == 1:
                 self.display_new_event_menu()
             elif user_choice == 2:
                 self.display_edit_existing_events_menu()
             elif user_choice == 3:
-                self.display_link_event_menu()
+                self.display_delete_event_menu()
             elif user_choice == 4:
+                self.display_link_event_menu()
+            # Out of scope :/
+            # elif user_choice == 5:
+            #     self.display_unlink_event_menu()
+            elif user_choice == 5:
                 self._campaign_factory.current_campaign.events = self._events_factory.events_tree
                 self._campaign_factory.save_campaign()
                 return
@@ -213,12 +226,11 @@ class UserMenu:
             if event_id not in self._events_factory.events_tree:
                 print(f"Event {event_id} not found")
                 return
-            print(f"Editing event {event_id}")
-            # print(self._events_manager.events_tree[event_id])
+            print(f"Editing event {event_id}: \"{self._events_factory.events_tree[event_id].description}\"")
+            print(f"Dialogue: {self._events_factory.events_tree[event_id].dialogue}")
             user_choice = None
             while user_choice != 3:
                 print("1. Edit description\n"
-                      # nothing else yet
                       "2. Edit dialogue\n"
                       "3. Cancel edit")
                 user_choice = int(input("Enter choice here (1-3): "))
@@ -242,6 +254,13 @@ class UserMenu:
         input1 = input("Enter first event id: ")
         input2 = input("Enter second event id: ")
         self._events_factory.link_event(input1, input2)
+        self._campaign_factory.current_campaign.events = self._events_factory.events_tree
+        self._campaign_factory.save_campaign()
+
+    def display_delete_event_menu(self):
+        print("Deleting event...")
+        input_event_id = input("Enter event id of event you wish to delete: ")
+        self._events_factory.delete_event(input_event_id)
         self._campaign_factory.current_campaign.events = self._events_factory.events_tree
         self._campaign_factory.save_campaign()
 
@@ -460,7 +479,7 @@ class UserMenu:
                     print(f"Playing {self._campaign_factory.current_campaign.name} Campaign")
                     # self._campaign_manager.start_campaign()
                     # self._campaign_manager.start_campaign()
-                    self.start_campaign()
+                    self.start_campaign(self._campaign_factory.current_campaign)
                     continue
                 elif user_choice == 1 + choice_count:
                     # self.display_editor_menu()

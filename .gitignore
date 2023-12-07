@@ -240,3 +240,4 @@ fabric.properties
 # Game configs
 game_configs/*.json
 game_configs/*.bin
+game_configs/*.bin.bak
