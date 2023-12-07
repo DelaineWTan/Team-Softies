@@ -110,10 +110,12 @@ class CampaignFactory:
         ConfigFileFactory.save_config_backup_file(campaign)
         CampaignFactory.add_campaign(campaign)
 
+
     @staticmethod
     def delete_campaign() -> None:
         campaign_name = CampaignFactory.current_campaign.name
         ConfigFileFactory.delete_config_file(campaign_name)
+        ConfigFileFactory.delete_config_backup_file(campaign_name)
         CampaignFactory.campaigns.remove(CampaignFactory.current_campaign)
         CampaignFactory.set_no_current_campaign()
 
@@ -169,6 +171,7 @@ class ConfigFileFactory:
 
             with open(file_name, 'wb') as file_object:
                 pickle.dump(campaign, file_object)
+                file_object.flush()
             file_object.close()
         except OSError:
             raise OSError
@@ -181,10 +184,13 @@ class ConfigFileFactory:
             bak_path = (f'{ConfigFileFactory._path}{campaign.name}'
                         f'{ConfigFileFactory._config_backup_extension}')
             if campaign.previous_name:
+                print(bak_path)
+                print(f'{ConfigFileFactory._path}{campaign.previous_name}'
+                      f'{ConfigFileFactory._config_backup_extension}')
                 os.rename(
                     f'{ConfigFileFactory._path}{campaign.previous_name}'
-                    f'{ConfigFileFactory._config_extension}',
-                    file_name)
+                    f'{ConfigFileFactory._config_backup_extension}',
+                    bak_path)
             shutil.copy(file_name, bak_path)
         except OSError:
             raise OSError
@@ -240,6 +246,14 @@ class ConfigFileFactory:
     def delete_config_file(file_name) -> None:
         try:
             file_path = f'{ConfigFileFactory._path}{file_name}{ConfigFileFactory._config_extension}'
+            os.remove(file_path)
+        except OSError:
+            raise OSError
+
+    @staticmethod
+    def delete_config_backup_file(file_name) -> None:
+        try:
+            file_path = f'{ConfigFileFactory._path}{file_name}{ConfigFileFactory._config_backup_extension}'
             os.remove(file_path)
         except OSError:
             raise OSError
