@@ -210,7 +210,7 @@ class ConfigFileFactory:
                             campaign = pickle.load(file_object)
                             parsed_campaigns.append(campaign)
                             file_object.close()
-                    except decoder.JSONDecodeError:
+                    except (decoder.JSONDecodeError, pickle.UnpicklingError):
                         print(
                             f"WARNING: config file for campaign {campaign_name} is corrupted. Skipping...")
                 else:
