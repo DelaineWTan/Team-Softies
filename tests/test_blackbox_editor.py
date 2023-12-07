@@ -204,3 +204,29 @@ class EditorBBTests(unittest.TestCase):
             output.invalid_chars_campaign_name(self.CAMPAIGN_NAME_INVALID_MAX_ALL_SPEC))
         self.assertTrue(actual_output, expected_output)
         self.assertFalse(os.path.isfile(file_path))
+
+    @patch('builtins.input', side_effect=['1', 'unittest', 'back', '3'])
+    def test_create_campaign_invalid_duplicate_name(self, _):
+        # Creates file to delete for test
+        file_path = os.path.join(self._configs_path, self._file_name)
+        if not os.path.isfile(file_path):
+            self._file_manager.create_config_file(self._campaign)
+
+        with patch('sys.stdout', new_callable=StringIO) as mock_stdout:
+            self._menu.display_editor_menu()
+
+        actual_output = mock_stdout.getvalue().strip()
+        expected_output = (output.campaign_editor_choices() + '\n' +
+            output.filename_exists(self._file_name))
+        self.assertTrue(actual_output, expected_output)
+        self.assertTrue(os.path.isfile(file_path))
+
+    @patch('builtins.input', side_effect=['1', 'back', '3'])
+    def test_create_campaign_valid_back_prompt(self, _):
+        with patch('sys.stdout', new_callable=StringIO) as mock_stdout:
+            self._menu.display_editor_menu()
+
+        actual_output = mock_stdout.getvalue().strip()
+        expected_output = (output.campaign_editor_choices() + '\n' 
+                           + output.campaign_editor_choices())
+        self.assertEqual(actual_output, expected_output)

@@ -64,3 +64,7 @@ class output_messages:
     @staticmethod
     def input_less_min_length(length: int) -> str:
         return f'Input length cannot be less than {length}.'
+    
+    @staticmethod
+    def filename_exists(filename: str) -> str:
+        return f'{filename} already exists as another file.'

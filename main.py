@@ -70,7 +70,7 @@ class UserMenu:
                 self.display_edit_campaign_menu(True)
                 break
             except FileExistsError:
-                print(f'{user_input} already exists as another file.')
+                print(output.filename_exists(user_input))
             except OSError:
                 print(output.invalid_OS_filename(user_input))
             except fb.ForbiddenFilenameCharsError:
