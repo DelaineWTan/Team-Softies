@@ -105,8 +105,11 @@ class EditorMenuTest(unittest.TestCase):
     def tearDownClass(cls):
         # Code to clean up resources after all tests in this class
         file_path = os.path.join(cls._configs_path, cls._file_name)
+        backup_path = os.path.join(cls._configs_path, cls._backup_file_name)
         if os.path.isfile(file_path):
             os.remove(file_path)
+        if os.path.isfile(backup_path):
+            os.remove(backup_path)
 
     @measure_latency
     @patch('builtins.input', side_effect=['1', 'unittest', '9', '2', '3'])
