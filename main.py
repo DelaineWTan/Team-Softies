@@ -185,7 +185,7 @@ class UserMenu:
                   "2. Edit an existing event\n"
                   "3. Link events (create choices)\n"
                   "4. Return to edit campaign menu")
-            user_choice = int(input("Enter your choice (1-3):"))
+            user_choice = int(input("Enter your choice (1-5):"))
             if user_choice == 1:
                 self.display_new_event_menu()
             elif user_choice == 2:
@@ -193,6 +193,8 @@ class UserMenu:
             elif user_choice == 3:
                 self.display_link_event_menu()
             elif user_choice == 4:
+                self.display_delete_event_menu()
+            elif user_choice == 5:
                 self._campaign_factory.current_campaign.events = self._events_factory.events_tree
                 self._campaign_factory.save_campaign()
                 return
@@ -250,6 +252,10 @@ class UserMenu:
         self._campaign_factory.current_campaign.events = self._events_factory.events_tree
         self._campaign_factory.save_campaign()
 
+    def display_delete_event_menu(self):
+        print("Deleting event...")
+        input_event_id = input("Enter event id of event you wish to delete: ")
+        self._events_factory.delete_event(input_event_id)
     # Edit events stuff end =================================
 
     # def edit_campaign_name_menu(self):

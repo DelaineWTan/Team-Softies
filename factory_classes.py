@@ -36,12 +36,7 @@ class EventFactory:
 
     @staticmethod
     def delete_event(event_id):
-        is_successful = True
-        try:
-            del EventFactory.events_tree[event_id]
-        except KeyError:
-            is_successful = False
-        return is_successful
+        EventFactory.events_tree.pop(event_id)
 
     @staticmethod
     def link_event(event_id_1, event_id_2):
