@@ -47,8 +47,10 @@ class EventFactory:
 
     @staticmethod
     def print_events():
-        for event in EventFactory.events_tree.values():
-            print(f"| {event.event_id} : {event.description} -> {event.choices}")
+        # for event in EventFactory.events_tree.values():
+        #     print(f"| {event.event_id} : {event.description} -> {event.choices}")
+        list(map(lambda event: print(f"| {event.event_id} : {event.description} -> {event.choices}"),
+                 EventFactory.events_tree.values()))
 
     @staticmethod
     def start_events():
