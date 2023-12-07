@@ -9,6 +9,8 @@ from unittest.mock import patch
 from io import StringIO
 import inspect
 import time
+import tracemalloc
+
 # Project Module Imports
 from main import UserMenu
 from output_messages import output_messages as output
@@ -176,6 +178,8 @@ class EditorMenuTest(unittest.TestCase):
 
 class CombatEventTest(unittest.TestCase):
 
+    maxDiff = None
+
     @classmethod
     def setUpClass(cls):
         cls._menu = UserMenu()
@@ -195,13 +199,30 @@ class CombatEventTest(unittest.TestCase):
             self._menu.run_combat_event(test_player, test_enemy)
         # Assertions go here
         printed_output = mock_stdout.getvalue().strip()
-        expected_output = ("You are fighting a Level 1 Goblin!\n"
-                           "1. Attack\n2. Defend\n3. Use Item\n4. Flee\n"
-                           # "Enter your choice (1-4):\n"
-                           "You attacked the Level 1 Goblin for 5 damage!\n"
-                           "Level 1 Goblin died!")
-        # self.assertEqual(printed_output, expected_output)
-        self.assertTrue(True, True)
+        expected_output = ("You engaged combat with NPC Anon!\n"
+                           "You are fighting NPC Anon!\n"
+                           "Anon HP: 10/10\n"
+                           "NPC Anon HP: 10/10\n"
+                           "1. Attack\n"
+                           "2. Defend\n"
+                           "3. Use Item\n"
+                           "4. Flee\n"
+                           "You attack first!\n"
+                           "Anon attacked NPC Anon for 5 damage!\n"
+                           "NPC Anon attacks!\n"
+                           "NPC Anon attacked Anon for 5 damage!\n"
+                           "You are fighting NPC Anon!\n"
+                           "Anon HP: 5/10\n"
+                           "NPC Anon HP: 5/10\n"
+                           "1. Attack\n"
+                           "2. Defend\n"
+                           "3. Use Item\n"
+                           "4. Flee\n"
+                           "You attack first!\n"
+                           "Anon attacked NPC Anon for 5 damage!\n"
+                           "You defeated NPC Anon!\n"
+                           "You gained 1 experience.")
+        self.assertEqual(printed_output, expected_output)
         pass
 
     @measure_latency
@@ -214,13 +235,34 @@ class CombatEventTest(unittest.TestCase):
             self._menu.run_combat_event(test_player, test_enemy)
         # Assertions go here
         printed_output = mock_stdout.getvalue().strip()
-        expected_output = ("You are fighting a Level 1 Goblin!\n"
-                           "1. Attack\n2. Defend\n3. Use Item\n4. Flee\n"
-                           # "Enter your choice (1-4):\n"
+        expected_output = ("You engaged combat with NPC Anon!\n"
+                           "You are fighting NPC Anon!\n"
+                           "Anon HP: 10/10\n"
+                           "NPC Anon HP: 10/10\n"
+                           "1. Attack\n"
+                           "2. Defend\n"
+                           "3. Use Item\n"
+                           "4. Flee\n"
                            "You defended yourself!\n"
-                           "Level 1 Goblin hit you for 1 damage!")
-        # self.assertEqual(printed_output, expected_output)
-        self.assertTrue(True, True)
+                           "NPC Anon hit you for 1 damage!\n"
+                           "You are fighting NPC Anon!\n"
+                           "Anon HP: 9/10\n"
+                           "NPC Anon HP: 10/10\n"
+                           "1. Attack\n"
+                           "2. Defend\n"
+                           "3. Use Item\n"
+                           "4. Flee\n"
+                           "You defended yourself!\n"
+                           "NPC Anon hit you for 1 damage!\n"
+                           "You are fighting NPC Anon!\n"
+                           "Anon HP: 8/10\n"
+                           "NPC Anon HP: 10/10\n"
+                           "1. Attack\n"
+                           "2. Defend\n"
+                           "3. Use Item\n"
+                           "4. Flee\n"
+                           "You fled successfully!")
+        self.assertEqual(printed_output, expected_output)
         pass
 
     @measure_latency
@@ -233,12 +275,24 @@ class CombatEventTest(unittest.TestCase):
             self._menu.run_combat_event(test_player, test_enemy)
         # Assertions go here
         printed_output = mock_stdout.getvalue().strip()
-        expected_output = ("You are fighting a Level 1 Goblin!\n"
-                           "1. Attack\n2. Defend\n3. Use Item\n4. Flee\n"
-                           # "Enter your choice (1-4):\n"
-                           "You used a potion and healed 1 hp!")
-        # self.assertEqual(printed_output, expected_output)
-        self.assertTrue(True, True)
+        expected_output = ("You engaged combat with NPC Anon!\n"
+                           "You are fighting NPC Anon!\n"
+                           "Anon HP: 10/10\n"
+                           "NPC Anon HP: 10/10\n"
+                           "1. Attack\n"
+                           "2. Defend\n"
+                           "3. Use Item\n"
+                           "4. Flee\n"
+                           "You used a potion and healed 3 hp!\n"
+                           "You are fighting NPC Anon!\n"
+                           "Anon HP: 10/10\n"
+                           "NPC Anon HP: 10/10\n"
+                           "1. Attack\n"
+                           "2. Defend\n"
+                           "3. Use Item\n"
+                           "4. Flee\n"
+                           "You fled successfully!")
+        self.assertEqual(printed_output, expected_output)
         pass
 
     @measure_latency
@@ -251,12 +305,16 @@ class CombatEventTest(unittest.TestCase):
             self._menu.run_combat_event(test_player, test_enemy)
         # Assertions go here
         printed_output = mock_stdout.getvalue().strip()
-        expected_output = ("You are fighting a Level 1 Goblin!\n"
-                           "1. Attack\n2. Defend\n3. Use Item\n4. Flee\n"
-                           # "Enter your choice (1-4):\n"
+        expected_output = ("You engaged combat with NPC Anon!\n"
+                           "You are fighting NPC Anon!\n"
+                           "Anon HP: 10/10\n"
+                           "NPC Anon HP: 10/10\n"
+                           "1. Attack\n"
+                           "2. Defend\n"
+                           "3. Use Item\n"
+                           "4. Flee\n"
                            "You fled successfully!")
-        # self.assertEqual(printed_output, expected_output)
-        self.assertTrue(True, True)
+        self.assertEqual(printed_output, expected_output)
         pass
 
 
@@ -328,5 +386,14 @@ def run_tests_in_loop(num_iterations=100):
 
 
 if __name__ == '__main__':
-    num_iterations = 100  # You can adjust the number of iterations
-    run_tests_in_loop(num_iterations)
+    tracemalloc.start()
+
+    num_tests = [10, 100, 1000, 10000]  # You can adjust the number of iterations
+    run_tests_in_loop(num_tests[2])
+
+    snapshot = tracemalloc.take_snapshot()
+    top_stats = snapshot.statistics('lineno')
+    for stat in top_stats[:10]:
+        print(stat)
+
+
