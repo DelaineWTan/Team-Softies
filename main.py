@@ -424,7 +424,7 @@ class UserMenu:
                     print(f"Playing {self._campaign_factory.current_campaign.name} Campaign")
                     # self._campaign_manager.start_campaign()
                     # self._campaign_manager.start_campaign()
-                    self.start_campaign()
+                    self.start_campaign(self._campaign_factory.current_campaign)
                     continue
                 elif user_choice == 1 + choice_count:
                     # self.display_editor_menu()
@@ -460,14 +460,14 @@ class UserMenu:
         # self.display_main_menu()
 
     def combat_attack(self, attacker: Character, defender: Character):
-        hit_mod = random.random()
-
-        if hit_mod <= 0.1:
-            print("A critical Hit!")
-            hit_mod = 1.2
-        else:
-            hit_mod = 1
-
+        # critical hit mod
+        #hit_mod = random.random()
+        #
+        #if hit_mod <= 0.1:
+        #    print("A critical Hit!")
+        #    hit_mod = 1.2
+        #else:
+        hit_mod = 1
         damage = attacker.base_atk * hit_mod
         print(f"{attacker.name} attacked {defender.name} for {damage} damage!")
         defender.current_hp -= damage
@@ -512,8 +512,9 @@ class UserMenu:
             elif user_choice == 2:
                 print("You defended yourself!")
                 print(f"{enemy.name} hit you for 1 damage!")
+                player.current_hp -= 1
             elif user_choice == 3:
-                self.use_item_menu()
+                self.use_item_menu(player)
             elif user_choice == 4:
                 print("You fled successfully!")
                 break
@@ -521,8 +522,11 @@ class UserMenu:
                 print("Invalid choice, please try again.")
 
     # @TODO fake use item menu
-    def use_item_menu(self):
-        print("You used a potion and healed 1 hp!")
+    def use_item_menu(self, player: Player):
+        print("You used a potion and healed 3 hp!")
+        player.current_hp += 3;
+        if player.current_hp > player.max_hp:
+            player.current_hp = player.max_hp
 
     # @TODO Fake choice event
     def run_choice_event(self):
