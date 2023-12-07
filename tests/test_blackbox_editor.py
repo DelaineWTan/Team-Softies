@@ -27,6 +27,8 @@ class EditorBBTests(unittest.TestCase):
         + 'aatmadtaekyeihxeutaapzeamozeseeqrahne')
     CAMPAIGN_NAME_VALID_MAX = ('Qeathainlawcainxarhiteapheerlehwemaetfibosutoanmizeyhaahmaodohseta'
         + 'nyahnogiehsoyyeurelvoceaherevoiclotpaesihtenrumonivethuhjoe')
+    CAMPAIGN_NAME_INVALID_MAX = ('Saaneniotordatawwaariehwehohuazeyajietaavoiseinhiohtitdeetiqauyu'
+        + 'etatognualseokoseatciindeejaoheuhaumaameofuotseewhoseohtoephao')
 
     @classmethod
     def setUpClass(cls):
@@ -58,7 +60,7 @@ class EditorBBTests(unittest.TestCase):
         
     @patch('builtins.input', side_effect=['1', CAMPAIGN_NAME_VALID_LOWER, '9', '2', '3'])
     def test_create_campaign_valid_boundary_value_lower(self, _):
-        # EditorBBTests.tearDownClass()   
+        EditorBBTests.tearDownClass()   
         file_path = os.path.join(self._configs_path, self.CAMPAIGN_NAME_VALID_LOWER + 
                                  EditorBBTests._extension)
         
@@ -95,3 +97,30 @@ class EditorBBTests(unittest.TestCase):
         with patch('sys.stdout', new_callable=StringIO) as mock_output:
             self._menu.display_editor_menu()
         self.assertTrue(os.path.isfile(file_path))
+
+    @patch('builtins.input', side_effect=['1', '', 'back', '3'])
+    def test_create_campaign_invalid_boundary_value_min(self, _):
+        EditorBBTests.tearDownClass()
+        file_path = os.path.join(self._configs_path, EditorBBTests._extension)
+        with patch('sys.stdout', new_callable=StringIO) as mock_stdout:
+            self._menu.display_editor_menu()
+
+        actual_output = mock_stdout.getvalue().strip()
+        expected_output = (output.campaign_editor_choices() + '\n' +
+                           output.input_less_min_length(CampaignFactory.CAMPAIGN_NAME_LEN_MIN))
+        self.assertTrue(actual_output, expected_output)
+        self.assertFalse(os.path.isfile(file_path))
+
+    @patch('builtins.input', side_effect=['1', CAMPAIGN_NAME_INVALID_MAX, 'back', '3'])
+    def test_create_campaign_invalid_boundary_value_max(self, _):
+        EditorBBTests.tearDownClass()
+        file_path = os.path.join(self._configs_path, self.CAMPAIGN_NAME_INVALID_MAX + 
+                                 EditorBBTests._extension)
+        with patch('sys.stdout', new_callable=StringIO) as mock_stdout:
+            self._menu.display_editor_menu()
+
+        actual_output = mock_stdout.getvalue().strip()
+        expected_output = (output.campaign_editor_choices() + '\n' +
+                           output.input_less_min_length(CampaignFactory.CAMPAIGN_NAME_LEN_MIN))
+        self.assertTrue(actual_output, expected_output)
+        self.assertFalse(os.path.isfile(file_path))
