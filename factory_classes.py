@@ -3,7 +3,7 @@ import re
 import pickle
 import shutil
 from json import decoder
-from object_classes import Campaign, DialogueEvent
+from object_classes import Campaign, DialogueEvent, Player, NPC, Character
 from CustomExceptions import forbidden_filename_chars_error as fb
 
 BAD_FILENAME_CHARS = r'/\\<>:\"|?*'
@@ -11,6 +11,77 @@ BAD_FILENAME_CHARS = r'/\\<>:\"|?*'
 
 class EventFactory:
     events_tree = {}
+
+    @staticmethod
+    def combat_attack(attacker: Character, defender: Character):
+        # critical hit mod
+        # hit_mod = random.random()
+        #
+        # if hit_mod <= 0.1:
+        #    print("A critical Hit!")
+        #    hit_mod = 1.2
+        # else:
+        hit_mod = 1
+        damage = attacker.base_atk * hit_mod
+        print(f"{attacker.name} attacked {defender.name} for {damage} damage!")
+        defender.current_hp -= damage
+
+    @staticmethod
+    def use_item_menu(player: Player):
+        print("You used a potion and healed 3 hp!")
+        player.current_hp += 3
+        if player.current_hp > player.max_hp:
+            player.current_hp = player.max_hp
+
+    @staticmethod
+    def run_combat_event(player: Player, enemy: NPC) -> Player:
+        print(f"You engaged combat with {enemy.name}!")
+        while True:
+            print(f"You are fighting {enemy.name}!")
+            print(f"{player.name} HP: {player.current_hp}/{player.max_hp}")
+            print(f"{enemy.name} HP: {enemy.current_hp}/{enemy.max_hp}")
+            print("1. Attack")
+            print("2. Defend")
+            print("3. Use Item")
+            print("4. Flee")
+            user_choice = int(input(f"Enter your choice (1-4):"))
+            if user_choice == 1:
+                # @TODO max hp and current hp are still using default values
+                if player.base_spd >= enemy.base_spd:
+                    print(f"You attack first!")
+                    EventFactory.combat_attack(player, enemy)
+                    if enemy.current_hp <= 0:
+                        print(f"You defeated {enemy.name}!")
+                        print(f"You gained {enemy.exp} experience.")
+                        break
+                    print(f"{enemy.name} attacks!")
+                    EventFactory.combat_attack(enemy, player)
+                    if player.current_hp <= 0:
+                        print(f"You were defeated...")
+                        break
+                else:
+                    print(f"{enemy.name} attacks!")
+                    EventFactory.combat_attack(enemy, player)
+                    if player.current_hp <= 0:
+                        print(f"You were defeated...")
+                        break
+                    print(f"You attack!")
+                    EventFactory.combat_attack(player, enemy)
+                    if enemy.current_hp <= 0:
+                        print(f"You defeated {enemy.name}!")
+                        print(f"You gained {enemy.exp} experience.")
+                        break
+            elif user_choice == 2:
+                print("You defended yourself!")
+                print(f"{enemy.name} hit you for 1 damage!")
+                player.current_hp -= 1
+            elif user_choice == 3:
+                EventFactory.use_item_menu(player)
+            elif user_choice == 4:
+                print("You fled successfully!")
+                break
+            else:
+                print("Invalid choice, please try again.")
 
     @staticmethod
     def create_event(description, dialogue):
@@ -53,7 +124,7 @@ class EventFactory:
                  EventFactory.events_tree.values()))
 
     @staticmethod
-    def start_events():
+    def start_events(player: Player, npc: NPC):
         # get initial event, event 0
         init_event = EventFactory.events_tree["0"]
         temp_event = init_event
@@ -61,6 +132,11 @@ class EventFactory:
         while len(temp_event.choices) != 0:
             print(f"| -=+ {temp_event.description} +=-")
             print(f"| {temp_event.dialogue}")
+
+            # @TODO handle combat event somehow else
+            if "combat" in temp_event.description.lower().strip():
+                EventFactory.run_combat_event(player, npc)
+
             print("Choose an option:")
             choice_count = 1
             count_to_choices = {}

@@ -138,6 +138,8 @@ class UserMenu:
                     self.edit_events_menu()
                 elif user_choice == 4:
                     self.manage_campaign_players()
+                elif user_choice == 5:
+                    self.manage_campaign_npcs()
                 elif 1 <= user_choice <= 6:
                     print("Made a valid choice 1-6")
                 elif user_choice == 7:
@@ -334,6 +336,19 @@ class UserMenu:
             else:
                 print("Invalid choice, please try again.")
 
+    def manage_campaign_npcs(self):
+        while True:
+            print(f" --Non-Player Character List-- ")
+            for index, npc in enumerate(self._campaign_factory.current_campaign.npc_list):
+                print(f"{index + 1}. {npc.name}")
+            npc_index = int(
+                input(f"Enter your choice (1-{len(self._campaign_factory.current_campaign.npc_list)}):")) - 1
+            if 0 <= npc_index <= (len(self._campaign_factory.current_campaign.npc_list)):
+                self.manage_single_campaign_npc(npc_index)
+                break
+            else:
+                print("Invalid choice, please try again.")
+
     def manage_single_campaign_player(self, player_index):
         while True:
             print(f" --Player Character Details-- ")
@@ -356,6 +371,7 @@ class UserMenu:
             if user_choice == 1:
                 self._change_campaign_property_menu(self._campaign_factory.current_campaign.player_list[player_index]
                                                , "name", "name")
+                # self._campaign_manager.current_campaign.player_list[player_index].name = new_name
                 continue
             if user_choice == 2:
                 self._change_campaign_property_menu(self._campaign_factory.current_campaign.player_list[player_index]
@@ -398,6 +414,58 @@ class UserMenu:
             else:
                 print("Invalid choice, please try again.")
 
+    def manage_single_campaign_npc(self, player_index):
+        while True:
+            print(f" --Non-Player Character Details-- ")
+            print(f"{self._campaign_factory.current_campaign.npc_list[player_index]}")
+            print(f" -------- ")
+            print("1. Change NPC name")
+            print("2. Change NPC description")
+            print("3. Change NPC base hit points")
+            print("4. Change NPC base attack")
+            print("5. Change NPC base speed")
+            print("6. Change NPC experience given")
+            print("7. Change friendly/enemy NPC (selecting this will toggle to the other)")
+            print("8. Clear character")
+            print("9. Back")
+
+            user_choice = int(input("Enter your choice (1-9):"))
+            if user_choice == 1:
+                self._change_campaign_property_menu(self._campaign_factory.current_campaign.npc_list[player_index]
+                                               , "name", "name")
+                # self._campaign_manager.current_campaign.player_list[player_index].name = new_name
+                continue
+            if user_choice == 2:
+                self._change_campaign_property_menu(self._campaign_factory.current_campaign.npc_list[player_index]
+                                               , "description", "description")
+                continue
+            if user_choice == 3:
+                self._change_campaign_property_menu(self._campaign_factory.current_campaign.npc_list[player_index],
+                                               "base_hp", "base hit points")
+                continue
+            if user_choice == 4:
+                self._change_campaign_property_menu(self._campaign_factory.current_campaign.npc_list[player_index],
+                                               "base_atk", "base attack")
+                continue
+            if user_choice == 5:
+                self._change_campaign_property_menu(self._campaign_factory.current_campaign.npc_list[player_index],
+                                               "base_spd", "base speed")
+                continue
+            if user_choice == 6:
+                self._change_campaign_property_menu(self._campaign_factory.current_campaign.npc_list[player_index]
+                                               , "exp", "experience given")
+                continue
+            if user_choice == 7:
+                if (self._campaign_factory.current_campaign.npc_list[player_index].friendly):
+                    self._campaign_factory.current_campaign.npc_list[player_index].friendly = False
+                else:
+                    self._campaign_factory.current_campaign.npc_list[player_index].friendly = True
+                continue
+            if user_choice == 9:
+                break
+            else:
+                print("Invalid choice, please try again.")
+
     def display_play_existing_campaigns_menu(self):
         while True:
             try:
@@ -436,7 +504,9 @@ class UserMenu:
     def start_campaign(self, campaign: Campaign):
         # @TODO properly extract campaign data to start campaign event sequence
         self._events_factory.events_tree = self._campaign_factory.current_campaign.events
-        self._events_factory.start_events()
+        player = self._campaign_factory.current_campaign.player_list[0]
+        npc = self._campaign_factory.current_campaign.npc_list[0]
+        self._events_factory.start_events(player, npc)
 
         # self.run_combat_event(campaign.player_list[0], campaign.npc_list[0])
         # self.run_choice_event()
@@ -445,75 +515,6 @@ class UserMenu:
         # print("Campaign ended!")
         # print("########################################################################")
         # self.display_main_menu()
-
-    def combat_attack(self, attacker: Character, defender: Character):
-        # critical hit mod
-        #hit_mod = random.random()
-        #
-        #if hit_mod <= 0.1:
-        #    print("A critical Hit!")
-        #    hit_mod = 1.2
-        #else:
-        hit_mod = 1
-        damage = attacker.base_atk * hit_mod
-        print(f"{attacker.name} attacked {defender.name} for {damage} damage!")
-        defender.current_hp -= damage
-
-    def run_combat_event(self, player: Player, enemy: NPC) -> Player:
-        print(f"You engaged combat with {enemy.name}!")
-        while True:
-            print(f"You are fighting {enemy.name}!")
-            print(f"{player.name} HP: {player.current_hp}/{player.max_hp}")
-            print(f"{enemy.name} HP: {enemy.current_hp}/{enemy.max_hp}")
-            print("1. Attack")
-            print("2. Defend")
-            print("3. Use Item")
-            print("4. Flee")
-            user_choice = int(input(f"Enter your choice (1-4):"))
-            if user_choice == 1:
-                # @TODO max hp and current hp are still using default values
-                if player.base_spd >= enemy.base_spd:
-                    print(f"You attack first!")
-                    self.combat_attack(player, enemy)
-                    if enemy.current_hp <= 0:
-                        print(f"You defeated {enemy.name}!")
-                        print(f"You gained {enemy.exp} experience.")
-                        break
-                    print(f"{enemy.name} attacks!")
-                    self.combat_attack(enemy, player)
-                    if player.current_hp <= 0:
-                        print(f"You were defeated...")
-                        break
-                else:
-                    print(f"{enemy.name} attacks!")
-                    self.combat_attack(enemy, player)
-                    if player.current_hp <= 0:
-                        print(f"You were defeated...")
-                        break
-                    print(f"You attack!")
-                    self.combat_attack(player, enemy)
-                    if enemy.current_hp <= 0:
-                        print(f"You defeated {enemy.name}!")
-                        print(f"You gained {enemy.exp} experience.")
-                        break
-            elif user_choice == 2:
-                print("You defended yourself!")
-                print(f"{enemy.name} hit you for 1 damage!")
-                player.current_hp -= 1
-            elif user_choice == 3:
-                self.use_item_menu(player)
-            elif user_choice == 4:
-                print("You fled successfully!")
-                break
-            else:
-                print("Invalid choice, please try again.")
-
-    # @TODO fake use item menu
-    def use_item_menu(self, player: Player):
-        print("You used a potion and healed 3 hp!")
-        player.current_hp += 3;
-        if player.current_hp > player.max_hp:
-            player.current_hp = player.max_hp
 
     # @TODO Fake choice event
     def run_choice_event(self):

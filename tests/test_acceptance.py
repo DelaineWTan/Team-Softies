@@ -14,7 +14,7 @@ import tracemalloc
 # Project Module Imports
 from main import UserMenu
 from output_messages import output_messages as output
-from factory_classes import ConfigFileFactory
+from factory_classes import ConfigFileFactory, EventFactory
 from object_classes import Campaign
 from object_classes import Player
 from object_classes import NPC
@@ -182,7 +182,7 @@ class CombatEventTest(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls._menu = UserMenu()
+        cls._menu = EventFactory
 
     @classmethod
     def tearDownClass(cls):
@@ -388,12 +388,10 @@ def run_tests_in_loop(num_iterations=100):
 if __name__ == '__main__':
     tracemalloc.start()
 
-    num_tests = [10, 100, 1000, 10000]  # You can adjust the number of iterations
-    run_tests_in_loop(num_tests[2])
+    num_tests = [1, 10, 100, 1000, 10000]  # You can adjust the number of iterations
+    run_tests_in_loop(num_tests[0])
 
     snapshot = tracemalloc.take_snapshot()
     top_stats = snapshot.statistics('lineno')
     for stat in top_stats[:10]:
         print(stat)
-
-
