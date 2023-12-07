@@ -116,7 +116,7 @@ class EventFactory:
             print(f"| {event.event_id} : {event.description} -> {event.choices}")
 
     @staticmethod
-    def start_events():
+    def start_events(player: Player, npc: NPC):
         # get initial event, event 0
         init_event = EventFactory.events_tree["0"]
         temp_event = init_event
@@ -128,7 +128,7 @@ class EventFactory:
             # @TODO handle combat event somehow else
             print(temp_event.dialogue)
             if "combat" in temp_event.dialogue.lower().strip():
-                EventFactory.run_combat_event(Player(), NPC())
+                EventFactory.run_combat_event(player, npc)
 
             print("Choose an option:")
             choice_count = 1

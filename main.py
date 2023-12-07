@@ -509,9 +509,9 @@ class UserMenu:
     def start_campaign(self, campaign: Campaign):
         # @TODO properly extract campaign data to start campaign event sequence
         self._events_factory.events_tree = self._campaign_factory.current_campaign.events
-        self._events_factory.player = self._campaign_factory.current_campaign.player_list[0]
-        self._events_factory.NPC = self._campaign_factory.current_campaign.npc_list[0]
-        self._events_factory.start_events()
+        # player = self._campaign_factory.current_campaign.player_list[0]
+        # npc = self._campaign_factory.current_campaign.npc_list[0]
+        self._events_factory.start_events(player, npc)
 
         # self.run_combat_event(campaign.player_list[0], campaign.npc_list[0])
         # self.run_choice_event()
