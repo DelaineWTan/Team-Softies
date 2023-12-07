@@ -3,6 +3,7 @@ from object_classes import *
 from output_messages import output_messages as output
 import random
 
+
 BACK_KEYWORD = 'back'
 
 
@@ -23,7 +24,7 @@ class UserMenu:
                 continue
             elif user_choice == 2:
                 self.display_player_menu()
-                continue
+                break
             elif user_choice == 3:
                 return
             else:
@@ -125,14 +126,11 @@ class UserMenu:
             try:
                 user_choice = int(input("Enter your choice (1-8):"))
                 if user_choice == 1:
-                    self._change_campaign_property_menu(self._campaign_factory.current_campaign, 'name',
-                                                        'Campaign Name')
+                    self.edit_campaign_name_menu()
                 elif user_choice == 2:
                     self.edit_events_menu()
                 elif user_choice == 4:
                     self.manage_campaign_players()
-                elif user_choice == 5:
-                    self.manage_campaign_npcs()
                 elif 1 <= user_choice <= 6:
                     print("Made a valid choice 1-6")
                 elif user_choice == 7:
@@ -141,8 +139,7 @@ class UserMenu:
                         self.display_edit_existing_campaigns_menu()
                     break
                 elif user_choice == 8:
-                    self._change_campaign_property_menu(self._campaign_factory.current_campaign, 'short_desc',
-                                                        'Campaign Description')
+                    pass
                 elif user_choice == 9:
                     self._campaign_factory.set_no_current_campaign()
                     if from_campaign_creation:
@@ -152,8 +149,12 @@ class UserMenu:
                     print(output.invalid_choice())
             except ValueError:
                 print(output.invalid_choice_int_expected())
-            except AttributeError:
-                print("caught attr error")
+
+    def edit_campaign_description(self, desc: str) -> None:
+        # print("Edit your description below:")
+        # ask for input
+        # insert current desc on input field
+        pass
 
     def delete_campaign(self, campaign_name: str) -> None:
         try:
@@ -173,9 +174,8 @@ class UserMenu:
             # @TODO: print tree structure here
             print("printing event tree here...")
             # print(self._events_manager.events_tree)
-            # for event in self._events_manager.events_tree.values():
-            #     print(f"|| Event ID: {event.event_id} -> choices: {event.choices}")
-            self._events_factory.print_events()
+            for event in self._events_factory.events_tree.values():
+                print(f"|| Event ID: {event.event_id} -> choices: {event.choices}")
             print("1. Create new event\n"
                   "2. Edit an existing event\n"
                   "3. Link events (create choices)\n"
@@ -239,53 +239,42 @@ class UserMenu:
 
     def display_link_event_menu(self):
         print("Linking events...")
-        input1 = input("Enter first event id: ")
-        input2 = input("Enter second event id: ")
+        input1 = int(input("Enter first event id: "))
+        input2 = int(input("Enter second event id: "))
         self._events_factory.link_event(input1, input2)
         self._campaign_factory.current_campaign.events = self._events_factory.events_tree
         self._campaign_factory.save_campaign()
 
     # Edit events stuff end =================================
 
-    # def edit_campaign_name_menu(self):
-    #     while True:
-    #         try:
-    #             user_input = input(output.campaign_name_prompt()).strip()
-    #             if len(user_input) == 0:
-    #                 print("Name cannot be empty, please try again.")
-    #             elif user_input.lower() == BACK_KEYWORD:
-    #                 break
-    #             else:
-    #                 self._campaign_manager.rename_campaign(user_input)
-    #                 self._campaign_manager.save_campaign()
-    #                 break
-    #         except ValueError:
-    #             print("Name cannot be empty, please try again.")
-    #         except OSError:
-    #             print(output.invalid_OS_filename(user_input))
-    #         except fb.ForbiddenFilenameCharsError:
-    #             print(output.invalid_chars_campaign_name(user_input))
-
-    # generic function to change any property in campaign
-    def _change_campaign_property_menu(self, campaign_prop, prop_name: str, display_prop: str) -> None:
+    def edit_campaign_name_menu(self):
         while True:
             try:
-                print(f"Current {display_prop}: {getattr(campaign_prop, prop_name)}")
-                user_input = input(f'Enter new {display_prop}: ')
-
+                user_input = input(output.campaign_name_prompt()).strip()
                 if len(user_input) == 0:
-                    print("Input cannot be empty, please try again.")
+                    print("Name cannot be empty, please try again.")
                 elif user_input.lower() == BACK_KEYWORD:
                     break
                 else:
 
-                    self._campaign_factory.edit_campaign_property(campaign_prop, prop_name, user_input)
+                    self._campaign_factory.rename_campaign(user_input)
                     self._campaign_factory.save_campaign()
                     break
+            except ValueError:
+                print("Name cannot be empty, please try again.")
             except OSError:
                 print(output.invalid_OS_filename(user_input))
             except fb.ForbiddenFilenameCharsError:
                 print(output.invalid_chars_campaign_name(user_input))
+
+    # generic function to change any property in campaign
+    def _change_campaign_property(self, campaign_obj, prop_name: str, current_prop: str, display_prop):
+        print(f"Current {display_prop}: {current_prop}")
+        new_property = input(f"Enter new {display_prop}: ")
+        if hasattr(campaign_obj, prop_name):
+            setattr(campaign_obj, prop_name, new_property)
+        else:
+            print(f"Error: changing invalid campaign property...")
 
     def display_player_menu(self):
         while True:
@@ -296,8 +285,9 @@ class UserMenu:
                 user_choice = int(input("Enter your choice (1-2):"))
                 if user_choice == 1:
                     self.display_play_existing_campaigns_menu()
+                    break
                 elif user_choice == 2:
-                    # self.display_main_menu()
+                    self.display_main_menu()
                     break
                 else:
                     print("Invalid choice, please try again.")
@@ -313,19 +303,6 @@ class UserMenu:
                 input(f"Enter your choice (1-{len(self._campaign_factory.current_campaign.player_list)}):")) - 1
             if 0 <= player_index <= (len(self._campaign_factory.current_campaign.player_list)):
                 self.manage_single_campaign_player(player_index)
-                break
-            else:
-                print("Invalid choice, please try again.")
-
-    def manage_campaign_npcs(self):
-        while True:
-            print(f" --Non-Player Character List-- ")
-            for index, npc in enumerate(self._campaign_factory.current_campaign.npc_list):
-                print(f"{index + 1}. {npc.name}")
-            npc_index = int(
-                input(f"Enter your choice (1-{len(self._campaign_factory.current_campaign.npc_list)}):")) - 1
-            if 0 <= npc_index <= (len(self._campaign_factory.current_campaign.npc_list)):
-                self.manage_single_campaign_npc(npc_index)
                 break
             else:
                 print("Invalid choice, please try again.")
@@ -358,115 +335,52 @@ class UserMenu:
                 continue
             if user_choice == 2:
                 self._change_campaign_property(self._campaign_factory.current_campaign.player_list[player_index]
-                                               , "description",
-                                               self._campaign_factory.current_campaign.player_list[
-                                                   player_index].description
-                                               , "description")
+                                          , "description",
+                                          self._campaign_factory.current_campaign.player_list[player_index].description
+                                          , "description")
                 continue
             if user_choice == 3:
-                self._change_campaign_property(self._campaign_factory.current_campaign.player_list[player_index],
-                                               "base_hp",
+                self._change_campaign_property(self._campaign_factory.current_campaign.player_list[player_index], "base_hp",
                                                self._campaign_factory.current_campaign.player_list[player_index].base_hp
                                                , "base hit points")
                 continue
             if user_choice == 4:
-                self._change_campaign_property(self._campaign_factory.current_campaign.player_list[player_index],
-                                               "base_atk",
-                                               self._campaign_factory.current_campaign.player_list[
-                                                   player_index].base_atk
+                self._change_campaign_property(self._campaign_factory.current_campaign.player_list[player_index], "base_atk",
+                                               self._campaign_factory.current_campaign.player_list[player_index].base_atk
                                                , "base attack")
                 continue
             if user_choice == 5:
-                self._change_campaign_property(self._campaign_factory.current_campaign.player_list[player_index],
-                                               "base_spd",
-                                               self._campaign_factory.current_campaign.player_list[
-                                                   player_index].base_spd
+                self._change_campaign_property(self._campaign_factory.current_campaign.player_list[player_index], "base_spd",
+                                               self._campaign_factory.current_campaign.player_list[player_index].base_spd
                                                , "base speed")
                 continue
             if user_choice == 6:
                 self._change_campaign_property(self._campaign_factory.current_campaign.player_list[player_index]
-                                               , "exp_per_lvl_up",
-                                               self._campaign_factory.current_campaign.player_list[
-                                                   player_index].exp_per_lvl_up
-                                               , "level up experience")
+                                          , "exp_per_lvl_up",
+                                          self._campaign_factory.current_campaign.player_list[player_index].exp_per_lvl_up
+                                          , "level up experience")
                 continue
             if user_choice == 7:
-                self._change_campaign_property(self._campaign_factory.current_campaign.player_list[player_index],
-                                               "max_lvl",
+                self._change_campaign_property(self._campaign_factory.current_campaign.player_list[player_index], "max_lvl",
                                                self._campaign_factory.current_campaign.player_list[player_index].max_lvl
                                                , "max level")
                 continue
             if user_choice == 8:
-                self._change_campaign_property(self._campaign_factory.current_campaign.player_list[player_index],
-                                               "hp_mod",
+                self._change_campaign_property(self._campaign_factory.current_campaign.player_list[player_index], "hp_mod",
                                                self._campaign_factory.current_campaign.player_list[player_index].hp_mod
                                                , "hit point gain per level")
                 continue
             if user_choice == 9:
-                self._change_campaign_property(self._campaign_factory.current_campaign.player_list[player_index],
-                                               "atk_mod",
+                self._change_campaign_property(self._campaign_factory.current_campaign.player_list[player_index], "atk_mod",
                                                self._campaign_factory.current_campaign.player_list[player_index].atk_mod
                                                , "attack gain per level")
                 continue
             if user_choice == 10:
-                self._change_campaign_property(self._campaign_factory.current_campaign.player_list[player_index],
-                                               "spd_mod",
+                self._change_campaign_property(self._campaign_factory.current_campaign.player_list[player_index], "spd_mod",
                                                self._campaign_factory.current_campaign.player_list[player_index].spd_mod
                                                , "speed gain per level")
                 continue
             if user_choice == 12:
-                break
-            else:
-                print("Invalid choice, please try again.")
-
-    def manage_single_campaign_npc(self, player_index):
-        while True:
-            print(f" --Non-Player Character Details-- ")
-            print(f"{self._campaign_factory.current_campaign.npc_list[player_index]}")
-            print(f" -------- ")
-            print("1. Change NPC name")
-            print("2. Change NPC description")
-            print("3. Change NPC base hit points")
-            print("4. Change NPC base attack")
-            print("5. Change NPC base speed")
-            print("6. Change NPC experience given")
-            print("7. Change friendly/enemy NPC (selecting this will toggle to the other)")
-            print("8. Clear character")
-            print("9. Back")
-
-            user_choice = int(input("Enter your choice (1-9):"))
-            if user_choice == 1:
-                self._change_campaign_property_menu(self._campaign_factory.current_campaign.npc_list[player_index]
-                                               , "name", "name")
-                # self._campaign_manager.current_campaign.player_list[player_index].name = new_name
-                continue
-            if user_choice == 2:
-                self._change_campaign_property_menu(self._campaign_factory.current_campaign.npc_list[player_index]
-                                               , "description", "description")
-                continue
-            if user_choice == 3:
-                self._change_campaign_property_menu(self._campaign_factory.current_campaign.npc_list[player_index],
-                                               "base_hp", "base hit points")
-                continue
-            if user_choice == 4:
-                self._change_campaign_property_menu(self._campaign_factory.current_campaign.npc_list[player_index],
-                                               "base_atk", "base attack")
-                continue
-            if user_choice == 5:
-                self._change_campaign_property_menu(self._campaign_factory.current_campaign.npc_list[player_index],
-                                               "base_spd", "base speed")
-                continue
-            if user_choice == 6:
-                self._change_campaign_property_menu(self._campaign_factory.current_campaign.npc_list[player_index]
-                                               , "exp", "experience given")
-                continue
-            if user_choice == 7:
-                if (self._campaign_factory.current_campaign.npc_list[player_index].friendly):
-                    self._campaign_factory.current_campaign.npc_list[player_index].friendly = False
-                else:
-                    self._campaign_factory.current_campaign.npc_list[player_index].friendly = True
-                continue
-            if user_choice == 9:
                 break
             else:
                 print("Invalid choice, please try again.")
@@ -483,8 +397,6 @@ class UserMenu:
                     # self.display_edit_campaign_menu(False)
                     print(f"Playing {self._campaign_factory.current_campaign.name} Campaign")
                     # self._campaign_manager.start_campaign()
-                    # self._campaign_manager.start_campaign()
-                    self.start_campaign()
                     continue
                 elif user_choice == 1 + choice_count:
                     # self.display_editor_menu()
@@ -494,32 +406,93 @@ class UserMenu:
             except ValueError:
                 print(output.invalid_choice_int_expected())
 
-        # while True:
-        #     choice_count = self.display_campaign_list_choices()
-        #     user_choice = int(input(f"Enter your choice (1-{1 + choice_count}):"))
-        #     if choice_count + 1 > user_choice > 0:
-        #         # @TODO: change to use CampaignManager
-        #         self.start_campaign(campaign_list[user_choice - 1])
-        #     elif user_choice == 1 + choice_count:
-        #         self.display_player_menu()
-        #         break
-        #     else:
-        #         print("Invalid choice, please try again.")
+        while True:
+            choice_count = self.display_campaign_list_choices()
+            user_choice = int(input(f"Enter your choice (1-{1 + choice_count}):"))
+            if choice_count + 1 > user_choice > 0:
+                # @TODO: change to use CampaignManager
+                self.start_campaign(self._campaign_manager.campaigns[user_choice - 1])
+            elif user_choice == 1 + choice_count:
+                self.display_player_menu()
+                break
+            else:
+                print("Invalid choice, please try again.")
 
     def start_campaign(self, campaign: Campaign):
         # @TODO properly extract campaign data to start campaign event sequence
-        self._events_factory.events_tree = self._campaign_factory.current_campaign.events
-        self._events_factory.player = self._campaign_factory.current_campaign.player_list[0]
-        self._events_factory.NPC = self._campaign_factory.current_campaign.npc_list[0]
-        self._events_factory.start_events()
-
-        # self.run_combat_event(campaign.player_list[0], campaign.npc_list[0])
-        # self.run_choice_event()
+        self.run_combat_event(campaign.player_list[0], campaign.npc_list[0])
+        self.run_choice_event()
         # game ended, return to main menu
-        # self.run_last_choice_event()
-        # print("Campaign ended!")
-        # print("########################################################################")
-        # self.display_main_menu()
+        self.run_last_choice_event()
+        print("Campaign ended!")
+        print("########################################################################")
+        self.display_main_menu()
+
+    def combat_attack(self, attacker: Character, defender: Character):
+        hit_mod = random.random()
+
+        if hit_mod <= 0.1:
+            print("A critical Hit!")
+            hit_mod = 1.2
+        else:
+            hit_mod = 1
+
+        damage = attacker.base_atk * hit_mod
+        print(f"{attacker.name} attacked {defender.name} for {damage} damage!")
+        defender.current_hp -= damage
+
+
+    def run_combat_event(self, player: Player, enemy:NPC) -> Player:
+        print(f"You engaged combat with {enemy.name}!")
+        print(player.ascii_art)
+        print(enemy.ascii_art)
+        while True:
+            print(f"You are fighting {enemy.name}!")
+            print(f"{player.name} HP: {player.current_hp}/{player.max_hp}")
+            print(f"{enemy.name} HP: {enemy.current_hp}/{enemy.max_hp}")
+            print("1. Attack")
+            print("2. Defend")
+            print("3. Use Item")
+            print("4. Flee")
+            user_choice = int(input(f"Enter your choice (1-4):"))
+            if user_choice == 1:
+                # @TODO max hp and current hp are still using default values
+                if player.base_spd >= enemy.base_spd:
+                    print(f"You attack first!")
+                    self.combat_attack(player, enemy)
+                    if enemy.current_hp <= 0:
+                        print(f"You defeated {enemy.name}!")
+                        print(f"You gained {enemy.exp} experience.")
+                        break
+                    print(f"{enemy.name} attacks!")
+                    self.combat_attack(enemy, player)
+                    if player.current_hp <= 0:
+                        print(f"You were defeated...")
+                        break
+                else:
+                    print(f"{enemy.name} attacks!")
+                    self.combat_attack(enemy, player)
+                    if player.current_hp <= 0:
+                        print(f"You were defeated...")
+                        break
+                    print(f"You attack!")
+                    self.combat_attack(player, enemy)
+                    if enemy.current_hp <= 0:
+                        print(f"You defeated {enemy.name}!")
+                        print(f"You gained {enemy.exp} experience.")
+                        break
+            elif user_choice == 2:
+                print("You defended yourself!")
+                print(f"{enemy.name} hit you for 1 damage!")
+                break
+            elif user_choice == 3:
+                self.use_item_menu()
+                break
+            elif user_choice == 4:
+                print("You fled successfully!")
+                break
+            else:
+                print("Invalid choice, please try again.")
 
     # @TODO fake use item menu
     def use_item_menu(self):

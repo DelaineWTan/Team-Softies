@@ -66,28 +66,18 @@ class NPC(Character):
 ⠀⣿⣿⠀⠀⠀⣿⣿⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⣿⣿⠀⠀
 ⠀⢿⣿⡆⠀⠀⣿⣿⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⣿⡇⠀⠀
 ⠀⠸⣿⣧⡀⠀⣿⣿⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⣿⠃⠀⠀
-⠀⠀⠛⢿⣿⣿⣿⣿⣇⠀⠀⠀⠀⠀⣰⣿⣿⣷⣶⣶⣶⣶⢠⣿⣿⠀⠀⠀
+⠀⠀⠛⢿⣿⣿⣿⣿⣇⠀⠀⠀⠀⠀⣰⣿⣿⣷⣶⣶⣶⣶⠶⠀⢠⣿⣿⠀⠀⠀
 ⠀⠀⠀⠀⠀⠀⠀⣿⣿⠀⠀⠀⠀⠀⣿⣿⡇⠀⣽⣿⡏⠁⠀⠀⢸⣿⡇⠀⠀⠀
 ⠀⠀⠀⠀⠀⠀⠀⣿⣿⠀⠀⠀⠀⠀⣿⣿⡇⠀⢹⣿⡆⠀⠀⠀⣸⣿⠇⠀⠀⠀
 ⠀⠀⠀⠀⠀⠀⠀⢿⣿⣦⣄⣀⣠⣴⣿⣿⠁⠀⠈⠻⣿⣿⣿⣿⡿⠏⠀⠀⠀⠀
 ⠀⠀⠀⠀⠀⠀⠀⠈⠛⠻⠿⠿⠿⠿⠋⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀"""
 
     def __init__(self, name: str = "NPC Anon", ascii_art: str = NPC_ascii_art, exp: int = 1, friendly=False, **kwargs):
-        super().__init__(name, **kwargs)
         self.friendly = friendly
         self.exp = exp
         self.ascii_art = ascii_art
+        super().__init__(name, **kwargs)
 
-    def __str__(self):
-        friendly_text = "friendly" if self.friendly else "unfriendly"
-        return (f"Name: {self.name}\n"
-                f"Hit points (HP): {self.base_hp}\n"
-                f"Attack (atk): {self.base_atk}\n"
-                f"Speed (spd): {self.base_spd}\n"
-                f"Experience points given: {self.exp}\n"
-                f"This NPC is {friendly_text}\n"
-                f"{self.description}"
-                f"{self.ascii_art}")
 
 class Item:
     def __init__(self, name: str = "nameless item"):
@@ -185,7 +175,7 @@ class Campaign:
         self._events = events
         # @TODO do we want to have potentially more than 1 character per campaign?
         self._player_list = player_list  # players are characters
-        self._npc_list = npc_list  # list of NPCs
+        self._npc_list = npc_list  # list of NPCs, this can be empty
         self._items_list = items_list  # list of item objects, this can be empty
 
     @property
