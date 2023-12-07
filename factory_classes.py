@@ -184,8 +184,8 @@ class ConfigFileFactory:
             if campaign.previous_name:
                 os.rename(
                     f'{ConfigFileFactory._path}{campaign.previous_name}'
-                    f'{ConfigFileFactory._config_extension}',
-                    file_name)
+                    f'{ConfigFileFactory._config_backup_extension}',
+                    bak_path)
             shutil.copy(file_name, bak_path)
         except OSError:
             raise OSError

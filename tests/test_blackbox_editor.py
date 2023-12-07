@@ -315,6 +315,7 @@ class EditorBBTests(unittest.TestCase):
         # Creates file to delete for test
         file_path = os.path.join(self._configs_path, self._file_name)
         self._file_manager.create_config_file(self._campaign)
+        self._file_manager.save_config_backup_file(self._campaign)
 
         file_path = os.path.join(self._configs_path, self.CAMPAIGN_NAME_VALID_MIN + 
                                  EditorBBTests._extension)
@@ -330,6 +331,7 @@ class EditorBBTests(unittest.TestCase):
         # Creates file to delete for test
         file_path = os.path.join(self._configs_path, self._file_name)
         self._file_manager.create_config_file(self._campaign)
+        self._file_manager.save_config_backup_file(self._campaign)
 
         file_path = os.path.join(self._configs_path, self.CAMPAIGN_NAME_VALID_LOWER + 
                                  EditorBBTests._extension)
@@ -345,6 +347,7 @@ class EditorBBTests(unittest.TestCase):
         # Creates file to delete for test
         file_path = os.path.join(self._configs_path, self._file_name)
         self._file_manager.create_config_file(self._campaign)
+        self._file_manager.save_config_backup_file(self._campaign)
 
         file_path = os.path.join(self._configs_path, self.CAMPAIGN_NAME_VALID_NOMINAL + 
                                  EditorBBTests._extension)
@@ -360,6 +363,7 @@ class EditorBBTests(unittest.TestCase):
         # Creates file to delete for test
         file_path = os.path.join(self._configs_path, self._file_name)
         self._file_manager.create_config_file(self._campaign)
+        self._file_manager.save_config_backup_file(self._campaign)
 
         file_path = os.path.join(self._configs_path, self.CAMPAIGN_NAME_VALID_UPPER + 
                                  EditorBBTests._extension)
@@ -375,6 +379,7 @@ class EditorBBTests(unittest.TestCase):
         # Creates file to delete for test
         file_path = os.path.join(self._configs_path, self._file_name)
         self._file_manager.create_config_file(self._campaign)
+        self._file_manager.save_config_backup_file(self._campaign)
 
         file_path = os.path.join(self._configs_path, self.CAMPAIGN_NAME_VALID_MAX + 
                                  EditorBBTests._extension)
