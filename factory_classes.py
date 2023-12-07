@@ -36,12 +36,10 @@ class EventFactory:
 
     @staticmethod
     def delete_event(event_id):
-        is_successful = True
-        try:
-            del EventFactory.events_tree[event_id]
-        except KeyError:
-            is_successful = False
-        return is_successful
+        EventFactory.events_tree.pop(event_id)
+        for event in EventFactory.events_tree.values():
+            if event_id in event.choices:
+                event.choices.remove(event_id)
 
     @staticmethod
     def link_event(event_id_1, event_id_2):
@@ -49,8 +47,10 @@ class EventFactory:
 
     @staticmethod
     def print_events():
-        for event in EventFactory.events_tree.values():
-            print(f"| {event.event_id} : {event.description} -> {event.choices}")
+        # for event in EventFactory.events_tree.values():
+        #     print(f"| {event.event_id} : {event.description} -> {event.choices}")
+        list(map(lambda event: print(f"| {event.event_id} : {event.description} -> {event.choices}"),
+                 EventFactory.events_tree.values()))
 
     @staticmethod
     def start_events():
