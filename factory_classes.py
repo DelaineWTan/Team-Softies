@@ -201,10 +201,36 @@ class ConfigFileFactory:
                     campaign = pickle.load(file_object)
                     parsed_campaigns.append(campaign)
                     file_object.close()
-            except decoder.JSONDecodeError:
+            except (decoder.JSONDecodeError, pickle.UnpicklingError):
                 print(
-                    f"WARNING: config file for campaign {campaign_name} is corrupted. Skipping...")
+                    f"WARNING: config file for campaign {campaign_name} is corrupted. Checking for backup...")
+                if ConfigFileFactory.restore_backup_file(campaign_name):
+                    try:
+                        with open(f'{ConfigFileFactory._path}{campaign_name}', 'rb') as file_object:
+                            campaign = pickle.load(file_object)
+                            parsed_campaigns.append(campaign)
+                            file_object.close()
+                    except decoder.JSONDecodeError:
+                        print(
+                            f"WARNING: config file for campaign {campaign_name} is corrupted. Skipping...")
+                else:
+                    print(
+                        f"WARNING: config file for campaign {campaign_name} is could not be restored. Skipping...")
         return parsed_campaigns
+
+    @staticmethod
+    def restore_backup_file(campaign_name_ext) -> bool:
+        campaign_name = campaign_name_ext.split('.')[0]
+        file_name = (f'{ConfigFileFactory._path}{campaign_name}'
+                     f'{ConfigFileFactory._config_extension}')
+        print(campaign_name)
+        bak_path = (f'{ConfigFileFactory._path}{campaign_name}'
+                    f'{ConfigFileFactory._config_backup_extension}')
+        try:
+            shutil.copy(bak_path, file_name)
+            return True
+        except Exception:  # too broad, not sure the error that could occur here TODO: specific exception
+            return False
 
     @staticmethod
     def delete_config_file(file_name) -> None:
