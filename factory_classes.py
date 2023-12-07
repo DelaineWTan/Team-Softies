@@ -229,7 +229,11 @@ class ConfigFileFactory:
         try:
             shutil.copy(bak_path, file_name)
             return True
-        except Exception:  # too broad, not sure the error that could occur here TODO: specific exception
+        except (IsADirectoryError, PermissionError):
+            return False
+        except IOError:
+            print(
+                f"WARNING: backup file for campaign {campaign_name} does not exist...")
             return False
 
     @staticmethod
