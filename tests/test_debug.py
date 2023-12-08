@@ -108,4 +108,3 @@ def test_campaign_properties():
     assert campaign.events == TEST_CAMPAIGN_EVENTS
     assert campaign.player_list == TEST_CAMPAIGN_PLAYER_LIST
     assert campaign.npc_list == TEST_CAMPAIGN_NPC_LIST
-    # assert campaign._items_list == test_campaign_items

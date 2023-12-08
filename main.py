@@ -1,7 +1,6 @@
 from factory_classes import *
 from object_classes import *
 from output_messages import output_messages as output
-import random
 from CustomExceptions import input_length_error as ile
 
 BACK_KEYWORD = 'back'
@@ -41,11 +40,7 @@ class UserMenu:
                     self.display_edit_existing_campaigns_menu()
                     continue
                 elif user_choice == 3:
-                    # Wouldn't this run another instance of display_main_menu
-                    # and never finishing the display_main_menu from before?
-                    # Unless I'm getting it wrong
-                    # -Jun
-                    # self.display_main_menu()
+                    # Don't change to continue, will break so many tests xd
                     break
                 else:
                     print("Invalid choice, please try again.")
@@ -80,19 +75,6 @@ class UserMenu:
                     print(output.input_less_min_length(self._campaign_factory.CAMPAIGN_NAME_LEN_MIN))
                 else: 
                     print(output.input_exceeds_max_length(self._campaign_factory.CAMPAIGN_NAME_LEN_MAX))
-            
-
-    # def display_new_campaign_menu():
-    #     while True:
-    #         user_input = input("Enter new campaign name:")
-    #         if len(user_input) == 0:
-    #             print("Name cannot be empty, please try again.")
-    #         else:
-    #             newCampaign = Campaign(user_input)  # generate new campaign object
-    #             campaign_list.append(newCampaign)
-    #             print(f"New campaign created: {newCampaign.name}")
-    #             display_edit_campaign_menu(newCampaign)
-    #             break
 
     def display_campaign_list_choices(self):
         print("Campaign list:")
@@ -114,11 +96,9 @@ class UserMenu:
                 user_choice = int(input(f"Enter your choice (1-{1 + choice_count}):"))
                 if choice_count + 1 > user_choice > 0:
                     self._campaign_factory.set_current_campaign(user_choice - 1)
-                    # print(f'--*{self._campaign_manager.current_campaign.name}*--')
                     self.display_edit_campaign_menu(False)
                     continue
                 elif user_choice == 1 + choice_count:
-                    # self.display_editor_menu()
                     break
                 else:
                     print("Invalid choice, please try again.")
@@ -159,8 +139,8 @@ class UserMenu:
                     print(output.invalid_choice())
             except ValueError:
                 print(output.invalid_choice_int_expected())
-            # except AttributeError:
-            #     print("caught attr error")
+            except AttributeError:
+                print("caught attr error")
 
     def delete_campaign(self, campaign_name: str) -> None:
         try:
@@ -264,27 +244,6 @@ class UserMenu:
         self._campaign_factory.current_campaign.events = self._events_factory.events_tree
         self._campaign_factory.save_campaign()
 
-    # Edit events stuff end =================================
-
-    # def edit_campaign_name_menu(self):
-    #     while True:
-    #         try:
-    #             user_input = input(output.campaign_name_prompt()).strip()
-    #             if len(user_input) == 0:
-    #                 print("Name cannot be empty, please try again.")
-    #             elif user_input.lower() == BACK_KEYWORD:
-    #                 break
-    #             else:
-    #                 self._campaign_manager.rename_campaign(user_input)
-    #                 self._campaign_manager.save_campaign()
-    #                 break
-    #         except ValueError:
-    #             print("Name cannot be empty, please try again.")
-    #         except OSError:
-    #             print(output.invalid_OS_filename(user_input))
-    #         except fb.ForbiddenFilenameCharsError:
-    #             print(output.invalid_chars_campaign_name(user_input))
-
     # generic function to change any property in campaign
     def _change_campaign_property_menu(self, campaign_prop, prop_name: str, display_prop: str) -> None:
         while True:
@@ -371,7 +330,6 @@ class UserMenu:
             if user_choice == 1:
                 self._change_campaign_property_menu(self._campaign_factory.current_campaign.player_list[player_index]
                                                , "name", "name")
-                # self._campaign_manager.current_campaign.player_list[player_index].name = new_name
                 continue
             if user_choice == 2:
                 self._change_campaign_property_menu(self._campaign_factory.current_campaign.player_list[player_index]
@@ -433,7 +391,6 @@ class UserMenu:
             if user_choice == 1:
                 self._change_campaign_property_menu(self._campaign_factory.current_campaign.npc_list[player_index]
                                                , "name", "name")
-                # self._campaign_manager.current_campaign.player_list[player_index].name = new_name
                 continue
             if user_choice == 2:
                 self._change_campaign_property_menu(self._campaign_factory.current_campaign.npc_list[player_index]
@@ -474,32 +431,15 @@ class UserMenu:
                 user_choice = int(input(f"Enter your choice (1-{1 + choice_count}):"))
                 if choice_count + 1 > user_choice > 0:
                     self._campaign_factory.set_current_campaign(user_choice - 1)
-                    # print(f'--*{self._campaign_manager.current_campaign.name}*--')
-                    # self.display_edit_campaign_menu(False)
                     print(f"Playing {self._campaign_factory.current_campaign.name} Campaign")
-                    # self._campaign_manager.start_campaign()
-                    # self._campaign_manager.start_campaign()
                     self.start_campaign(self._campaign_factory.current_campaign)
                     continue
                 elif user_choice == 1 + choice_count:
-                    # self.display_editor_menu()
                     break
                 else:
                     print("Invalid choice, please try again.")
             except ValueError:
                 print(output.invalid_choice_int_expected())
-
-        # while True:
-        #     choice_count = self.display_campaign_list_choices()
-        #     user_choice = int(input(f"Enter your choice (1-{1 + choice_count}):"))
-        #     if choice_count + 1 > user_choice > 0:
-        #         # @TODO: change to use CampaignManager
-        #         self.start_campaign(campaign_list[user_choice - 1])
-        #     elif user_choice == 1 + choice_count:
-        #         self.display_player_menu()
-        #         break
-        #     else:
-        #         print("Invalid choice, please try again.")
 
     def start_campaign(self, campaign: Campaign):
         # @TODO properly extract campaign data to start campaign event sequence
@@ -507,14 +447,6 @@ class UserMenu:
         player = self._campaign_factory.current_campaign.player_list[0]
         npc = self._campaign_factory.current_campaign.npc_list[0]
         self._events_factory.start_events(player, npc)
-
-        # self.run_combat_event(campaign.player_list[0], campaign.npc_list[0])
-        # self.run_choice_event()
-        # game ended, return to main menu
-        # self.run_last_choice_event()
-        # print("Campaign ended!")
-        # print("########################################################################")
-        # self.display_main_menu()
 
     # @TODO Fake choice event
     def run_choice_event(self):

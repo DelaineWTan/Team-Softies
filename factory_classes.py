@@ -14,13 +14,6 @@ class EventFactory:
 
     @staticmethod
     def combat_attack(attacker: Character, defender: Character):
-        # critical hit mod
-        # hit_mod = random.random()
-        #
-        # if hit_mod <= 0.1:
-        #    print("A critical Hit!")
-        #    hit_mod = 1.2
-        # else:
         hit_mod = 1
         damage = attacker.base_atk * hit_mod
         print(f"{attacker.name} attacked {defender.name} for {damage} damage!")
